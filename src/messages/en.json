@@ -20,7 +20,10 @@
     "settings": "Settings"
   },
   "auth": {
+    "title": "Welcome",
+    "description": "Sign in to access your dashboard and available HRIS features.",
     "signIn": "Sign In",
+    "signUp": "Sign Up",
     "signOut": "Sign Out",
     "email": "Email",
     "password": "Password",
@@ -33,7 +36,17 @@
     "loginFailed": "Login failed. Please try again.",
     "registrationFailed": "Registration failed. Please try again.",
     "passwordMismatch": "Passwords do not match",
-    "passwordTooShort": "Password must be at least 6 characters long"
+    "passwordTooShort": "Password must be at least 6 characters"
+  },
+  "brand": {
+    "brandingTitle": "HRIS Portal",
+    "brandingSubtitle": "Human Resource Information System",
+    "brand1": "Manage Employee Data",
+    "brand1Description": "Integrated system to manage all employee data and information across the company.",
+    "brand2": "Centralized Access",
+    "brand2Description": "Centralized access to all HR services and information.",
+    "welcomeMessage": "Welcome!",
+    "welcomeDescription": "Sign in to access your dashboard and available HRIS features."
   },
   "employees": {
     "title": "Employees",

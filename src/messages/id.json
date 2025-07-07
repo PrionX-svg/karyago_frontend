@@ -1,0 +1,61 @@
+{
+    "common": {
+        "welcome": "Selamat Datang",
+        "login": "Masuk",
+        "logout": "Keluar",
+        "save": "Simpan",
+        "cancel": "Batal",
+        "delete": "Hapus",
+        "edit": "Edit",
+        "loading": "Memuat...",
+        "error": "Error",
+        "success": "Berhasil",
+        "register": "Daftar"
+    },
+    "navigation": {
+        "home": "Beranda",
+        "dashboard": "Dashboard",
+        "employees": "Karyawan",
+        "profile": "Profil",
+        "settings": "Pengaturan"
+    },
+    "auth": {
+        "title": "Selamat Datang",
+        "description": "Masuk untuk mengakses dashboard dan fitur HRIS yang tersedia.",
+        "signIn": "Masuk",
+        "signUp" : "Daftar",   
+        "signOut": "Keluar",
+        "email": "Email",
+        "password": "Kata Sandi",
+        "confirmPassword": "Konfirmasi Kata Sandi",
+        "forgotPassword": "Lupa Kata Sandi?",
+        "rememberMe": "Ingat Saya",
+        "createAccount": "Buat Akun",
+        "alreadyHaveAccount": "Sudah punya akun?",
+        "noAccount": "Belum punya akun?",
+        "loginFailed": "Login gagal. Silakan coba lagi.",
+        "registrationFailed": "Pendaftaran gagal. Silakan coba lagi.",
+        "passwordMismatch": "Kata sandi tidak cocok",
+        "passwordTooShort": "Kata sandi harus minimal 6 karakter"
+    },
+    "brand": {
+        "brandingTitle": "Portal HRIS",
+        "brandingSubtitle": "Sistem Informasi Sumber Daya Manusia",
+        "brand1": "Kelola Data Karyawan",
+        "brand1Description": "Sistem terintegrasi untuk mengelola semua data dan informasi karyawan di seluruh perusahaan.",
+        "brand2": "Akses Terpusat",
+        "brand2Description": "Akses terpusat ke semua layanan dan informasi HR.",
+        "welcomeMessage": "Selamat Datang!",
+        "welcomeDescription": "Masuk untuk mengakses dashboard dan fitur HRIS yang tersedia."
+    },
+    "employees": {
+        "title": "Karyawan",
+        "addEmployee": "Tambah Karyawan",
+        "firstName": "Nama Depan",
+        "lastName": "Nama Belakang",
+        "position": "Posisi",
+        "department": "Departemen",
+        "hireDate": "Tanggal Masuk",
+        "salary": "Gaji"
+    }
+}
