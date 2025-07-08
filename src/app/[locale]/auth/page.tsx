@@ -115,17 +115,19 @@ export default function AuthPage() {
         {/* Right Side - Auth Forms */}
         <div className="flex justify-center animate-in slide-in-from-right-8 duration-800 delay-400">
           <Card className="w-full max-w-md border-0 shadow-xl">
-            <CardHeader>
+            {!registrationSuccess && (
+              <CardHeader>
               <div className="flex justify-center mb-4">
                 <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center animate-in zoom-in-50 duration-600 delay-800">
-                  <Building2 className="w-8 h-8 text-white" />
+                <Building2 className="w-8 h-8 text-white" />
                 </div>
               </div>
               <CardTitle className="text-2xl text-center text-gray-800">{AuthPage("title")}</CardTitle>
               <CardDescription className="text-base text-center text-gray-600">
                 {AuthPage("description")}
               </CardDescription>
-            </CardHeader>
+              </CardHeader>
+            )}
             <CardContent>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 {!registrationSuccess && (

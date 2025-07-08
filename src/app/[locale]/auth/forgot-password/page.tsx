@@ -17,7 +17,7 @@ import { toast } from "sonner"
 type Step = "email" | "otp" | "password" | "success"
 
 export default function ForgotPasswordPage() {
-    const [currentStep, setCurrentStep] = useState<Step>("password")
+    const [currentStep, setCurrentStep] = useState<Step>("email")
     const [email, setEmail] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const rp = useTranslations("forgotPassword")

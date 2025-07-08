@@ -4,9 +4,10 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, ArrowRight, Sparkles } from "lucide-react"
 import Link from "next/link"
+import { useTranslations } from "next-intl"
 
 export default function SuccessStep() {
-    const [countdown, setCountdown] = useState(5)
+    const [countdown, setCountdown] = useState(10)
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -22,6 +23,8 @@ export default function SuccessStep() {
 
         return () => clearInterval(timer)
     }, [])
+
+    const ac = useTranslations("activation")
 
     return (
         <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500 text-center space-y-6">
@@ -42,9 +45,9 @@ export default function SuccessStep() {
             </div>
 
             <div className="space-y-3">
-                <h3 className="text-xl font-semibold text-gray-800">Welcome to Our Platform!</h3>
+                <h3 className="text-xl font-semibold text-gray-800">{ac("welcomeTitle")}</h3>
                 <p className="text-gray-600 max-w-sm mx-auto">
-                    Your account has been successfully activated. You can now access all features and start using our platform.
+                    {ac("welcomeMessage")}
                 </p>
             </div>
 
@@ -52,28 +55,28 @@ export default function SuccessStep() {
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-2">
                 <div className="flex items-center justify-center space-x-2 text-sm text-green-700">
                     <CheckCircle className="w-4 h-4" />
-                    <span>Account verified and activated</span>
+                    <span>{ac("note1")}</span>
                 </div>
                 <div className="flex items-center justify-center space-x-2 text-sm text-green-700">
                     <CheckCircle className="w-4 h-4" />
-                    <span>Full access granted</span>
+                    <span>{ac("note2")}</span>
                 </div>
                 <div className="flex items-center justify-center space-x-2 text-sm text-green-700">
                     <CheckCircle className="w-4 h-4" />
-                    <span>Ready to get started</span>
+                    <span>{ac("note3")}</span>
                 </div>
             </div>
 
             <div className="space-y-3">
                 <Link href="/auth">
                     <Button className="w-full h-12 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg">
-                        Sign In Now
+                        {ac('signInNow')}
                         <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                 </Link>
 
                 <p className="text-sm text-gray-500 mt-2">
-                    Redirecting automatically in <span className="font-semibold text-orange-600">{countdown}</span> seconds...
+                    {ac('redirectMessage', { countdown: countdown })}
                 </p>
             </div>
         </div>
