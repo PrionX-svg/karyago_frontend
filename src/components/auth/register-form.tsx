@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,6 +11,7 @@ import Link from "next/link"
 import { validatePassword } from "@/lib/validate-password"
 import type { RegisterForm } from "@/lib/interfaces/auth-interface"
 import { getClientUTCOffset } from "@/lib/get-timezone"
+import { useTranslations } from "next-intl"
 
 interface RegisterFormProps {
     onSubmit?: (data: RegisterForm) => void
@@ -31,10 +32,8 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
         timezone: getClientUTCOffset(),
     })
     const { isValid, requirements } = validatePassword(formData.password);
+    const Register = useTranslations("auth")
 
-    useEffect(() => {
-        console.log("Form data changed:", formData)
-    }, [formData])
 
     const isFormValid = useMemo(() => {
         const passwordCheck = validatePassword(formData.password)
@@ -64,7 +63,7 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="register-firstname" className="text-sm text-gray-700">
-                        First Name
+                        {Register("firstName")}
                     </Label>
                     <Input
                         id="register-firstname"
@@ -78,7 +77,7 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="register-lastname" className="text-sm text-gray-700">
-                        Last Name
+                        {Register("lastName")}
                     </Label>
                     <Input
                         id="register-lastname"
@@ -94,7 +93,7 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
 
             <div className="space-y-2">
                 <Label htmlFor="register-phone" className="text-sm text-gray-700">
-                    Phone Number
+                    {Register("phone")}
                 </Label>
                 <Input
                     id="register-phone"
@@ -109,7 +108,7 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
 
             <div className="space-y-2">
                 <Label htmlFor="register-email" className="text-sm text-gray-700">
-                    Your Email
+                    {Register("email")}
                 </Label>
                 <Input
                     id="register-email"
@@ -124,7 +123,7 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
 
             <div className="space-y-2">
                 <Label htmlFor="register-password" className="text-sm text-gray-700">
-                    Password
+                    {Register("password")}
                 </Label>
                 <div className="relative">
                     <Input
@@ -169,7 +168,7 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
 
             <div className="space-y-2">
                 <Label htmlFor="register-confirm-password" className="text-sm text-gray-700">
-                    Confirm Password
+                    {Register("confirmPassword")}
                 </Label>
                 <div className="relative">
                     <Input
@@ -198,13 +197,13 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
                 {formData.confirmPassword && formData.password !== formData.confirmPassword && (
                     <p className="text-xs text-red-500 flex items-center">
                         <XCircle className="w-3 h-3 mr-1" />
-                        Passwords do not match
+                        {Register("passwordMismatch")}
                     </p>
                 )}
                 {formData.confirmPassword && formData.password === formData.confirmPassword && (
                     <p className="text-xs text-green-600 flex items-center">
                         <CheckCircle className="w-3 h-3 mr-1" />
-                        Passwords match
+                        {Register("passwordMatch")}
                     </p>
                 )}
             </div>
@@ -218,9 +217,9 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
                     className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500 mt-1"
                 />
                 <Label htmlFor="terms" className="text-sm text-gray-600 leading-relaxed">
-                    I agree to the{" "}
+                    {Register('agree1')}{" "}
                     <Link href="/terms" className="text-orange-600 hover:text-orange-700 hover:underline">
-                        terms and conditions
+                        {Register('termsAndConditions')}
                     </Link>
                 </Label>
             </div>
@@ -234,9 +233,9 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
                     className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500 mt-1"
                 />
                 <Label htmlFor="privacy" className="text-sm text-gray-600 leading-relaxed">
-                    I agree to the{" "}
+                    {Register('agree1')}{" "}
                     <Link href="/privacy" className="text-orange-600 hover:text-orange-700 hover:underline">
-                        privacy policy
+                        {Register('privacyPolicy')}
                     </Link>
                 </Label>
             </div>
@@ -246,7 +245,7 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
                 disabled={!isFormValid}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
-                Create Account
+                {Register("createAccount")}
             </Button>
         </form>
     )

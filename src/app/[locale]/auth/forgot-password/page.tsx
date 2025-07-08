@@ -10,59 +10,82 @@ import EmailStep from "@/components/auth/forgot-password/email-step"
 import OtpStep from "@/components/auth/forgot-password/otp-step"
 import PasswordStep from "@/components/auth/forgot-password/password-step"
 import SuccessStep from "@/components/auth/forgot-password/success-step"
+import { useTranslations } from "next-intl"
+import postAPI from "@/lib/api/postAPI"
+import { toast } from "sonner"
 
 type Step = "email" | "otp" | "password" | "success"
 
 export default function ForgotPasswordPage() {
-    const [currentStep, setCurrentStep] = useState<Step>("email")
+    const [currentStep, setCurrentStep] = useState<Step>("password")
     const [email, setEmail] = useState("")
     const [isLoading, setIsLoading] = useState(false)
+    const rp = useTranslations("forgotPassword")
+    const nav = useTranslations("navigation")
+    const ap = useTranslations("api")
 
     const handleEmailSubmit = async (emailData: { email: string }) => {
         setIsLoading(true)
-        setEmail(emailData.email)
-
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false)
-            setCurrentStep("otp")
-        }, 2000)
+        try {
+            await postAPI({
+                email: emailData.email
+            }, "/auth/forgot-password")
+            setEmail(emailData.email)
+        } finally {
+            setTimeout(() => {
+                setCurrentStep("otp")
+                setIsLoading(false)
+            }, 2000)
+        }
     }
 
     const handleOtpSubmit = async (otpData: { otp: string }) => {
         setIsLoading(true)
-
-        // Simulate OTP verification
-        setTimeout(() => {
-            setIsLoading(false)
-            if (otpData.otp === "123456") {
-                // Mock validation
+        try {
+            const response = await postAPI({
+                email: email,
+                otp_code: otpData.otp
+            }, "/auth/forgot-password/reset")
+            if (response.status === 200) {
                 setCurrentStep("password")
             } else {
-                alert("Invalid OTP. Please try again.")
+                toast.error(ap("otpInvalid"), {
+                    description: ap("otpErrorDescription")
+                })
             }
-        }, 1500)
+        } catch {
+            // Handle error
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleResendOtp = async () => {
+        setIsLoading(true)
+        try {
+            const response = await postAPI({ email: email }, "/auth/forgot-password/resend")
+            if (response.status === 200) {
+                toast.success(ap("otpResendSuccess"))
+            } else {
+                toast.error(ap("otpResendError"))
+            }
+        } catch {
+            toast.error(ap("somethingWentWrong"))
+            setIsLoading(false)
+            return
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     const handlePasswordSubmit = async (passwordData: { password: string; confirmPassword: string }) => {
         setIsLoading(true)
         console.log("New Password:", passwordData)
-
         // Simulate password reset
         setTimeout(() => {
             setIsLoading(false)
             setCurrentStep("success")
         }, 2000)
-    }
-
-    const handleResendOtp = async () => {
-        setIsLoading(true)
-
-        // Simulate resend OTP
-        setTimeout(() => {
-            setIsLoading(false)
-            alert("OTP has been resent to your email")
-        }, 1000)
     }
 
     const getStepNumber = (step: Step) => {
@@ -83,28 +106,28 @@ export default function ForgotPasswordPage() {
     const getStepTitle = (step: Step) => {
         switch (step) {
             case "email":
-                return "Reset Password"
+                return rp("title1")
             case "otp":
-                return "Verify Email"
+                return rp("title2")
             case "password":
-                return "New Password"
+                return rp("title3")
             case "success":
-                return "Password Reset"
+                return rp("titleSuccess")
             default:
-                return "Reset Password"
+                return rp("title1")
         }
     }
 
     const getStepDescription = (step: Step) => {
         switch (step) {
             case "email":
-                return "Enter your email address and we'll send you a verification code"
+                return rp('description1')
             case "otp":
-                return `We've sent a verification code to ${email}`
+                return rp('description2', { email: email })
             case "password":
-                return "Create a new password for your account"
+                return rp('description3')
             case "success":
-                return "Your password has been successfully reset"
+                return rp('description4')
             default:
                 return ""
         }
@@ -120,7 +143,7 @@ export default function ForgotPasswordPage() {
                 <Link href="/auth">
                     <Button variant="ghost" className="text-gray-600 hover:text-gray-800">
                         <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Login
+                        {nav('backToLogin')}
                     </Button>
                 </Link>
             </div>
@@ -160,10 +183,14 @@ export default function ForgotPasswordPage() {
                             </div>
                         </div>
 
-                        <CardTitle className="text-2xl text-center text-gray-800">{getStepTitle(currentStep)}</CardTitle>
-                        <CardDescription className="text-base text-center text-gray-600">
-                            {getStepDescription(currentStep)}
-                        </CardDescription>
+                        {currentStep !== "success" && (
+                            <>
+                                <CardTitle className="text-2xl text-center text-gray-800">{getStepTitle(currentStep)}</CardTitle>
+                                <CardDescription className="text-base text-center text-gray-600">
+                                    {getStepDescription(currentStep)}
+                                </CardDescription>
+                            </>
+                        )}
                     </CardHeader>
 
                     <CardContent>

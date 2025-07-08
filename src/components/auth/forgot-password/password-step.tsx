@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Lock, Eye, EyeOff, Loader2, CheckCircle, XCircle } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 interface PasswordStepProps {
     onSubmit: (data: { password: string; confirmPassword: string }) => void
@@ -19,6 +20,9 @@ export default function PasswordStep({ onSubmit, isLoading }: PasswordStepProps)
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
+    const r = useTranslations('auth');
+    const fp = useTranslations("forgotPassword")
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (password !== confirmPassword) {
@@ -29,11 +33,11 @@ export default function PasswordStep({ onSubmit, isLoading }: PasswordStepProps)
     }
 
     const passwordRequirements = [
-        { text: "At least 8 characters", met: password.length >= 8 },
-        { text: "Contains uppercase letter", met: /[A-Z]/.test(password) },
-        { text: "Contains lowercase letter", met: /[a-z]/.test(password) },
-        { text: "Contains number", met: /\d/.test(password) },
-        { text: "Contains special character", met: /[!@#$%^&*(),.?":{}|<>]/.test(password) },
+        { text: r('atleast8'), met: password.length >= 8 },
+        { text: r('uppercase'), met: /[A-Z]/.test(password) },
+        { text: r('lowercase'), met: /[a-z]/.test(password) },
+        { text: r('number'), met: /\d/.test(password) },
+        { text: r('specialChar'), met: /[!@#$%^&*(),.?":{}|<>]/.test(password) },
     ]
 
     const isPasswordValid = passwordRequirements.every((req) => req.met)
@@ -44,27 +48,28 @@ export default function PasswordStep({ onSubmit, isLoading }: PasswordStepProps)
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                     <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                        New Password
+                        {fp('labelNewPassword')}
                     </Label>
                     <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                         <Input
                             id="password"
                             type={showPassword ? "text" : "password"}
-                            placeholder="Create a strong password"
+                            placeholder={fp('placeholderNewPassword')}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="pl-10 pr-10 h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-base"
                             required
                             disabled={isLoading}
                         />
-                        <button
+                        <Button
                             type="button"
+                            variant="ghost"
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                         >
                             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
+                        </Button>
                     </div>
 
                     {/* Password Requirements */}
@@ -86,14 +91,14 @@ export default function PasswordStep({ onSubmit, isLoading }: PasswordStepProps)
 
                 <div className="space-y-2">
                     <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-                        Confirm New Password
+                        {r('confirmPassword')}
                     </Label>
                     <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                         <Input
                             id="confirmPassword"
                             type={showConfirmPassword ? "text" : "password"}
-                            placeholder="Confirm your password"
+                            placeholder={fp('placeholderNewPasswordConfirm')}
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             className={`pl-10 pr-10 h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-base ${confirmPassword && !passwordsMatch ? "border-red-300 focus:border-red-500 focus:ring-red-500" : ""
@@ -101,24 +106,25 @@ export default function PasswordStep({ onSubmit, isLoading }: PasswordStepProps)
                             required
                             disabled={isLoading}
                         />
-                        <button
+                        <Button
                             type="button"
+                            variant="ghost"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                         >
                             {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
+                        </Button>
                     </div>
                     {confirmPassword && !passwordsMatch && (
                         <p className="text-xs text-red-500 flex items-center">
                             <XCircle className="w-3 h-3 mr-1" />
-                            Passwords do not match
+                            {r('passwordsMismatch')}
                         </p>
                     )}
                     {passwordsMatch && (
                         <p className="text-xs text-green-600 flex items-center">
                             <CheckCircle className="w-3 h-3 mr-1" />
-                            Passwords match
+                            {r('passwordMatch')}
                         </p>
                     )}
                 </div>
@@ -131,10 +137,10 @@ export default function PasswordStep({ onSubmit, isLoading }: PasswordStepProps)
                     {isLoading ? (
                         <>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Resetting Password...
+                            {fp('loading3')}
                         </>
                     ) : (
-                        "Reset Password"
+                        fp('sendButton3')
                     )}
                 </Button>
             </form>

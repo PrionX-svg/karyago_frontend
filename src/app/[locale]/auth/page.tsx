@@ -19,6 +19,9 @@ export default function AuthPage() {
   const [registrationSuccess, setRegistrationSuccess] = useState(false)
   const [registeredEmail, setRegisteredEmail] = useState("")
   const router = useRouter()
+  const ap = useTranslations("api")
+  const BrandingPage = useTranslations("brand")
+  const AuthPage = useTranslations("auth")
 
   const handleLogin = async (data: LoginForm) => {
     try {
@@ -26,14 +29,14 @@ export default function AuthPage() {
       if (result.status === 200) {
         document.cookie = "authOK=true; path=/";
         router.push("/dashboard")
-        toast.success("Login successful!", {
-          description: "Welcome back!",
-        })
+        toast.success(ap('loginSuccess'))
       } else {
-        console.error("Login failed:", result)
+        toast.error(ap('loginFailed'), {
+          description: ap('invalidCredentials')
+        })
       }
-    } catch (error) {
-      console.error("Login error:", error)
+    } catch {
+      toast.error(ap('somethingWentWrong'))
     }
   }
 
@@ -43,14 +46,16 @@ export default function AuthPage() {
       if (result.status === 201) {
         setRegisteredEmail(data.email)
         setRegistrationSuccess(true)
-        toast.success("Registration successful!", {
-          description: "Please check your email for the activation link.",
+        toast.success(ap('registerSuccess'), {
+          description: ap('checkEmailForActivation')
         })
-      } else {
-        console.error("Registration failed:", result)
+      } else if (result.status === 500) {
+        toast.error(ap('registerFailed'), {
+          description: ap('emailAlreadyExists')
+        })
       }
-    } catch (error) {
-      console.error("Registration error:", error)
+    } catch {
+      toast.error(ap('somethingWentWrong'))
     }
   }
 
@@ -58,9 +63,6 @@ export default function AuthPage() {
     setRegistrationSuccess(false)
     setRegisteredEmail("")
   }
-
-  const BrandingPage = useTranslations("brand")
-  const AuthPage = useTranslations("auth")
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 animate-in fade-in-0 duration-1000 ease-out">
@@ -83,7 +85,7 @@ export default function AuthPage() {
           </div>
 
           <div className="space-y-6">
-            <div className="flex items-start space-x-4 animate-in slide-in-from-left-4 duration-600 delay-700">
+            <div className="flex items-start space-x-4 animate-in slide-in-from-left-4 duration-600 ">
               <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                 <Users className="w-5 h-5 text-orange-600" />
               </div>
@@ -93,7 +95,7 @@ export default function AuthPage() {
               </div>
             </div>
 
-            <div className="flex items-start space-x-4 animate-in slide-in-from-left-4 duration-600 delay-900">
+            <div className="flex items-start space-x-4 animate-in slide-in-from-left-4 duration-600 ">
               <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                 <Building2 className="w-5 h-5 text-orange-600" />
               </div>
@@ -104,7 +106,7 @@ export default function AuthPage() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-6 text-white animate-in slide-in-from-left-4 duration-600 delay-1100">
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-6 text-white animate-in slide-in-from-left-4 duration-600">
             <h3 className="font-semibold mb-2">{BrandingPage("welcomeMessage")}</h3>
             <p className="text-base opacity-90">{BrandingPage("welcomeDescription")}</p>
           </div>
@@ -113,7 +115,7 @@ export default function AuthPage() {
         {/* Right Side - Auth Forms */}
         <div className="flex justify-center animate-in slide-in-from-right-8 duration-800 delay-400">
           <Card className="w-full max-w-md border-0 shadow-xl">
-            <CardHeader className="pb-4">
+            <CardHeader>
               <div className="flex justify-center mb-4">
                 <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center animate-in zoom-in-50 duration-600 delay-800">
                   <Building2 className="w-8 h-8 text-white" />

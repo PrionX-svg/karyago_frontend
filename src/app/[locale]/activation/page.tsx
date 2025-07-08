@@ -21,25 +21,20 @@ export default function ActivationPage() {
     const searchParams = useSearchParams()
     const token = searchParams.get("token")
 
-    // Function to send token to backend (placeholder for user to implement)
     const activateAccount = async (activationToken?: string) => {
         try {
             const response = await postAPI({
                 uuid: activationToken,
             }, "/auth/verify")
-
             if (!response || response.status !== 200) {
                 throw new Error("Failed to activate account")
             }
-
             return { success: true, message: "Account activated successfully" }
         } catch (error) {
             throw error
         }
     }
-
-
-    // Function to request new activation OTP
+    
     const requestNewOTP = async (activationToken: string) => {
         try {
             const response = await postAPI(
@@ -56,7 +51,6 @@ export default function ActivationPage() {
             throw error
         }
     }
-
     useEffect(() => {
         const handleActivation = async () => {
             if (!token) {

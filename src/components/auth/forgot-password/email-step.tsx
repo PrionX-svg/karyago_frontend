@@ -6,6 +6,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Mail, Loader2 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 interface EmailStepProps {
     onSubmit: (data: { email: string }) => void
@@ -20,6 +21,8 @@ export default function EmailStep({ onSubmit, isLoading }: EmailStepProps) {
         onSubmit({ email })
     }
 
+    const fp = useTranslations("forgotPassword")
+
     return (
         <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -29,7 +32,7 @@ export default function EmailStep({ onSubmit, isLoading }: EmailStepProps) {
                         <Input
                             id="email"
                             type="email"
-                            placeholder="Enter your email address"
+                            placeholder="email@company.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="pl-10 h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-base"
@@ -37,7 +40,7 @@ export default function EmailStep({ onSubmit, isLoading }: EmailStepProps) {
                             disabled={isLoading}
                         />
                     </div>
-                    <p className="text-sm text-gray-500 mt-2">We&apos;ll send a verification code to this email address</p>
+                    <p className="text-sm text-gray-500 mt-2">{fp('hint1')}</p>
                 </div>
 
                 <Button
@@ -48,10 +51,10 @@ export default function EmailStep({ onSubmit, isLoading }: EmailStepProps) {
                     {isLoading ? (
                         <>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Sending Code...
+                            {fp('loading1')}
                         </>
                     ) : (
-                        "Send Verification Code"
+                        fp('sendButton1')
                     )}
                 </Button>
             </form>

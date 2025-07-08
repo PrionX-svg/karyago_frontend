@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Shield, Loader2, RefreshCw } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 interface OtpStepProps {
     onSubmit: (data: { otp: string }) => void
@@ -15,10 +16,11 @@ interface OtpStepProps {
     isLoading: boolean
 }
 
-export default function OtpStep({ onSubmit, onResend, email, isLoading }: OtpStepProps) {
+export default function OtpStep({ onSubmit, onResend, isLoading }: OtpStepProps) {
     const [otp, setOtp] = useState("")
     const [countdown, setCountdown] = useState(60)
     const [canResend, setCanResend] = useState(false)
+    const fp = useTranslations("forgotPassword")
 
     useEffect(() => {
         if (countdown > 0) {
@@ -50,14 +52,14 @@ export default function OtpStep({ onSubmit, onResend, email, isLoading }: OtpSte
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                     <Label htmlFor="otp" className="text-sm font-medium text-gray-700">
-                        Verification Code
+                        {fp('labelVerif')}
                     </Label>
                     <div className="relative">
                         <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                         <Input
                             id="otp"
                             type="text"
-                            placeholder="Enter 6-digit code"
+                            placeholder={fp('placeholderVerif')}
                             value={otp}
                             onChange={handleOtpChange}
                             className="pl-10 h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-base text-center tracking-widest font-mono"
@@ -68,30 +70,23 @@ export default function OtpStep({ onSubmit, onResend, email, isLoading }: OtpSte
                     </div>
                     <div className="flex items-center justify-between text-sm">
                         <p className="text-gray-500">
-                            Code sent to: <span className="font-medium">{email}</span>
+                            {fp("notSent?")} 
                         </p>
                         {!canResend ? (
-                            <p className="text-orange-600 font-medium">Resend in {countdown}s</p>
+                            <p className="text-orange-600 font-medium">{fp("resendIn", { countdown })}</p>
                         ) : (
                             <Button
                                 type="button"
                                 variant="ghost"
                                 size="sm"
                                 onClick={handleResend}
-                                className="text-orange-600 hover:text-orange-700 p-0 h-auto font-medium"
+                                className="text-orange-600 hover:text-orange-700 p-1 h-auto font-medium flex items-center gap-1 flex-shrink-0"
                             >
-                                <RefreshCw className="w-3 h-3 mr-1" />
-                                Resend Code
+                                <RefreshCw className="w-3 h-3" />
+                                <span className="whitespace-nowrap">{fp('resendButton')}</span>
                             </Button>
                         )}
                     </div>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <p className="text-sm text-blue-800">
-                        <strong>Demo:</strong> Use code <span className="font-mono bg-blue-100 px-1 rounded">123456</span> to
-                        proceed
-                    </p>
                 </div>
 
                 <Button
@@ -102,10 +97,10 @@ export default function OtpStep({ onSubmit, onResend, email, isLoading }: OtpSte
                     {isLoading ? (
                         <>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Verifying...
+                            {fp('loading')}
                         </>
                     ) : (
-                        "Verify Code"
+                        fp('sendButton2')
                     )}
                 </Button>
             </form>
