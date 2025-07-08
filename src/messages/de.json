@@ -35,7 +35,8 @@
     "otpErrorDescription": "Der eingegebene OTP ist ungültig oder abgelaufen. Bitte fordern Sie einen neuen OTP an.",
     "accountActivationSuccess": "Konto erfolgreich aktiviert!",
     "accountActivationFailed": "Kontoaktivierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
-    "resendFail": "Fehler beim erneuten Senden des Aktivierungscodes. Bitte versuchen Sie es erneut."
+    "resendFail": "Fehler beim erneuten Senden des Aktivierungscodes. Bitte versuchen Sie es erneut.",
+    "userAlreadyVerified": "Benutzer ist bereits verifiziert."
   },
   "auth": {
     "title": "Willkommen",

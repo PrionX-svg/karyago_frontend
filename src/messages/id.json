@@ -35,7 +35,8 @@
         "otpErrorDescription": "OTP yang Anda masukkan tidak valid atau sudah kedaluwarsa. Silakan minta OTP baru.",
         "accountActivationSuccess": "Akun berhasil diaktifkan!",
         "accountActivationFailed": "Aktivasi akun gagal. Silakan coba lagi.",
-        "resendFail": "Gagal mengirim ulang kode aktivasi. Silakan coba lagi."
+        "resendFail": "Gagal mengirim ulang kode aktivasi. Silakan coba lagi.",
+        "userAlreadyVerified": "Pengguna sudah terverifikasi."
     },
     "auth": {
         "title": "Selamat Datang",

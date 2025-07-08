@@ -35,7 +35,8 @@
     "otpErrorDescription": "The OTP you entered is invalid or has expired. Please request a new OTP.",
     "accountActivationSuccess": "Account activated successfully!",
     "accountActivationFailed": "Account activation failed. Please try again.",
-    "resendFail": "Failed to resend activation code. Please try again."
+    "resendFail": "Failed to resend activation code. Please try again.",
+    "userAlreadyVerified": "User is already verified."
   },
   "auth": {
     "title": "Welcome",

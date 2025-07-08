@@ -13,6 +13,7 @@ import ErrorStep from "@/components/auth/activation/error-step"
 import postAPI from "@/lib/api/postAPI"
 import OtpSentStep from "@/components/auth/activation/otp-sent-step"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 
 type ActivationState = "loading" | "success" | "error" | "otp-sent"
 
@@ -47,12 +48,19 @@ export default function ActivationPage() {
                 },
                 "/auth/resend-verification",
             )
-            if (!response || response.status !== 200) {
-                throw new Error(ap('resendFail'))
+
+            if (response.status === 200) {
+                setActivationState("otp-sent")
+                setErrorMessage("")
+                return response
+            } else if (response.status === 500 && response.data?.message === "user already verified") {
+                toast.error(ap("userAlreadyVerified"))
+            } else {
+                const errorMessage = response.data?.message || ac("accountActivationFailed")
+                setErrorMessage(errorMessage)
+                setActivationState("error")
+                throw new Error(errorMessage)
             }
-            setActivationState("otp-sent")
-            setErrorMessage("")
-            return response
         } catch (error) {
             throw error
         }
