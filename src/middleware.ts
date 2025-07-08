@@ -54,9 +54,11 @@ export default async function middleware(req: NextRequest) {
   const isLandingPath = /^\/(en|de|id)\/landing\/?$/.test(pathname);
   // Check if path is just the locale without any additional path
   const isLocaleOnly = /^\/(en|de|id)\/?$/.test(pathname);
+  const isActivationPath = /^\/(en|de|id)\/activation\/?$/.test(pathname);
+
 
   // Allow schedule paths, landing page, and locale-only paths to bypass authentication
-  if (isSchedulePath || isLandingPath || isLocaleOnly) {
+  if (isSchedulePath || isLandingPath || isLocaleOnly || isActivationPath) {
     // Add nonce and CSP headers to the intl response
     const nonce = nanoid(16);
     const cspHeader = [

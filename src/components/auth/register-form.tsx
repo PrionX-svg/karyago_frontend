@@ -2,40 +2,46 @@
 
 import type React from "react"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Eye, EyeOff } from "lucide-react"
+import { CheckCircle, Eye, EyeOff, XCircle } from "lucide-react"
 import Link from "next/link"
 import { validatePassword } from "@/lib/validate-password"
+import type { RegisterForm } from "@/lib/interfaces/auth-interface"
+import { getClientUTCOffset } from "@/lib/get-timezone"
 
 interface RegisterFormProps {
-    onSubmit?: (data: {
-        email: string
-        password: string
-        confirmPassword: string
-        termsAccepted: boolean
-        privacyAccepted: boolean
-    }) => void
+    onSubmit?: (data: RegisterForm) => void
 }
 
 export default function RegisterForm({ onSubmit }: RegisterFormProps) {
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [formData, setFormData] = useState({
+        firstname: "",
+        lastname: "",
+        phone: "",
         email: "",
         password: "",
         confirmPassword: "",
         termsAccepted: false,
         privacyAccepted: false,
+        timezone: getClientUTCOffset(),
     })
-    const passwordValidation = useMemo(() => validatePassword(formData.password), [formData.password])
+    const { isValid, requirements } = validatePassword(formData.password);
 
-    // Validation logic
+    useEffect(() => {
+        console.log("Form data changed:", formData)
+    }, [formData])
+
     const isFormValid = useMemo(() => {
         const passwordCheck = validatePassword(formData.password)
         return (
+            formData.firstname.trim() !== "" &&
+            formData.lastname.trim() !== "" &&
+            formData.phone.trim() !== "" &&
             formData.email.trim() !== "" &&
             formData.password.trim() !== "" &&
             formData.confirmPassword.trim() !== "" &&
@@ -46,7 +52,6 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
         )
     }, [formData])
 
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (isFormValid) {
@@ -56,6 +61,52 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="register-firstname" className="text-sm text-gray-700">
+                        First Name
+                    </Label>
+                    <Input
+                        id="register-firstname"
+                        type="text"
+                        placeholder="John"
+                        value={formData.firstname}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, firstname: e.target.value }))}
+                        className="border-gray-300 focus:border-orange-500 focus:ring-orange-500"
+                        required
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="register-lastname" className="text-sm text-gray-700">
+                        Last Name
+                    </Label>
+                    <Input
+                        id="register-lastname"
+                        type="text"
+                        placeholder="Doe"
+                        value={formData.lastname}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, lastname: e.target.value }))}
+                        className="border-gray-300 focus:border-orange-500 focus:ring-orange-500"
+                        required
+                    />
+                </div>
+            </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="register-phone" className="text-sm text-gray-700">
+                    Phone Number
+                </Label>
+                <Input
+                    id="register-phone"
+                    type="tel"
+                    placeholder="+62 812 3456 7890"
+                    value={formData.phone}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                    className="border-gray-300 focus:border-orange-500 focus:ring-orange-500"
+                    required
+                />
+            </div>
+
             <div className="space-y-2">
                 <Label htmlFor="register-email" className="text-sm text-gray-700">
                     Your Email
@@ -77,12 +128,12 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
                 </Label>
                 <div className="relative">
                     <Input
-                        id="register-password"
+                        id="register-password-input"
                         type={showPassword ? "text" : "password"}
                         placeholder="Minimum 8 characters"
                         value={formData.password}
                         onChange={(e) => setFormData((prev) => ({ ...prev, password: e.target.value }))}
-                        className={`border-gray-300 focus:border-orange-500 focus:ring-orange-500 pr-10 ${formData.password && !passwordValidation.isValid
+                        className={`border-gray-300 focus:border-orange-500 focus:ring-orange-500 pr-10 ${formData.password && !isValid
                             ? "border-red-500 focus:border-red-500"
                             : ""
                             }`}
@@ -100,31 +151,34 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
                     </Button>
                 </div>
 
-                {formData.password && !passwordValidation.isValid && (
-                    <div className="text-sm text-red-600 space-y-1">
-                        <p className="font-medium">Password must meet the following requirements:</p>
-                        <ul className="ml-4 space-y-1 list-disc">
-                            {passwordValidation.errors.map((err, idx) => (
-                                <li key={idx}>{err}</li>
-                            ))}
-                        </ul>
+                {formData.password && (
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                        {requirements.map((req, index) => (
+                            <div key={index} className="flex items-center text-xs">
+                                {req.met ? (
+                                    <CheckCircle className="w-3 h-3 text-green-500 mr-2" />
+                                ) : (
+                                    <XCircle className="w-3 h-3 text-red-400 mr-2" />
+                                )}
+                                <span className={req.met ? "text-green-600" : "text-gray-500"}>{req.text}</span>
+                            </div>
+                        ))}
                     </div>
                 )}
             </div>
 
-
             <div className="space-y-2">
-                <Label htmlFor="register-password" className="text-sm text-gray-700">
+                <Label htmlFor="register-confirm-password" className="text-sm text-gray-700">
                     Confirm Password
                 </Label>
                 <div className="relative">
                     <Input
-                        id="register-password"
+                        id="register-confirm-password"
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Minimum 8 characters"
                         value={formData.confirmPassword}
                         onChange={(e) => setFormData((prev) => ({ ...prev, confirmPassword: e.target.value }))}
-                        className={`border-gray-300 focus:border-orange-500 focus:ring-orange-500 pr-10 ${formData.confirmPassword && !passwordValidation.isValid
+                        className={`border-gray-300 focus:border-orange-500 focus:ring-orange-500 pr-10 ${formData.confirmPassword && !isValid
                             ? "border-red-500 focus:border-red-500"
                             : ""
                             }`}
@@ -142,12 +196,18 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
                     </Button>
                 </div>
                 {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                    <div className="text-sm text-red-600">
+                    <p className="text-xs text-red-500 flex items-center">
+                        <XCircle className="w-3 h-3 mr-1" />
                         Passwords do not match
-                    </div>
+                    </p>
+                )}
+                {formData.confirmPassword && formData.password === formData.confirmPassword && (
+                    <p className="text-xs text-green-600 flex items-center">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Passwords match
+                    </p>
                 )}
             </div>
-
 
             <div className="flex items-start space-x-2">
                 <Input

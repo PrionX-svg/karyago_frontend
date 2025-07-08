@@ -1,26 +1,21 @@
-interface PasswordValidationResult {
-    isValid: boolean
-    errors: string[]
-}
+export type PasswordRequirement = {
+    text: string;
+    met: boolean;
+};
 
-export function validatePassword(password: string): PasswordValidationResult {
-    const errors: string[] = []
-
-    if (password.length < 8) {
-        errors.push("Minimum 8 characters")
-    }
-    if (!/[a-z]/.test(password)) {
-        errors.push("Must contain at least one lowercase letter (a–z)")
-    }
-    if (!/[A-Z]/.test(password)) {
-        errors.push("Must contain at least one uppercase letter (A–Z)")
-    }
-    if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password)) {
-        errors.push("Must include at least one special character (e.g. ! @ # $)")
-    }
+export function validatePassword(password: string): {
+    isValid: boolean;
+    requirements: PasswordRequirement[];
+} {
+    const requirements: PasswordRequirement[] = [
+        { text: "Min 8 chars", met: password.length >= 8 },
+        { text: "Upper & lowercase", met: /[A-Z]/.test(password) && /[a-z]/.test(password) },
+        { text: "At least 1 number", met: /[0-9]/.test(password) },
+        { text: "At least 1 special char", met: /[^A-Za-z0-9]/.test(password) },
+    ];
 
     return {
-        isValid: errors.length === 0,
-        errors,
-    }
+        isValid: requirements.every((r) => r.met),
+        requirements,
+    };
 }

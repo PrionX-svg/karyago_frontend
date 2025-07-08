@@ -9,9 +9,10 @@ import { Label } from "@/components/ui/label"
 import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
+import type { LoginForm } from "@/lib/interfaces/auth-interface"
 
 interface LoginFormProps {
-    onSubmit?: (data: { email: string; password: string; remember: boolean }) => void
+    onSubmit?: (data: LoginForm) => void
 }
 
 export default function LoginForm({ onSubmit }: LoginFormProps) {
@@ -85,7 +86,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
                         {LoginPage("rememberMe")}
                     </Label>
                 </div>
-                <Link href="/forgot-password" className="text-sm text-orange-600 hover:text-orange-700 hover:underline">
+                <Link href="/auth/forgot-password" className="text-sm text-orange-600 hover:text-orange-700 hover:underline">
                     {LoginPage("forgotPassword")}
                 </Link>
             </div>
