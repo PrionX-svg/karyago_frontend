@@ -1,7 +1,7 @@
 "use client";
 
 import { Globe } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -13,12 +13,18 @@ import {
 const DLanguageSwitcher = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const currentLocale = pathname.split("/")[1] || "en";
 
   const changeLanguage = (locale: string) => {
     const pathParts = pathname.split("/");
     pathParts[1] = locale;
-    router.push(pathParts.join("/"));
+    const newPath = pathParts.join("/");
+
+    const query = searchParams.toString();
+    const finalUrl = query ? `${newPath}?${query}` : newPath;
+
+    router.push(finalUrl);
   };
 
   // Get display text based on screen size

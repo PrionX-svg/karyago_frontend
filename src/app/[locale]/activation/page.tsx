@@ -79,10 +79,6 @@ export default function ActivationPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token])
 
-    useEffect(() => {
-        console.log("state", activationState)
-    }, [activationState])
-
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 animate-in fade-in-0 duration-1000 ease-out">
             <div className="absolute top-4 right-4 z-10 animate-in slide-in-from-top-2 duration-700 delay-300">
