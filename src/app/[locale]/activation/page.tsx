@@ -34,7 +34,7 @@ export default function ActivationPage() {
             if (!response || response.status !== 200) {
                 throw new Error(ap('accountActivationFailed'))
             }
-            return { success: true, message: ac("accountActivationSuccess") }
+            return { success: true, message: ap("accountActivationSuccess") }
         } catch (error) {
             throw error
         }
