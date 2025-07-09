@@ -1,7 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
-import * as nextIntl from "next-intl";
 import LoginForm from "@/components/auth/login-form";
 
 
