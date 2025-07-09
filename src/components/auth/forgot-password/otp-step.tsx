@@ -21,6 +21,7 @@ export default function OtpStep({ onSubmit, onResend, isLoading }: OtpStepProps)
     const [countdown, setCountdown] = useState(60)
     const [canResend, setCanResend] = useState(false)
     const fp = useTranslations("forgotPassword")
+    const co = useTranslations("common")
 
     useEffect(() => {
         if (countdown > 0) {
@@ -97,7 +98,7 @@ export default function OtpStep({ onSubmit, onResend, isLoading }: OtpStepProps)
                     {isLoading ? (
                         <>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            {fp('loading')}
+                            {co('loading')}
                         </>
                     ) : (
                         fp('sendButton2')

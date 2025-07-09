@@ -36,7 +36,9 @@
     "accountActivationSuccess": "Konto erfolgreich aktiviert!",
     "accountActivationFailed": "Kontoaktivierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "resendFail": "Fehler beim erneuten Senden des Aktivierungscodes. Bitte versuchen Sie es erneut.",
-    "userAlreadyVerified": "Benutzer ist bereits verifiziert."
+    "userAlreadyVerified": "Benutzer ist bereits verifiziert.",
+    "passwordChangeSuccess": "Passwort erfolgreich geändert!",
+    "passwordChangeError": "Passwort konnte nicht geändert werden. Bitte versuchen Sie es erneut."
   },
   "auth": {
     "title": "Willkommen",
