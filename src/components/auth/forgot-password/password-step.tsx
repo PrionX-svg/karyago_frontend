@@ -8,14 +8,17 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Lock, Eye, EyeOff, Loader2, CheckCircle, XCircle } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { ForgotPasswordForm } from "@/lib/interfaces/auth-interface"
 
 interface PasswordStepProps {
-    onSubmit: (data: { password: string; confirmPassword: string }) => void
+    onSubmit: (data: ForgotPasswordForm) => void
     isLoading: boolean
+    otp: string;
+    email: string;
 }
 
-export default function PasswordStep({ onSubmit, isLoading }: PasswordStepProps) {
-    const [password, setPassword] = useState("")
+export default function PasswordStep({ onSubmit, isLoading, otp, email}: PasswordStepProps) {
+    const [newPassword, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -25,38 +28,38 @@ export default function PasswordStep({ onSubmit, isLoading }: PasswordStepProps)
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        if (password !== confirmPassword) {
+        if (newPassword !== confirmPassword) {
             alert("Passwords do not match")
             return
         }
-        onSubmit({ password, confirmPassword })
+        onSubmit({ newPassword, email, otp })
     }
 
     const passwordRequirements = [
-        { text: r('atleast8'), met: password.length >= 8 },
-        { text: r('uppercase'), met: /[A-Z]/.test(password) },
-        { text: r('lowercase'), met: /[a-z]/.test(password) },
-        { text: r('number'), met: /\d/.test(password) },
-        { text: r('specialChar'), met: /[!@#$%^&*(),.?":{}|<>]/.test(password) },
+        { text: r('atleast8'), met: newPassword.length >= 8 },
+        { text: r('uppercase'), met: /[A-Z]/.test(newPassword) },
+        { text: r('lowercase'), met: /[a-z]/.test(newPassword) },
+        { text: r('number'), met: /\d/.test(newPassword) },
+        { text: r('specialChar'), met: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword) },
     ]
 
     const isPasswordValid = passwordRequirements.every((req) => req.met)
-    const passwordsMatch = password === confirmPassword && confirmPassword.length > 0
+    const passwordsMatch = newPassword === confirmPassword && confirmPassword.length > 0
 
     return (
         <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                    <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                    <Label htmlFor="newPassword" className="text-sm font-medium text-gray-700">
                         {fp('labelNewPassword')}
                     </Label>
                     <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                         <Input
-                            id="password"
-                            type={showPassword ? "text" : "password"}
+                            id="newPassword"
+                            type={showPassword ? "text" : "newPassword"}
                             placeholder={fp('placeholderNewPassword')}
-                            value={password}
+                            value={newPassword}
                             onChange={(e) => setPassword(e.target.value)}
                             className="pl-10 pr-10 h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-base"
                             required
@@ -73,7 +76,7 @@ export default function PasswordStep({ onSubmit, isLoading }: PasswordStepProps)
                     </div>
 
                     {/* Password Requirements */}
-                    {password && (
+                    {newPassword && (
                         <div className="mt-3 space-y-1">
                             {passwordRequirements.map((req, index) => (
                                 <div key={index} className="flex items-center text-xs">
@@ -97,7 +100,7 @@ export default function PasswordStep({ onSubmit, isLoading }: PasswordStepProps)
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                         <Input
                             id="confirmPassword"
-                            type={showConfirmPassword ? "text" : "password"}
+                            type={showConfirmPassword ? "text" : "newPassword"}
                             placeholder={fp('placeholderNewPasswordConfirm')}
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}

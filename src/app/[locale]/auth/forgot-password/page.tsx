@@ -13,12 +13,14 @@ import SuccessStep from "@/components/auth/forgot-password/success-step"
 import { useTranslations } from "next-intl"
 import postAPI from "@/lib/api/postAPI"
 import { toast } from "sonner"
+import { ForgotPasswordForm } from "@/lib/interfaces/auth-interface"
 
 type Step = "email" | "otp" | "password" | "success"
 
 export default function ForgotPasswordPage() {
     const [currentStep, setCurrentStep] = useState<Step>("email")
     const [email, setEmail] = useState("")
+    const [otp, setOtp] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const rp = useTranslations("forgotPassword")
     const nav = useTranslations("navigation")
@@ -45,9 +47,10 @@ export default function ForgotPasswordPage() {
             const response = await postAPI({
                 email: email,
                 otp_code: otpData.otp
-            }, "/auth/forgot-password/reset")
+            }, "/auth/forgot-password/verify")
             if (response.status === 200) {
                 setCurrentStep("password")
+                setOtp(otpData.otp)
             } else {
                 toast.error(ap("otpInvalid"), {
                     description: ap("otpErrorDescription")
@@ -78,14 +81,26 @@ export default function ForgotPasswordPage() {
         }
     }
 
-    const handlePasswordSubmit = async (passwordData: { password: string; confirmPassword: string }) => {
+    const handlePasswordSubmit = async (data: ForgotPasswordForm) => {
         setIsLoading(true)
-        console.log("New Password:", passwordData)
-        // Simulate password reset
-        setTimeout(() => {
+        try {
+            const response = await postAPI({
+                email: data.email,
+                otp_code: data.otp,
+                new_password: data.newPassword
+            }, "/auth/forgot-password/reset")
+            if (response.status === 200) {
+                toast.success(ap("passwordChangeSuccess"))
+                setTimeout(() => {
+                    setIsLoading(false)
+                    setCurrentStep("success")
+                }, 2000)
+            } 
+        } catch {
+            toast.error(ap("somethingWentWrong"))
+        } finally {
             setIsLoading(false)
-            setCurrentStep("success")
-        }, 2000)
+        }
     }
 
     const getStepNumber = (step: Step) => {
@@ -210,7 +225,7 @@ export default function ForgotPasswordPage() {
 
                             {getStepNumber(currentStep) === 3 && (
                                 <div className="px-2">
-                                    <PasswordStep onSubmit={handlePasswordSubmit} isLoading={isLoading} />
+                                    <PasswordStep onSubmit={handlePasswordSubmit} isLoading={isLoading} email={email} otp={otp} />
                                 </div>
                             )}
 

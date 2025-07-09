@@ -36,7 +36,9 @@
         "accountActivationSuccess": "Akun berhasil diaktifkan!",
         "accountActivationFailed": "Aktivasi akun gagal. Silakan coba lagi.",
         "resendFail": "Gagal mengirim ulang kode aktivasi. Silakan coba lagi.",
-        "userAlreadyVerified": "Pengguna sudah terverifikasi."
+        "userAlreadyVerified": "Pengguna sudah terverifikasi.",
+        "passwordChangeSuccess": "Password berhasil diubah!",
+        "passwordChangeError": "Gagal mengubah password. Silakan coba lagi."
     },
     "auth": {
         "title": "Selamat Datang",
