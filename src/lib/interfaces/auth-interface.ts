@@ -14,3 +14,9 @@ export interface LoginForm {
     password: string;
     remember: boolean;
 }
+
+export interface ForgotPasswordForm {
+    email: string;
+    otp: string;
+    newPassword: string;
+}

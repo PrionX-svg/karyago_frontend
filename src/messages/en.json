@@ -36,7 +36,9 @@
     "accountActivationSuccess": "Account activated successfully!",
     "accountActivationFailed": "Account activation failed. Please try again.",
     "resendFail": "Failed to resend activation code. Please try again.",
-    "userAlreadyVerified": "User is already verified."
+    "userAlreadyVerified": "User is already verified.",
+    "passwordChangeSuccess": "Password changed successfully!",
+    "passwordChangeError": "Failed to change password. Please try again."
   },
   "auth": {
     "title": "Welcome",
