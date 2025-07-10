@@ -17,8 +17,6 @@ jest.mock("next-intl", () => ({
 }));
 
 describe("Login Form Test Black Box and White Box", () => {
-
-    // Black Box Testing
     it("renders all form elements and labels in Indonesian", () => {
         render(<LoginForm onSubmit={jest.fn()} />);
         expect(screen.getByLabelText("Email")).toBeInTheDocument();
@@ -49,8 +47,9 @@ describe("Login Form Test Black Box and White Box", () => {
         });
 
     });
+});
 
-    // White Box Testing
+describe("Login Form Test White Box", () => {
     it("toggles password visibility when the icon button is clicked (white-box)", () => {
         render(<LoginForm />);
         const passwordInput = screen.getByLabelText("Password");
@@ -82,5 +81,4 @@ describe("Login Form Test Black Box and White Box", () => {
         fireEvent.click(screen.getByRole("button", { name: "Masuk" }));
         expect(handleSubmit).not.toHaveBeenCalled();
     });
-
 });
