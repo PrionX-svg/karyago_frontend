@@ -43,20 +43,22 @@ export default async function middleware(req: NextRequest) {
   const refreshToken = req.cookies.get("refresh_token")?.value;
 
   // Extract locale from pathname after intl middleware processing
-  const localeMatch = pathname.match(/^\/(en|de)/);
+  const localeMatch = pathname.match(/^\/(en|de|id)/);
   const locale = localeMatch?.[1] || "en";
 
-  // Determine if the path is for login or register based on locale (en|de)
-  const isLoginOrRegister = /^\/(en|de)\/(login|register)/.test(pathname);
+  // Determine if the path is for auth page based on locale (en|de|id)
+  const isAuthPage = /^\/(en|de|id)\/auth/.test(pathname);
   // Check if the path is for schedule (sch/helperUuid) - should be unprotected
-  const isSchedulePath = /^\/(en|de)\/sch\/[^/]+\/?$/.test(pathname);
+  const isSchedulePath = /^\/(en|de|id)\/sch\/[^/]+\/?$/.test(pathname);
   // Check if the path is for landing page - should be unprotected
-  const isLandingPath = /^\/(en|de)\/landing\/?$/.test(pathname);
+  const isLandingPath = /^\/(en|de|id)\/landing\/?$/.test(pathname);
   // Check if path is just the locale without any additional path
-  const isLocaleOnly = /^\/(en|de)\/?$/.test(pathname);
+  const isLocaleOnly = /^\/(en|de|id)\/?$/.test(pathname);
+  const isActivationPath = /^\/(en|de|id)\/activation\/?$/.test(pathname);
+
 
   // Allow schedule paths, landing page, and locale-only paths to bypass authentication
-  if (isSchedulePath || isLandingPath || isLocaleOnly) {
+  if (isSchedulePath || isLandingPath || isLocaleOnly || isActivationPath) {
     // Add nonce and CSP headers to the intl response
     const nonce = nanoid(16);
     const cspHeader = [
@@ -74,28 +76,29 @@ export default async function middleware(req: NextRequest) {
     intlResponse.headers.set("x-nonce", nonce);
     return intlResponse;
   }
+
   // Case 1: First time access without authentication
-  if (!authOK && !refreshToken && !isLoginOrRegister && !isLocaleOnly) {
-    // Redirect to login page for the corresponding locale
-    url.pathname = `/${locale}/login`;
+  if (!authOK && !refreshToken && !isAuthPage && !isLocaleOnly) {
+    // Redirect to auth page for the corresponding locale
+    url.pathname = `/${locale}/auth`;
     return NextResponse.redirect(url);
   }
 
-  // Case 2: User has logged out or is not authenticated and not on login/register page
+  // Case 2: User has logged out or is not authenticated and not on auth page
   if (
     authOK === "false" &&
-    !isLoginOrRegister &&
+    !isAuthPage &&
     !isSchedulePath &&
     !isLandingPath &&
     !isLocaleOnly
   ) {
-    url.pathname = `/${locale}/login`; // Redirect to login page based on locale
+    url.pathname = `/${locale}/auth`; // Redirect to auth page based on locale
     url.searchParams.set("logout", "true");
     return NextResponse.redirect(url);
   }
 
-  // Case 3: User is authenticated (authOK === "true") but trying to access login/register page
-  if (authOK === "true" && isLoginOrRegister) {
+  // Case 3: User is authenticated (authOK === "true") but trying to access auth page
+  if (authOK === "true" && isAuthPage) {
     url.pathname = `/${locale}/dashboard`; // Redirect to dashboard if already logged in
     return NextResponse.redirect(url);
   }
@@ -104,7 +107,7 @@ export default async function middleware(req: NextRequest) {
   if (
     !authOK &&
     refreshToken &&
-    !isLoginOrRegister &&
+    !isAuthPage &&
     !isSchedulePath &&
     !isLandingPath &&
     !isLocaleOnly
@@ -144,12 +147,12 @@ export default async function middleware(req: NextRequest) {
         intlResponse.headers.set("x-nonce", nonce);
         return intlResponse;
       } else {
-        url.pathname = `/${locale}/login`; // Redirect to login page if refresh fails
+        url.pathname = `/${locale}/auth`; // Redirect to auth page if refresh fails
         url.searchParams.set("logout", "true");
         return NextResponse.redirect(url);
       }
     } catch {
-      url.pathname = `/${locale}/login`; // Redirect to login page in case of error
+      url.pathname = `/${locale}/auth`; // Redirect to auth page in case of error
       url.searchParams.set("logout", "true");
       return NextResponse.redirect(url);
     }
@@ -183,7 +186,7 @@ export const config = {
 
     // Set a cookie to remember the previous locale for
     // all requests that have a locale prefix
-    '/(en|de)/:path*',
+    '/(en|de|id)/:path*',
 
     // Enable redirects that add missing locales
     // (e.g. `/pathnames` -> `/en/pathnames`)
