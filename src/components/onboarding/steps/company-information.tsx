@@ -16,6 +16,8 @@ import postAPI from "@/lib/api/postAPI"
 import { HelpFooter } from "../layout/help-footer"
 import { Progress } from "@/components/ui/progress"
 import FileDropUploader from "@/lib/upload-image"
+import { useUserStore } from "@/stores/user-store"
+import { useTranslations } from "next-intl"
 
 interface CompanyInformationProps {
     onNext: (data: CompanyPayload, companyUuid: string) => void
@@ -30,26 +32,31 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
         phone: "",
         logo: "",
     })
-
+    const user = useUserStore((state) => state.user)
     const [isLoading, setIsLoading] = useState(false)
     const completionPercentage = Object.values(formData).filter((value) => value !== "" && value !== null).length * 20
+
+    const ap = useTranslations("api")
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
 
         try {
-            const response = await postAPI(formData, "/onboarding/company")
+            const response = await postAPI(formData, "/companies/create")
             if (response.status === 201) {
-                toast.success("gg")
+                toast.success(ap('companyCreated'))
                 setTimeout(() => {
-                    onNext(formData, response.data!.company_uuid)
+                    onNext(formData, response.data!.uuid)
+                    console.log(response.data)
                 }, 1000)
             } else {
-                toast.error("apalahj")
+                toast.error(ap('companyCreationFailed'), {
+                    description: ap('checkInputs')
+                })
             }
         } catch {
-            toast.error("An unexpected error occurred while creating the company. Please try again later.")
+            toast.error(ap('somethingWentWrong'))
         } finally {
             setIsLoading(false)
         }
@@ -60,15 +67,24 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
     }
 
     useEffect(() => {
+        if (user.uuid) {
+            setFormData((prev) => ({
+                ...prev,
+                user_uuid: user.uuid,
+            }))
+        } else {
+            toast.warning("User UUID missing!")
+        }
+    }, [user.uuid])
+
+    useEffect(() => {
         console.log("data:", formData)
     }, [formData])
 
     return (
         <div className="min-h-screen flex flex-col">
-            {/* Main content area that grows to fill available space */}
             <div className="flex-1 flex flex-col lg:flex-row items-start px-8 py-8 gap-4 sm:gap-16 max-w-7xl mx-auto w-full">
                 <div className="lg:w-80 space-y-6 py-4">
-                    {/* Progress Card */}
                     <Card className="border-orange-200 bg-white/80 backdrop-blur-sm">
                         <CardHeader>
                             <div className="flex items-center gap-3">
@@ -94,8 +110,6 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                             </p>
                         </CardContent>
                     </Card>
-
-                    {/* Pro Tips Card */}
                     <Card className="border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50">
                         <CardHeader>
                             <div className="flex items-center gap-2">
@@ -127,7 +141,6 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                         </CardContent>
                     </Card>
                 </div>
-                {/* Main Content */}
                 <div className="flex-1">
                     <div className="max-w-2xl mx-auto p-4 lg:mx-0">
                         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Company Information</h2>
@@ -135,7 +148,6 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                             Let&apos;s start with your company&apos;s basic details
                         </p>
                         <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
-                            {/* Logo Upload */}
                             <div className="space-y-3">
                                 <Label className="text-base font-medium flex items-center gap-2">
                                     <Upload className="h-4 w-4" />
@@ -147,7 +159,6 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                     onChange={(val) => setFormData({ ...formData, logo: val })}
                                 />
                             </div>
-                            {/* Form Fields */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                                 <div>
                                     <Label
@@ -155,7 +166,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                         className="flex items-center gap-2 text-gray-700 font-medium mb-2 text-sm lg:text-base"
                                     >
                                         <Building2 className="w-4 h-4 text-orange-400" />
-                                        Company Name *
+                                        Company Name*
                                     </Label>
                                     <Input
                                         id="company-name"
@@ -174,7 +185,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                         className="flex items-center gap-2 text-gray-700 font-medium mb-2 text-sm lg:text-base"
                                     >
                                         <Mail className="w-4 h-4 text-orange-400" />
-                                        Company Email *
+                                        Company Email*
                                     </Label>
                                     <Input
                                         id="company-email"
@@ -194,7 +205,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                     className="flex items-center gap-2 text-gray-700 font-medium mb-2 text-sm lg:text-base"
                                 >
                                     <Phone className="w-4 h-4 text-orange-400" />
-                                    Phone Number *
+                                    Phone Number*
                                 </Label>
                                 <Input
                                     id="company-phone"
@@ -213,7 +224,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                     className="flex items-center gap-2 text-gray-700 font-medium mb-2 text-sm lg:text-base"
                                 >
                                     <MapPin className="w-4 h-4 text-orange-400" />
-                                    Company Address *
+                                    Company Address*
                                 </Label>
                                 <Textarea
                                     id="company-address"
@@ -227,7 +238,6 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                             </div>
                         </form>
                     </div>
-                    {/* Navigation */}
                     <div className="flex justify-between items-center px-4 max-w-2xl lg:mx-0">
                         <div />
                         <Button
@@ -250,7 +260,6 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                     </div>
                 </div>
             </div>
-            {/* Footer positioned at bottom */}
             <HelpFooter />
         </div>
     )

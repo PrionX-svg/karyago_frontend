@@ -55,7 +55,7 @@ export function BranchLocations({ onNext, onPrevious, companyUuid }: BranchLocat
 
         try {
             if (branches.length > 0) {
-                const response = await postAPI(branches, "/onboarding/branches")
+                const response = await postAPI(branches, "/branches/create")
                 if (response.status === 201) {
                     toast.success("Branches created successfully!")
                     setTimeout(() => {
@@ -65,7 +65,6 @@ export function BranchLocations({ onNext, onPrevious, companyUuid }: BranchLocat
                     toast.error("Failed to create branches")
                 }
             } else {
-                // Skip if no branches
                 onNext([])
             }
         } catch {

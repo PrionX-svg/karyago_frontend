@@ -28,7 +28,11 @@ export default function AuthPage() {
       const result = await postAPI(data, "/auth/login")
       if (result.status === 200) {
         document.cookie = "authOK=true; path=/";
-        router.push("/dashboard")
+        if(result.data.data.is_onboarding === true){
+          router.push('/onboarding')
+        } else {
+          router.push('/dashboard')
+        }
         toast.success(ap('loginSuccess'))
       } else {
         toast.error(ap('loginFailed'), {

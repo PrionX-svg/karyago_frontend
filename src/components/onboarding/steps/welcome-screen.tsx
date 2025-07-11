@@ -18,7 +18,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
     }, [])
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-25 via-orange-50 to-amber-25">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-25 via-orange-100 to-amber-25">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: showContent ? 1 : 0, y: showContent ? 0 : 20 }}
@@ -61,17 +61,17 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
                     transition={{ duration: 0.6, delay: 1.0 }}
                     className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10"
                 >
-                    <div className="flex flex-col items-center p-6 bg-white/50 rounded-lg backdrop-blur-sm">
+                    <div className="flex flex-col items-center p-6 bg-white rounded-lg backdrop-blur-sm">
                         <Building2 className="w-8 h-8 text-orange-400 mb-3" />
                         <h3 className="font-semibold text-gray-800 mb-2">Company Setup</h3>
                         <p className="text-sm text-gray-600 text-center">Create your company profile and branch locations</p>
                     </div>
-                    <div className="flex flex-col items-center p-6 bg-white/50 rounded-lg backdrop-blur-sm">
+                    <div className="flex flex-col items-center p-6 bg-white rounded-lg backdrop-blur-sm">
                         <Briefcase className="w-8 h-8 text-orange-400 mb-3" />
                         <h3 className="font-semibold text-gray-800 mb-2">Organization Structure</h3>
                         <p className="text-sm text-gray-600 text-center">Set up divisions and departments</p>
                     </div>
-                    <div className="flex flex-col items-center p-6 bg-white/50 rounded-lg backdrop-blur-sm">
+                    <div className="flex flex-col items-center p-6 bg-white rounded-lg backdrop-blur-sm">
                         <Users className="w-8 h-8 text-orange-400 mb-3" />
                         <h3 className="font-semibold text-gray-800 mb-2">Team Management</h3>
                         <p className="text-sm text-gray-600 text-center">Add and manage your employees</p>
@@ -92,7 +92,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
                         Start Company Setup
                         <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
-                    <p className="text-sm text-gray-500">This process takes approximately 3-5 minutes</p>
+                    <p className="text-sm text-gray-500">Please ensure all information is accurate before proceeding.</p>
                 </motion.div>
             </motion.div>
         </div>
