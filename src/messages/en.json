@@ -29,6 +29,7 @@
     "registerFailed": "Registration failed!",
     "emailAlreadyExists": "An account with this email address already exists.",
     "somethingWentWrong": "We couldn’t complete your request. Please try again later.",
+    "status500": "A system error occurred. Please try again later.",
     "otpResendSuccess": "OTP resent successfully.",
     "otpResendError": "Failed to resend OTP. Please try again.",
     "otpInvalid": "Invalid OTP. Please try again.",

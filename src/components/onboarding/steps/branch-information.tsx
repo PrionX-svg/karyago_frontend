@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -53,27 +53,31 @@ export function BranchLocations({ onNext, onPrevious, companyUuid }: BranchLocat
 
     const handleNext = async () => {
         setIsLoading(true)
-
         try {
-            if (branches.length > 0) {
-                const response = await postAPI(branches, "/branches/create")
-                if (response.status === 201) {
-                    toast.success("Branches created successfully!")
-                    setTimeout(() => {
-                        onNext(branches)
-                    }, 1000)
-                } else {
-                    toast.error("Failed to create branches")
+            for (const branch of branches) {
+                const response = await postAPI(branch, "/branches/create")
+
+                if (response.status !== 201) {
+                    toast.error(`Gagal membuat cabang: ${branch.name}`)
+                    return 
                 }
-            } else {
-                onNext([])
             }
+
+            toast.success("Semua cabang berhasil dibuat!")
+            setTimeout(() => {
+                onNext(branches)
+            }, 1000)
         } catch {
-            toast.error("An unexpected error occurred while creating branches. Please try again later.")
+            toast.error("Terjadi kesalahan saat membuat cabang. Silakan coba lagi.")
         } finally {
             setIsLoading(false)
         }
     }
+
+
+    useEffect(() => {
+        console.log("data", branches)
+    }, [branches])
 
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -199,11 +203,26 @@ export function BranchLocations({ onNext, onPrevious, companyUuid }: BranchLocat
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.2 }}
+                                className="mb-8"
                             >
-                                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Branch Locations</h2>
-                                <p className="text-sm sm:text-base text-gray-600 mb-6 lg:mb-8">
-                                    Add multiple locations for your company. You can skip this if you only have one office.
-                                </p>
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div>
+                                        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">Branch Locations</h2>
+                                        <p className="text-sm sm:text-base text-gray-600">
+                                            Add multiple locations for your company. You can skip this if you only have one office.
+                                        </p>
+                                    </div>
+                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                        <Button
+                                            onClick={() => setShowForm(true)}
+                                            className="bg-orange-400 hover:bg-orange-500 text-white"
+                                            disabled={isLoading || showForm}
+                                        >
+                                            <Plus className="w-4 h-4 mr-1" />
+                                            Add Branch Location
+                                        </Button>
+                                    </motion.div>
+                                </div>
                             </motion.div>
 
                             {/* Empty State */}

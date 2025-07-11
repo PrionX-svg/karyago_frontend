@@ -11,10 +11,11 @@ import user from "@/lib/queries/user-queries"
 import { Loader2 } from "lucide-react"
 
 export default function OnboardingPage() {
-    const [currentStep, setCurrentStep] = useState(1)
+    const [currentStep, setCurrentStep] = useState(2)
     const [companyUuid, setCompanyUuid] = useState<string>("")
     const [showWelcome, setShowWelcome] = useState(true)
     const { isFetchingGetMe } = user.useGetUMe()
+    
     const handleCompanyNext = (data: CompanyPayload, uuid: string) => {
         setCompanyUuid(uuid)
         setCurrentStep(2)

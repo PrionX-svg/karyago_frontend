@@ -5,6 +5,11 @@ export type CompanyType = {
     email: string;
     phone: string;
     logo?: string;
+    user: {
+        uuid: string;
+        firstName: string;
+        lastName: string;
+    }
 }
 
 export type CompanyBranchType = {

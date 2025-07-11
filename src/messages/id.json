@@ -29,6 +29,7 @@
         "registerFailed": "Registrasi gagal!",
         "emailAlreadyExists": "Akun dengan alamat email ini sudah ada.",
         "somethingWentWrong": "Kami tidak dapat menyelesaikan permintaan Anda. Silakan coba lagi nanti.",
+        "status500": "Terjadi kesalahan sistem. Silakan coba lagi nanti.",
         "otpResendSuccess": "OTP berhasil dikirim ulang.",
         "otpResendError": "Gagal mengirim ulang OTP. Silakan coba lagi.",
         "otpInvalid": "OTP tidak valid. Silakan coba lagi.",

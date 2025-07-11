@@ -19,6 +19,7 @@ import FileDropUploader from "@/lib/upload-image"
 import { useUserStore } from "@/stores/user-store"
 import { useTranslations } from "next-intl"
 import { motion } from "framer-motion"
+import { useCompanyStore } from "@/stores/company-store"
 
 interface CompanyInformationProps {
     onNext: (data: CompanyPayload, companyUuid: string) => void
@@ -34,27 +35,34 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
         logo: "",
     })
     const user = useUserStore((state) => state.user)
+    const setCompanyStore = useCompanyStore((state) => state.setCompany)
     const [isLoading, setIsLoading] = useState(false)
-    const completionPercentage = Object.values(formData).filter((value) => value !== "" && value !== null).length * 20
+    
+    const completionPercentage = (
+        ["name", "address", "email", "phone", "logo"] as (keyof CompanyPayload)[]
+    ).filter((key) => formData[key] !== "" && formData[key] !== null).length * 20
 
     const ap = useTranslations("api")
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
-
         try {
             const response = await postAPI(formData, "/companies/create")
             if (response.status === 201) {
                 toast.success(ap("companyCreated"))
+                setCompanyStore(response.data)
                 setTimeout(() => {
-                    onNext(formData, response.data!.uuid)
+                    onNext(formData, response.data.uuid)
                     console.log(response.data)
                 }, 1000)
-            } else {
+            } else if (response.status === 400) {
                 toast.error(ap("companyCreationFailed"), {
                     description: ap("checkInputs"),
                 })
+            } else {
+                toast.error(ap("status500"))
+                console.error("error: ", response.data?.message)
             }
         } catch {
             toast.error(ap("somethingWentWrong"))
