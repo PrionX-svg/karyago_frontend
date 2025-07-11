@@ -4,7 +4,7 @@ export interface CompanyPayload {
     address: string
     email: string
     phone: string
-    logo?: File | string
+    logo?: string
 }
 
 export interface BranchPayload {
