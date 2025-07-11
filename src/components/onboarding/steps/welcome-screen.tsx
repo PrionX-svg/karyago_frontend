@@ -87,7 +87,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
                     <Button
                         onClick={onStart}
                         size="lg"
-                        className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                        className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-300"
                     >
                         Start Company Setup
                         <ArrowRight className="w-5 h-5 ml-2" />

@@ -11,7 +11,7 @@ import user from "@/lib/queries/user-queries"
 import { Loader2 } from "lucide-react"
 
 export default function OnboardingPage() {
-    const [currentStep, setCurrentStep] = useState(2)
+    const [currentStep, setCurrentStep] = useState(1)
     const [companyUuid, setCompanyUuid] = useState<string>("")
     const [showWelcome, setShowWelcome] = useState(true)
     const { isFetchingGetMe } = user.useGetUMe()
@@ -31,7 +31,9 @@ export default function OnboardingPage() {
         }
     }
     const handleStartOnboarding = () => {
-        setShowWelcome(false)
+        setTimeout(() => {
+            setShowWelcome(false)
+        }, 750)
     }
     if (isFetchingGetMe) {
         return (
