@@ -83,6 +83,13 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
                     animate={{ opacity: showContent ? 1 : 0 }}
                     transition={{ duration: 0.6, delay: 1.2 }}
                     className="space-y-4"
+                ></motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: showContent ? 1 : 0 }}
+                    transition={{ duration: 0.6, delay: 1.2 }}
+                    className="space-y-4"
                 >
                     <Button
                         onClick={onStart}
@@ -92,7 +99,6 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
                         Start Company Setup
                         <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
-                    <p className="text-sm text-gray-500">Please ensure all information is accurate before proceeding.</p>
                 </motion.div>
             </motion.div>
         </div>

@@ -12,10 +12,9 @@ import { useRouter } from "next/navigation"
 
 export default function OnboardingPage() {
     const [showWelcome, setShowWelcome] = useState(true)
-    const [currentStep, setCurrentStep] = useState(() => {
-        const savedStep = localStorage.getItem("onboardingStep")
-        return savedStep ? parseInt(savedStep) : 1
-    })
+    const [currentStep, setCurrentStep] = useState(1)
+
+
     const router = useRouter()
 
     const { isFetchingGetMe } = user.useGetUMe()
@@ -42,9 +41,21 @@ export default function OnboardingPage() {
     }
 
     useEffect(() => {
-        localStorage.setItem("onboardingStep", String(currentStep))
-        if (currentStep > 1){
-            setShowWelcome(false)
+        if (typeof window !== "undefined") {
+            const savedStep = localStorage.getItem("onboardingStep")
+            if (savedStep) {
+                setCurrentStep(parseInt(savedStep))
+                setShowWelcome(parseInt(savedStep) === 1)
+            }
+        }
+    }, [])
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            localStorage.setItem("onboardingStep", String(currentStep))
+            if (currentStep > 1) {
+                setShowWelcome(false)
+            }
         }
     }, [currentStep])
 
