@@ -39,7 +39,10 @@
     "resendFail": "Fehler beim erneuten Senden des Aktivierungscodes. Bitte versuchen Sie es erneut.",
     "userAlreadyVerified": "Benutzer ist bereits verifiziert.",
     "passwordChangeSuccess": "Passwort erfolgreich geändert!",
-    "passwordChangeError": "Passwort konnte nicht geändert werden. Bitte versuchen Sie es erneut."
+    "passwordChangeError": "Passwort konnte nicht geändert werden. Bitte versuchen Sie es erneut.",
+    "companyCreated": "Unternehmen erfolgreich erstellt!",
+    "companyCreationFailed": "Unternehmen konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+    "checkInputs": "Bitte überprüfen Sie Ihre Eingaben und versuchen Sie es erneut."
   },
   "auth": {
     "title": "Willkommen",

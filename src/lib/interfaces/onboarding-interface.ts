@@ -17,15 +17,14 @@ export interface BranchPayload {
 
 export type DivisionPayload = {
     id?: string;
-    company_uuid: string
-    responsible_uuid: string
     name: string
-    description: string
+    company_uuid: string
+    desc: string
 }
 
 export type SubDivisionPayload = {
     id?: string
     division_uuid: string
     name: string
-    description: string
+    desc: string
 }

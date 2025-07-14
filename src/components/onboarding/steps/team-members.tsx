@@ -1,16 +1,13 @@
 "use client"
 
-import { CheckCircle, Plus, Upload, ChevronLeft, ArrowRight } from "lucide-react"
+import { CheckCircle, Plus, Upload, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { HelpFooter } from "../layout/help-footer"
 import { motion } from "framer-motion"
 
-interface TeamMembersProps {
-    onPrevious: () => void
-}
 
-export function TeamMembers({ onPrevious }: TeamMembersProps) {
+export function TeamMembers() {
     const containerVariants = {
         hidden: { opacity: 0, y: 30 },
         visible: {
@@ -152,17 +149,7 @@ export function TeamMembers({ onPrevious }: TeamMembersProps) {
 
                                 {/* Navigation */}
                                 <motion.div className="flex justify-between pt-6" variants={itemVariants}>
-                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            onClick={onPrevious}
-                                            className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
-                                        >
-                                            <ChevronLeft className="w-4 h-4" />
-                                            Previous
-                                        </Button>
-                                    </motion.div>
+                                    <div />
                                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                         <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8">
                                             Complete Setup

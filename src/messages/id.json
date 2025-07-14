@@ -39,7 +39,10 @@
         "resendFail": "Gagal mengirim ulang kode aktivasi. Silakan coba lagi.",
         "userAlreadyVerified": "Pengguna sudah terverifikasi.",
         "passwordChangeSuccess": "Password berhasil diubah!",
-        "passwordChangeError": "Gagal mengubah password. Silakan coba lagi."
+        "passwordChangeError": "Gagal mengubah password. Silakan coba lagi.",
+        "companyCreated": "Perusahaan berhasil dibuat!",
+        "companyCreationFailed": "Gagal membuat perusahaan. Silakan coba lagi.",
+        "checkInputs": "Silakan periksa masukan Anda dan coba lagi."
     },
     "auth": {
         "title": "Selamat Datang",

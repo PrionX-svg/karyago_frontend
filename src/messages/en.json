@@ -25,7 +25,7 @@
     "loginFailed": "Login failed!",
     "invalidCredentials": "Check your email and password.",
     "registerSuccess": "Registration successful!",
-    "checkEmailForActivation": "Check your email for activation link!", 
+    "checkEmailForActivation": "Check your email for activation link!",
     "registerFailed": "Registration failed!",
     "emailAlreadyExists": "An account with this email address already exists.",
     "somethingWentWrong": "We couldn’t complete your request. Please try again later.",
@@ -39,7 +39,10 @@
     "resendFail": "Failed to resend activation code. Please try again.",
     "userAlreadyVerified": "User is already verified.",
     "passwordChangeSuccess": "Password changed successfully!",
-    "passwordChangeError": "Failed to change password. Please try again."
+    "passwordChangeError": "Failed to change password. Please try again.",
+    "companyCreated": "Company created successfully!",
+    "companyCreationFailed": "Failed to create company. Please try again.",
+    "checkInputs": "Please check your inputs and try again."
   },
   "auth": {
     "title": "Welcome",

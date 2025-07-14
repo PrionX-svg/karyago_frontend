@@ -24,14 +24,14 @@ export type CompanyBranchType = {
 export type DivisionType = {
     uuid: string;
     company_uuid: string;
-    responsible_uuid: string;
     name: string;
-    description: string;
+    desc: string;
+    responsible_uuid?: string;
 }
 
 export type SubDivisionType = {
     uuid: string;
     division_uuid: string;
     name: string;
-    description: string;
+    desc: string;
 }

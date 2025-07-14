@@ -6,24 +6,25 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { Building, ChevronLeft, ChevronRight, Info, MapPin, Plus, X } from "lucide-react"
+import { Building, ChevronRight, Info, MapPin, Plus, X } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { BranchPayload } from "@/lib/interfaces/onboarding-interface"
 import { toast } from "sonner"
 import postAPI from "@/lib/api/postAPI"
 import { HelpFooter } from "../layout/help-footer"
 import { motion, AnimatePresence, easeOut } from "framer-motion"
+import { useCompanyStore } from "@/stores/company-store"
 
 interface BranchLocationsProps {
     onNext: (branches: BranchPayload[]) => void
-    onPrevious: () => void
-    companyUuid: string
 }
 
-export function BranchLocations({ onNext, onPrevious, companyUuid }: BranchLocationsProps) {
+export function BranchLocations({ onNext }: BranchLocationsProps) {
     const [branches, setBranches] = useState<BranchPayload[]>([])
     const [showForm, setShowForm] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
+    const companyData = useCompanyStore((state) => state.company)
 
     const [newBranch, setNewBranch] = useState<BranchPayload>({
         company_uuid: companyUuid,
@@ -54,15 +55,15 @@ export function BranchLocations({ onNext, onPrevious, companyUuid }: BranchLocat
     const handleNext = async () => {
         setIsLoading(true)
         try {
+            const addCompanyBranch = useCompanyStore.getState().addCompanyBranch
             for (const branch of branches) {
                 const response = await postAPI(branch, "/branches/create")
-
                 if (response.status !== 201) {
                     toast.error(`Gagal membuat cabang: ${branch.name}`)
-                    return 
+                    return
                 }
+                addCompanyBranch(response.data.data)
             }
-
             toast.success("Semua cabang berhasil dibuat!")
             setTimeout(() => {
                 onNext(branches)
@@ -74,10 +75,17 @@ export function BranchLocations({ onNext, onPrevious, companyUuid }: BranchLocat
         }
     }
 
+    useEffect(() => {
+        if (companyUuid) {
+            setNewBranch((prev) => ({ ...prev, company_uuid: companyUuid }))
+        }
+    }, [companyUuid])
 
     useEffect(() => {
-        console.log("data", branches)
-    }, [branches])
+        console.log("Branches:", branches);
+        console.log("companyUuid: ", companyUuid);
+        console.log("companyData: ", companyData);
+    }, [branches, companyData, companyUuid]);
 
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -403,18 +411,7 @@ export function BranchLocations({ onNext, onPrevious, companyUuid }: BranchLocat
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.4 }}
                             >
-                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        onClick={onPrevious}
-                                        className="flex items-center gap-2 text-gray-600 hover:text-gray-800 text-sm lg:text-base"
-                                        disabled={isLoading}
-                                    >
-                                        <ChevronLeft className="w-4 h-4" />
-                                        Previous
-                                    </Button>
-                                </motion.div>
+                                <div />
                                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                     <Button
                                         onClick={handleNext}

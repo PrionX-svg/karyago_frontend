@@ -5,19 +5,16 @@ import { CompanyInformation } from "@/components/onboarding/steps/company-inform
 import { BranchLocations } from "@/components/onboarding/steps/branch-information"
 import { OrganizationalStructure } from "@/components/onboarding/steps/organizational-structure"
 import { TeamMembers } from "@/components/onboarding/steps/team-members"
-import type { CompanyPayload } from "@/lib/interfaces/onboarding-interface"
 import { WelcomeScreen } from "@/components/onboarding/steps/welcome-screen"
 import user from "@/lib/queries/user-queries"
 import { Loader2 } from "lucide-react"
 
 export default function OnboardingPage() {
-    const [currentStep, setCurrentStep] = useState(2)
-    const [companyUuid, setCompanyUuid] = useState<string>("")
+    const [currentStep, setCurrentStep] = useState(1)
     const [showWelcome, setShowWelcome] = useState(true)
     const { isFetchingGetMe } = user.useGetUMe()
     
-    const handleCompanyNext = (data: CompanyPayload, uuid: string) => {
-        setCompanyUuid(uuid)
+    const handleCompanyNext = () => {
         setCurrentStep(2)
     }
     const handleBranchNext = () => {
@@ -26,11 +23,7 @@ export default function OnboardingPage() {
     const handleDivisionNext = () => {
         setCurrentStep(4)
     }
-    const handlePrevious = () => {
-        if (currentStep > 1) {
-            setCurrentStep(currentStep - 1)
-        }
-    }
+
     const handleStartOnboarding = () => {
         setTimeout(() => {
             setShowWelcome(false)
@@ -60,10 +53,10 @@ export default function OnboardingPage() {
         <div className="min-h-screen bg-gradient-to-br from-orange-25 via-orange-50 to-amber-25">
             {currentStep === 1 && <CompanyInformation onNext={handleCompanyNext} />}
             {currentStep === 2 && (
-                <BranchLocations onNext={handleBranchNext} onPrevious={handlePrevious} companyUuid={companyUuid} />
+                <BranchLocations onNext={handleBranchNext} />
             )}
-            {currentStep === 3 && <OrganizationalStructure onNext={handleDivisionNext} onPrevious={handlePrevious} />}
-            {currentStep === 4 && <TeamMembers onPrevious={handlePrevious} />}
+            {currentStep === 3 && <OrganizationalStructure onNext={handleDivisionNext} />}
+            {currentStep === 4 && <TeamMembers />}
         </div>
     )
 }

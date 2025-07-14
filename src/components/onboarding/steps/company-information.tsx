@@ -22,7 +22,7 @@ import { motion } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
 
 interface CompanyInformationProps {
-    onNext: (data: CompanyPayload, companyUuid: string) => void
+    onNext: () => void
 }
 
 export function CompanyInformation({ onNext }: CompanyInformationProps) {
@@ -51,10 +51,9 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
             const response = await postAPI(formData, "/companies/create")
             if (response.status === 201) {
                 toast.success(ap("companyCreated"))
-                setCompanyStore(response.data)
+                setCompanyStore([response.data.data])
                 setTimeout(() => {
-                    onNext(formData, response.data.uuid)
-                    console.log(response.data)
+                    onNext();
                 }, 1000)
             } else if (response.status === 400) {
                 toast.error(ap("companyCreationFailed"), {
@@ -85,10 +84,6 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
             toast.warning("User UUID missing!")
         }
     }, [user.uuid])
-
-    useEffect(() => {
-        console.log("data:", formData)
-    }, [formData])
 
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },
