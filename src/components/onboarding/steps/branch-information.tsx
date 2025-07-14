@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { Building, ChevronRight, Info, MapPin, Plus, X } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import type { BranchPayload } from "@/lib/interfaces/onboarding-interface"
+import type { BranchPayload } from "@/lib/interfaces/company-interface"
 import { toast } from "sonner"
 import postAPI from "@/lib/api/postAPI"
 import { HelpFooter } from "../layout/help-footer"
@@ -16,7 +16,7 @@ import { motion, AnimatePresence, easeOut } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
 
 interface BranchLocationsProps {
-    onNext: (branches: BranchPayload[]) => void
+    onNext: () => void
 }
 
 export function BranchLocations({ onNext }: BranchLocationsProps) {
@@ -24,7 +24,6 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
     const [showForm, setShowForm] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
-    const companyData = useCompanyStore((state) => state.company)
 
     const [newBranch, setNewBranch] = useState<BranchPayload>({
         company_uuid: companyUuid,
@@ -64,9 +63,11 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                 }
                 addCompanyBranch(response.data.data)
             }
-            toast.success("Semua cabang berhasil dibuat!")
+            if (branches.length > 0) {
+                toast.success("Semua cabang berhasil dibuat!")
+            }
             setTimeout(() => {
-                onNext(branches)
+                onNext()
             }, 1000)
         } catch {
             toast.error("Terjadi kesalahan saat membuat cabang. Silakan coba lagi.")
@@ -80,12 +81,6 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
             setNewBranch((prev) => ({ ...prev, company_uuid: companyUuid }))
         }
     }, [companyUuid])
-
-    useEffect(() => {
-        console.log("Branches:", branches);
-        console.log("companyUuid: ", companyUuid);
-        console.log("companyData: ", companyData);
-    }, [branches, companyData, companyUuid]);
 
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -261,16 +256,6 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                         <p className="text-sm text-gray-600 mb-4">
                                             Start by adding your first branch location to assign employees later.
                                         </p>
-                                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                            <Button
-                                                onClick={() => setShowForm(true)}
-                                                className="bg-orange-400 hover:bg-orange-500 text-white"
-                                                disabled={isLoading}
-                                            >
-                                                <Plus className="w-4 h-4 mr-1" />
-                                                Add First Branch
-                                            </Button>
-                                        </motion.div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -430,8 +415,17 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                             </>
                                         ) : (
                                             <>
-                                                Next Step
-                                                <ChevronRight className="w-4 h-4" />
+                                                {branches.length === 0 ? (
+                                                    <>
+                                                        Skip This Step
+                                                        <ChevronRight className="w-4 h-4" />
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Next Step
+                                                        <ChevronRight className="w-4 h-4" />
+                                                    </>
+                                                )}
                                             </>
                                         )}
                                     </Button>

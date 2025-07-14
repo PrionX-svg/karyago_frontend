@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChevronRight, Layers, Layers3, Lightbulb, Plus, X, Building2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { DivisionPayload, SubDivisionPayload } from "@/lib/interfaces/onboarding-interface"
+import type { DivisionPayload, SubDivisionPayload } from "@/lib/interfaces/company-interface"
 import { toast } from "sonner"
 import postAPI from "@/lib/api/postAPI"
 import { HelpFooter } from "../layout/help-footer"
@@ -24,9 +24,10 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
     const [showDivisionForm, setShowDivisionForm] = useState(false)
     const [showSubDivisionForm, setShowSubDivisionForm] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [showSkipDialog, setShowSkipDialog] = useState(false)
     const [activeTab, setActiveTab] = useState("divisions")
-    const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
 
+    const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
     const divisions = useCompanyStore((state) => state.division)
     const subDivisions = useCompanyStore((state) => state.subDivision)
     const addDivision = useCompanyStore((state) => state.addDivision)
@@ -112,13 +113,13 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
 
     const handleNext = async () => {
         if (divisions.length === 0) {
-            toast.error("Please add at least one division before proceeding.")
+            setShowSkipDialog(true)
             return
         }
-        setTimeout(() => {
-            onNext(divisions, subDivisions)
-        }, 1000)
+
+        onNext(divisions, subDivisions)
     }
+
 
     useEffect(() => {
         if (companyUuid) {
@@ -249,7 +250,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                         {/* Summary Card */}
                         <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
                             <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
-                                <CardHeader className="pb-4">
+                                <CardHeader>
                                     <CardTitle className="text-lg text-blue-800">Structure Summary</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-2">
@@ -280,19 +281,23 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                             </motion.div>
 
                             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                                <TabsList className="grid w-full grid-cols-2 mb-6">
-                                    <TabsTrigger value="divisions" className="flex items-center gap-2">
+                                <TabsList className="w-full mb-6 grid grid-cols-2 sm:grid-cols-2 gap-2">
+                                    <TabsTrigger value="divisions" className="flex items-center gap-2 px-2 py-2 text-sm sm:text-base">
                                         <Layers className="w-4 h-4" />
-                                        Divisions
+                                        <span className="hidden xs:inline">Divisions</span>
+                                        <span className="inline xs:hidden">Div.</span>
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="subdivisions"
-                                        className="flex items-center gap-2"
+                                        className="flex items-center gap-2 px-2 py-2 text-sm sm:text-base"
                                         disabled={divisions.length === 0}
                                     >
                                         <Building2 className="w-4 h-4" />
-                                        Sub-divisions
-                                        {divisions.length === 0 && <span className="text-xs bg-gray-200 px-2 py-1 rounded">Disabled</span>}
+                                        <span className="hidden xs:inline">Sub-divisions</span>
+                                        <span className="inline xs:hidden">Sub-div.</span>
+                                        {divisions.length === 0 && (
+                                            <span className="text-xs bg-gray-200 px-2 py-1 rounded hidden sm:inline">Disabled</span>
+                                        )}
                                     </TabsTrigger>
                                 </TabsList>
 
@@ -663,7 +668,12 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                         className="bg-orange-500 hover:bg-orange-600 text-white px-6 flex items-center gap-2"
                                         disabled={isLoading}
                                     >
-                                        {isLoading ? (
+                                        {divisions.length === 0 ? (
+                                            <>
+                                                Skip This Step
+                                                <ChevronRight className="w-4 h-4" />
+                                            </>
+                                        ) : isLoading ? (
                                             <>
                                                 <motion.div
                                                     animate={{ rotate: 360 }}
@@ -688,6 +698,49 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
             </main>
             {/* Help Footer */}
             <HelpFooter />
+
+            <AnimatePresence>
+                {showSkipDialog && (
+                    <motion.div
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <motion.div
+                            className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4"
+                            initial={{ scale: 0.95, y: -20, opacity: 0 }}
+                            animate={{ scale: 1, y: 0, opacity: 1 }}
+                            exit={{ scale: 0.95, y: -20, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <h2 className="text-lg font-semibold text-gray-900 mb-2">
+                                Lewati Pengaturan Struktur Organisasi?
+                            </h2>
+                            <p className="text-sm text-gray-700 mb-4">
+                                Jika Anda melewati langkah ini, <strong>Anda tidak dapat langsung menambahkan karyawan</strong> pada langkah berikutnya.
+                                <br />
+                                Namun, Anda tetap dapat menambahkan karyawan setelah membuat divisi baru di kemudian hari.
+                            </p>
+                            <div className="flex justify-end gap-2">
+                                <Button variant="outline" onClick={() => setShowSkipDialog(false)}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    className="bg-orange-500 hover:bg-orange-600 text-white"
+                                    onClick={() => {
+                                        setShowSkipDialog(false)
+                                        onNext(divisions, subDivisions)
+                                    }}
+                                >
+                                    Skip Anyway
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
         </motion.div>
     )
 }

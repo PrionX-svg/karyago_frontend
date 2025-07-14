@@ -5,9 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { HelpFooter } from "../layout/help-footer"
 import { motion } from "framer-motion"
+import { useCompanyStore } from "@/stores/company-store"
 
 
 export function TeamMembers() {
+    const divisions = useCompanyStore((state) => state.division)
+    const subDivision = useCompanyStore((state) => state.subDivision)
+
     const containerVariants = {
         hidden: { opacity: 0, y: 30 },
         visible: {
@@ -78,13 +82,30 @@ export function TeamMembers() {
 
                             <CardContent className="space-y-8">
                                 {/* Action Cards */}
-                                <motion.div className="grid md:grid-cols-2 gap-6" variants={itemVariants}>
+                                <motion.div
+                                    className="grid md:grid-cols-2 gap-6"
+                                    variants={itemVariants}
+                                >
                                     <motion.div
                                         whileHover={{
                                             scale: 1.05,
                                             boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
                                         }}
                                         transition={{ duration: 0.3 }}
+                                        style={{
+                                            pointerEvents:
+                                                divisions.length === 0 ||
+                                                (divisions.length === 1 &&
+                                                    subDivision.length === 0)
+                                                    ? "none"
+                                                    : "auto",
+                                            opacity:
+                                                divisions.length === 0 ||
+                                                (divisions.length === 1 &&
+                                                    subDivision.length === 0)
+                                                    ? 0.5
+                                                    : 1,
+                                        }}
                                     >
                                         <Card className="border-orange-200 hover:border-orange-300 transition-colors cursor-pointer group">
                                             <CardContent className="p-6 text-center space-y-4">
@@ -117,6 +138,20 @@ export function TeamMembers() {
                                             boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
                                         }}
                                         transition={{ duration: 0.3 }}
+                                        style={{
+                                            pointerEvents:
+                                                divisions.length === 0 ||
+                                                (divisions.length === 1 &&
+                                                    subDivision.length === 0)
+                                                    ? "none"
+                                                    : "auto",
+                                            opacity:
+                                                divisions.length === 0 ||
+                                                (divisions.length === 1 &&
+                                                    subDivision.length === 0)
+                                                    ? 0.5
+                                                    : 1,
+                                        }}
                                     >
                                         <Card className="border-blue-200 hover:border-blue-300 transition-colors cursor-pointer group">
                                             <CardContent className="p-6 text-center space-y-4">
