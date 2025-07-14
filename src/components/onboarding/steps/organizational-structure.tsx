@@ -349,7 +349,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                                         animate={{ opacity: 1, x: 0 }}
                                                         transition={{ duration: 0.3, delay: 0.2 }}
                                                     >
-                                                        <Label className="text-gray-700 font-medium mb-2">Description (Optional)</Label>
+                                                        <Label className="text-gray-700 font-medium mb-2">Description</Label>
                                                         <Input
                                                             value={newDivision.desc}
                                                             onChange={(e) => setNewDivision((prev) => ({ ...prev, desc: e.target.value }))}

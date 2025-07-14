@@ -7,8 +7,11 @@ import { HelpFooter } from "../layout/help-footer"
 import { motion } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
 
+interface TeamMembersProps {
+    finishOnboarding: () => void
+}
 
-export function TeamMembers() {
+export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
     const divisions = useCompanyStore((state) => state.division)
     const subDivision = useCompanyStore((state) => state.subDivision)
 
@@ -95,14 +98,14 @@ export function TeamMembers() {
                                         style={{
                                             pointerEvents:
                                                 divisions.length === 0 ||
-                                                (divisions.length === 1 &&
-                                                    subDivision.length === 0)
+                                                    (divisions.length === 1 &&
+                                                        subDivision.length === 0)
                                                     ? "none"
                                                     : "auto",
                                             opacity:
                                                 divisions.length === 0 ||
-                                                (divisions.length === 1 &&
-                                                    subDivision.length === 0)
+                                                    (divisions.length === 1 &&
+                                                        subDivision.length === 0)
                                                     ? 0.5
                                                     : 1,
                                         }}
@@ -141,14 +144,14 @@ export function TeamMembers() {
                                         style={{
                                             pointerEvents:
                                                 divisions.length === 0 ||
-                                                (divisions.length === 1 &&
-                                                    subDivision.length === 0)
+                                                    (divisions.length === 1 &&
+                                                        subDivision.length === 0)
                                                     ? "none"
                                                     : "auto",
                                             opacity:
                                                 divisions.length === 0 ||
-                                                (divisions.length === 1 &&
-                                                    subDivision.length === 0)
+                                                    (divisions.length === 1 &&
+                                                        subDivision.length === 0)
                                                     ? 0.5
                                                     : 1,
                                         }}
@@ -186,7 +189,7 @@ export function TeamMembers() {
                                 <motion.div className="flex justify-between pt-6" variants={itemVariants}>
                                     <div />
                                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                        <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8">
+                                        <Button size="lg" onClick={finishOnboarding} className="bg-green-600 hover:bg-green-700 text-white px-8">
                                             Complete Setup
                                             <ArrowRight className="ml-2 h-5 w-5" />
                                         </Button>

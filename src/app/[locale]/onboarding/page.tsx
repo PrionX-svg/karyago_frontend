@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CompanyInformation } from "@/components/onboarding/steps/company-information"
 import { BranchLocations } from "@/components/onboarding/steps/branch-information"
 import { OrganizationalStructure } from "@/components/onboarding/steps/organizational-structure"
@@ -8,12 +8,18 @@ import { TeamMembers } from "@/components/onboarding/steps/team-members"
 import { WelcomeScreen } from "@/components/onboarding/steps/welcome-screen"
 import user from "@/lib/queries/user-queries"
 import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function OnboardingPage() {
-    const [currentStep, setCurrentStep] = useState(1)
     const [showWelcome, setShowWelcome] = useState(true)
+    const [currentStep, setCurrentStep] = useState(() => {
+        const savedStep = localStorage.getItem("onboardingStep")
+        return savedStep ? parseInt(savedStep) : 1
+    })
+    const router = useRouter()
+
     const { isFetchingGetMe } = user.useGetUMe()
-    
+
     const handleCompanyNext = () => {
         setCurrentStep(2)
     }
@@ -29,6 +35,19 @@ export default function OnboardingPage() {
             setShowWelcome(false)
         }, 750)
     }
+
+    const finishOnboarding = () => {
+        localStorage.removeItem("onboardingStep")
+        router.push("/dashboard")
+    }
+
+    useEffect(() => {
+        localStorage.setItem("onboardingStep", String(currentStep))
+        if (currentStep > 1){
+            setShowWelcome(false)
+        }
+    }, [currentStep])
+
     if (isFetchingGetMe) {
         return (
             <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-[#fff7f1] to-white px-4">
@@ -56,7 +75,7 @@ export default function OnboardingPage() {
                 <BranchLocations onNext={handleBranchNext} />
             )}
             {currentStep === 3 && <OrganizationalStructure onNext={handleDivisionNext} />}
-            {currentStep === 4 && <TeamMembers />}
+            {currentStep === 4 && <TeamMembers finishOnboarding={finishOnboarding} />}
         </div>
     )
 }
