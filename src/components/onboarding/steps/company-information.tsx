@@ -37,7 +37,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
     const user = useUserStore((state) => state.user)
     const setCompanyStore = useCompanyStore((state) => state.setCompany)
     const [isLoading, setIsLoading] = useState(false)
-    
+
     const completionPercentage = (
         ["name", "address", "email", "phone", "logo"] as (keyof CompanyPayload)[]
     ).filter((key) => formData[key] !== "" && formData[key] !== null).length * 20
@@ -295,6 +295,18 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                             Email is required
                                         </motion.p>
                                     )}
+                                    {/* Email validation message */}
+                                    {formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && (
+                                        <motion.p
+                                            className="text-red-500 text-xs mt-1"
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                        >
+                                            Please enter a valid email address
+                                        </motion.p>
+                                    )}
+
                                 </motion.div>
                             </motion.div>
 

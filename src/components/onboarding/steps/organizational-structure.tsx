@@ -220,7 +220,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                         {/* Best Practices Card */}
                         <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
                             <Card className="border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50">
-                                <CardHeader className="pb-4">
+                                <CardHeader>
                                     <div className="flex items-center gap-2">
                                         <motion.div whileHover={{ rotate: 15 }} transition={{ duration: 0.2 }}>
                                             <Lightbulb className="h-5 w-5 text-amber-600" />
@@ -281,20 +281,23 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                             </motion.div>
 
                             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                                <TabsList className="w-full mb-6 grid grid-cols-2 sm:grid-cols-2 gap-2">
-                                    <TabsTrigger value="divisions" className="flex items-center gap-2 px-2 py-2 text-sm sm:text-base">
+                                <TabsList className="w-full mb-6 grid grid-cols-2 gap-2">
+                                    <TabsTrigger
+                                        value="divisions"
+                                        className="flex items-center gap-2 px-2 py-2 text-sm sm:text-base justify-center"
+                                    >
                                         <Layers className="w-4 h-4" />
-                                        <span className="hidden xs:inline">Divisions</span>
-                                        <span className="inline xs:hidden">Div.</span>
+                                        <span className="hidden sm:inline">Divisions</span>
+                                        <span className="inline sm:hidden">Div.</span>
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="subdivisions"
-                                        className="flex items-center gap-2 px-2 py-2 text-sm sm:text-base"
+                                        className="flex items-center gap-2 px-2 py-2 text-sm sm:text-base justify-center"
                                         disabled={divisions.length === 0}
                                     >
                                         <Building2 className="w-4 h-4" />
-                                        <span className="hidden xs:inline">Sub-divisions</span>
-                                        <span className="inline xs:hidden">Sub-div.</span>
+                                        <span className="hidden sm:inline">Sub-divisions</span>
+                                        <span className="inline sm:hidden">Sub-div.</span>
                                         {divisions.length === 0 && (
                                             <span className="text-xs bg-gray-200 px-2 py-1 rounded hidden sm:inline">Disabled</span>
                                         )}
@@ -715,12 +718,12 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                             transition={{ duration: 0.3 }}
                         >
                             <h2 className="text-lg font-semibold text-gray-900 mb-2">
-                                Lewati Pengaturan Struktur Organisasi?
+                                Skip Organizational Structure Setup?
                             </h2>
                             <p className="text-sm text-gray-700 mb-4">
-                                Jika Anda melewati langkah ini, <strong>Anda tidak dapat langsung menambahkan karyawan</strong> pada langkah berikutnya.
+                                If you skip this step, <strong>you cannot immediately add employees</strong> in the next step.
                                 <br />
-                                Namun, Anda tetap dapat menambahkan karyawan setelah membuat divisi baru di kemudian hari.
+                                However, you can still add employees later after creating new divisions.
                             </p>
                             <div className="flex justify-end gap-2">
                                 <Button variant="outline" onClick={() => setShowSkipDialog(false)}>

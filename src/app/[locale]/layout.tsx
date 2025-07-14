@@ -12,8 +12,8 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "Helpernet",
-  description: "Manage events and helpers easily with our application.",
+  title: "HRIS",
+  description: "Manage your HR processes with ease",
   icons: {
     icon: "/helpernet-logo.png",
     shortcut: "/helpernet-logo.png",
