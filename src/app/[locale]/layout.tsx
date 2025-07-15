@@ -12,12 +12,12 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "Helpernet",
+  title: "ArbeitsHub",
   description: "Manage events and helpers easily with our application.",
   icons: {
-    icon: "/helpernet-logo.png",
-    shortcut: "/helpernet-logo.png",
-    apple: "/helpernet-logo.png",
+    icon: "/ArbeitsHub-logo.png",
+    shortcut: "/ArbeitsHub-logo.png",
+    apple: "/ArbeitsHub-logo.png",
   },
 };
 

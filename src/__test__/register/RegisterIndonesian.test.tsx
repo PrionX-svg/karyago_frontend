@@ -3,23 +3,24 @@ import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from '@testing-library/user-event';
 import RegisterForm from "@/components/auth/register-form";
+import { time } from "console";
 
 // Mock the translation function from next-intl
 jest.mock("next-intl", () => ({
     useTranslations: jest.fn(() => (key: string) => {
         const translations: Record<string, string> = {
-            firstname: "First Name",
-            lastname: "Last Name",
+            firstName: "Nama Depan",
+            lastName: "Nama Belakang",
             phone: "Phone",
             email: "Email",
             password: "Password",
-            confirmPassword: "Confirm Password",
-            passwordMismatch: "Passwords do not match",
-            passwordMatch: "Passwords match",
-            agree1: "I agree to",
-            termsAndConditions: "Terms and Conditions",
-            privacyPolicy: "Privacy Policy",
-            createAccount: "Create Account",
+            confirmPassword: "Konfirmasi Password",
+            passwordMismatch: "Password tidak cocok",
+            passwordMatch: "Password cocok",
+            agree1: "Saya setuju dengan",
+            termsAndConditions: "Syarat dan Ketentuan",
+            privacyPolicy: "Syarat Privasi",
+            createAccount: "Buat Akun",
         };
         return translations[key] || key;
     }),
@@ -36,10 +37,10 @@ jest.mock('@/lib/validate-password', () => ({
             /\d/.test(password) &&         // Number
             /[^A-Za-z0-9]/.test(password), // Special character
         requirements: [
-            { text: "Min 8 chars", met: password.length >= 8 },
-            { text: "Upper & lowercase", met: /[A-Z]/.test(password) && /[a-z]/.test(password) },
-            { text: "At least 1 number", met: /[0-9]/.test(password) },
-            { text: "At least 1 special char", met: /[^A-Za-z0-9]/.test(password) },
+            { text: "Minimal 8 karakter", met: password.length >= 8 },
+            { text: "Huruf besar & kecil", met: /[A-Z]/.test(password) && /[a-z]/.test(password) },
+            { text: "Minimal 1 angka", met: /\d/.test(password) },
+            { text: "Minimal 1 karakter khusus", met: /[^A-Za-z0-9]/.test(password) },
         ],
     }),
 }));
@@ -52,27 +53,27 @@ jest.mock('@/lib/get-timezone', () => ({
 describe("Register Form Test Black Box", () => {
     it("renders all main fields and labels", () => {
         render(<RegisterForm />);
-        expect(screen.getByLabelText("firstName")).toBeInTheDocument();
-        expect(screen.getByLabelText("lastName")).toBeInTheDocument();
+        expect(screen.getByLabelText("Nama Depan")).toBeInTheDocument();
+        expect(screen.getByLabelText("Nama Belakang")).toBeInTheDocument();
         expect(screen.getByLabelText("Phone")).toBeInTheDocument();
         expect(screen.getByLabelText("Email")).toBeInTheDocument();
         expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-        expect(screen.getByLabelText("Confirm Password")).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "Terms and Conditions" })).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "Privacy Policy" })).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: "Create Account" })).toBeInTheDocument();
+        expect(screen.getByLabelText("Konfirmasi Password")).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "Syarat dan Ketentuan" })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "Syarat Privasi" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Buat Akun" })).toBeInTheDocument();
     });
 
     it("shows password mismatch message when passwords do not match", () => {
         render(<RegisterForm />);
-        fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "StrongPass123!" } });
-        fireEvent.change(screen.getByLabelText("Confirm Password"), { target: { value: "AnotherPass" } });
-        expect(screen.getByText("Passwords do not match")).toBeInTheDocument();
+        fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "PasswordAman123!" } });
+        fireEvent.change(screen.getByLabelText("Konfirmasi Password"), { target: { value: "PasswordLain123!" } });
+        expect(screen.getByText("Password tidak cocok")).toBeInTheDocument();
     });
 
     it("disables submit button when form is incomplete", () => {
         render(<RegisterForm />);
-        expect(screen.getByRole("button", { name: "Create Account" })).toBeDisabled();
+        expect(screen.getByRole("button", { name: "Buat Akun" })).toBeDisabled();
     });
 
 });
@@ -82,38 +83,38 @@ describe("RegisterForm White Box Tests", () => {
         const handleSubmit = jest.fn();
         render(<RegisterForm onSubmit={handleSubmit} />);
         // Fill required fields using userEvent for proper async updates
-        await userEvent.type(screen.getByLabelText("firstName"), "John");
-        await userEvent.type(screen.getByLabelText("lastName"), "Doe");
+        await userEvent.type(screen.getByLabelText("Nama Depan"), "John");
+        await userEvent.type(screen.getByLabelText("Nama Belakang"), "Doe");
         await userEvent.type(screen.getByLabelText("Phone"), "+628123456789");
-        await userEvent.type(screen.getByLabelText("Email"), "john@example.com");
-        await userEvent.type(screen.getByLabelText(/password/i), "StrongPass123!");
-        await userEvent.type(screen.getByLabelText("Confirm Password"), "StrongPass123!");
+        await userEvent.type(screen.getByLabelText("Email"), "john@contoh.com");
+        await userEvent.type(screen.getByLabelText(/password/i), "PasswordAman123!");
+        await userEvent.type(screen.getByLabelText("Konfirmasi Password"), "PasswordAman123!");
 
-        const cbs = screen.getAllByRole("checkbox");
-        for (const cb of cbs) {
-            await userEvent.click(cb);
+        const allChecbox = screen.getAllByRole("checkbox");
+        for (const checkboxes of allChecbox) {
+            await userEvent.click(checkboxes);
         }
 
-        screen.getAllByRole("checkbox").forEach((cb) => {
-            console.log(cb.outerHTML);
+        screen.getAllByRole("checkbox").forEach((checkboxes) => {
+            console.log(checkboxes.outerHTML);
         });
 
         // screen.debug();
 
         await waitFor(() => {
-            expect(screen.getByRole("button", { name: "Create Account" })).toBeEnabled();
+            expect(screen.getByRole("button", { name: "Buat Akun" })).toBeEnabled();
         });
 
-        await userEvent.click(screen.getByRole("button", { name: "Create Account" }));
+        await userEvent.click(screen.getByRole("button", { name: "Buat Akun" }));
 
         await waitFor(() =>
             expect(handleSubmit).toHaveBeenCalledWith(expect.objectContaining({
                 firstname: "John",
                 lastname: "Doe",
                 phone: "+628123456789",
-                email: "john@example.com",
-                password: "StrongPass123!",
-                confirmPassword: "StrongPass123!",
+                email: "john@contoh.com",
+                password: "PasswordAman123!",
+                confirmPassword: "PasswordAman123!",
                 privacyAccepted: true,
                 termsAccepted: true,
                 timezone: "+07:00"
@@ -129,7 +130,7 @@ describe("RegisterForm White Box Tests", () => {
         fireEvent.click(passwordToggle);
         expect(passwordInput).toHaveAttribute("type", "password");
 
-        const confirmPasswordInput = screen.getByLabelText("Confirm Password");
+        const confirmPasswordInput = screen.getByLabelText("Konfirmasi Password");
         const confirmPasswordToggle = screen.getAllByRole("button")[1];
         expect(confirmPasswordInput).toHaveAttribute("type", "password");
         fireEvent.click(confirmPasswordToggle);
