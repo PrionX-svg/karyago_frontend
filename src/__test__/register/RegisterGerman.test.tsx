@@ -37,10 +37,10 @@ jest.mock('@/lib/validate-password', () => ({
             /\d/.test(password) &&         // Number
             /[^A-Za-z0-9]/.test(password), // Special character
         requirements: [
-            { text: "Minimal 8 karakter", met: password.length >= 8 },
-            { text: "Huruf besar & kecil", met: /[A-Z]/.test(password) && /[a-z]/.test(password) },
-            { text: "Minimal 1 angka", met: /\d/.test(password) },
-            { text: "Minimal 1 karakter khusus", met: /[^A-Za-z0-9]/.test(password) },
+            { text: "Mindestens 8 Zeichen", met: password.length >= 8 },
+            { text: "Groß- und Kleinbuchstaben", met: /[A-Z]/.test(password) && /[a-z]/.test(password) },
+            { text: "Mindestens 1 Zahl", met: /\d/.test(password) },
+            { text: "Mindestens 1 Sonderzeichen", met: /[^A-Za-z0-9]/.test(password) },
         ],
     }),
 }));
