@@ -9,6 +9,7 @@ import { WelcomeScreen } from "@/components/onboarding/steps/welcome-screen"
 import user from "@/lib/queries/user-queries"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 
 export default function OnboardingPage() {
     const [showWelcome, setShowWelcome] = useState(true)
@@ -16,6 +17,8 @@ export default function OnboardingPage() {
 
     const router = useRouter()
     const { isFetchingGetMe } = user.useGetUMe()
+    
+    const lo = useTranslations("onboarding")
     
     const handleCompanyNext = () => {
         setCurrentStep(2)
@@ -66,10 +69,10 @@ export default function OnboardingPage() {
                         <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
                     </div>
                     <h1 className="text-2xl font-semibold text-gray-800 text-center">
-                        Setting up your experience...
+                        {lo("loadingTitle")}
                     </h1>
                     <p className="text-center text-gray-500 max-w-md">
-                        Please wait while we prepare your experience. This should only take a few seconds.
+                        {lo("loadingDescription")}
                     </p>
                 </div>
             </div>

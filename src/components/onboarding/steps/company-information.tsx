@@ -78,6 +78,8 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
         setFormData((prev) => ({ ...prev, [field]: value }))
     }
 
+    const ci = useTranslations("onboarding")
+
     useEffect(() => {
         if (user.uuid) {
             setFormData((prev) => ({
@@ -135,15 +137,15 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                         <Building2 className="h-5 w-5 text-orange-600" />
                                     </motion.div>
                                     <div>
-                                        <CardTitle className="text-lg">Getting Started</CardTitle>
-                                        <CardDescription>Step 1 of 4</CardDescription>
+                                        <CardTitle className="text-lg">{ci("gettingStarted")}</CardTitle>
+                                        <CardDescription>{ci("step1of4")}</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div>
                                     <div className="flex justify-between text-sm mb-2">
-                                        <span className="text-gray-600">Creating Company Progress</span>
+                                        <span className="text-gray-600">{ci("companyProgress")}</span>
                                         <motion.span
                                             className="font-medium text-orange-600"
                                             key={completionPercentage}
@@ -157,8 +159,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                     <Progress value={completionPercentage} className="h-2 [&>div]:bg-green-600" />
                                 </div>
                                 <p className="text-sm text-gray-600 leading-relaxed">
-                                    Start by providing your company&apos;s basic information. This will be used throughout your HRIS
-                                    system.
+                                    {ci('companyProgressDescription')}
                                 </p>
                             </CardContent>
                         </Card>
@@ -179,19 +180,19 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                     <motion.div className="flex gap-3" whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
                                         <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0" />
                                         <p className="text-sm text-amber-700">
-                                            Use your official company name as registered with authorities
+                                            {ci("proTip1")}
                                         </p>
                                     </motion.div>
                                     <motion.div className="flex gap-3" whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
                                         <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0" />
                                         <p className="text-sm text-amber-700">
-                                            Upload a high-quality logo (PNG/JPG, max 2MB) for better branding
+                                            {ci("proTip2")}
                                         </p>
                                     </motion.div>
                                     <motion.div className="flex gap-3" whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
                                         <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0" />
                                         <p className="text-sm text-amber-700">
-                                            Provide a complete address for official documents and communications
+                                            {ci("proTip3")}
                                         </p>
                                     </motion.div>
                                 </div>
@@ -207,9 +208,9 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
                         >
-                            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Company Information</h2>
+                            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">{ci("formTitle")}</h2>
                             <p className="text-sm sm:text-base text-gray-600 mb-6 lg:mb-8">
-                                Let&apos;s start with your company&apos;s basic details
+                                {ci("formDescription")}
                             </p>
                         </motion.div>
 
@@ -223,7 +224,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                             >
                                 <Label className="text-base font-medium flex items-center gap-2">
                                     <Upload className="h-4 w-4" />
-                                    Company Logo
+                                    {ci("companyLogo")}
                                 </Label>
                                 <FileDropUploader
                                     value={formData.logo}
@@ -245,7 +246,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                         className="flex items-center gap-2 text-gray-700 font-medium mb-2 text-sm lg:text-base"
                                     >
                                         <Building2 className="w-4 h-4 text-orange-400" />
-                                        Company Name*
+                                        {ci("companyName")}
                                     </Label>
                                     <Input
                                         id="company-name"
@@ -265,7 +266,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ duration: 0.3 }}
                                         >
-                                            Name is required
+                                            {ci("nameIsRequired")}
                                         </motion.p>
                                     )}
                                 </motion.div>
@@ -276,7 +277,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                         className="flex items-center gap-2 text-gray-700 font-medium mb-2 text-sm lg:text-base"
                                     >
                                         <Mail className="w-4 h-4 text-orange-400" />
-                                        Company Email*
+                                        {ci('companyEmail')}
                                     </Label>
                                     <Input
                                         id="company-email"
@@ -296,7 +297,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ duration: 0.3 }}
                                         >
-                                            Email is required
+                                        {ci("emailIsRequired")}
                                         </motion.p>
                                     )}
                                     {/* Email validation message */}
@@ -307,7 +308,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ duration: 0.3 }}
                                         >
-                                            Please enter a valid email address
+                                            {ci("emailInvalid")}
                                         </motion.p>
                                     )}
 
@@ -326,7 +327,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                     className="flex items-center gap-2 text-gray-700 font-medium mb-2 text-sm lg:text-base"
                                 >
                                     <Phone className="w-4 h-4 text-orange-400" />
-                                    Phone Number*
+                                    {ci("companyPhone")}
                                 </Label>
                                 <Input
                                     id="company-phone"
@@ -346,7 +347,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.3 }}
                                     >
-                                        Phone number is required
+                                        {ci("phoneIsRequired")}
                                     </motion.p>
                                 )}
                             </motion.div>
@@ -363,7 +364,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                     className="flex items-center gap-2 text-gray-700 font-medium mb-2 text-sm lg:text-base"
                                 >
                                     <MapPin className="w-4 h-4 text-orange-400" />
-                                    Company Address*
+                                    {ci("companyAddress")}
                                 </Label>
                                 <Textarea
                                     id="company-address"
@@ -382,7 +383,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.3 }}
                                     >
-                                        Address is required
+                                        {ci("addressIsRequired")}
                                     </motion.p>
                                 )}
                             </motion.div>
@@ -410,11 +411,11 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
                                         >
                                             <LoadingSpinner size="sm" />
                                         </motion.div>
-                                        Creating Company...
+                                        {ci('loadingCompany')}
                                     </>
                                 ) : (
                                     <>
-                                        Next Step
+                                        {ci('nextButton')}
                                         <ChevronRight className="w-4 h-4" />
                                     </>
                                 )}

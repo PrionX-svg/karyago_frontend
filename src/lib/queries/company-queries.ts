@@ -2,6 +2,29 @@ import { useState, useCallback, useEffect } from "react";
 import { api } from "../api/api";
 
 const company = {
+    useGetCompanyByUserUuid: (userUuid: string) => {
+        const [isFetchingCompany, setIsFetchingCompany] = useState(false);
+
+        const fetchCompanyByUserUuid = useCallback(async () => {
+            setIsFetchingCompany(true);
+            if (!userUuid) {
+                return;
+            }
+            try {
+                return await api.getCompanyByUserUuid(userUuid);
+            } catch (error) {
+                return Promise.reject(error);
+            } finally {
+                setIsFetchingCompany(false);
+            }
+        }, [userUuid])
+
+        useEffect(() => {
+            fetchCompanyByUserUuid().catch((error) => console.error(error))
+        }, [fetchCompanyByUserUuid])
+
+        return { fetchCompanyByUserUuid, isFetchingCompany }
+    },
     useGetDivisions: (companyUuid: string) => {
         const [isFetchingDivisions, setIsFetchingDivisions] = useState(false);
 

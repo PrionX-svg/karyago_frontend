@@ -15,6 +15,7 @@ import { HelpFooter } from "../layout/help-footer"
 import { motion, AnimatePresence, easeOut } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
 import { decrypt } from "@/lib/encrypt"
+import { useTranslations } from "next-intl"
 interface BranchLocationsProps {
     onNext: () => void
 }
@@ -26,6 +27,9 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
     const [resolvedCompanyUuid, setResolvedCompanyUuid] = useState<string | null>(null)
     const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
     const companyLocalStorage = sessionStorage.getItem("meta")
+    const ap = useTranslations("api")
+    const br = useTranslations("onboarding")
+    const co = useTranslations("common")
 
     const [newBranch, setNewBranch] = useState<BranchPayload>({
         company_uuid: companyUuid,
@@ -60,19 +64,19 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
             for (const branch of branches) {
                 const response = await postAPI(branch, "/branches/create")
                 if (response.status !== 201) {
-                    toast.error(`Gagal membuat cabang: ${branch.name}`)
+                    toast.error(ap("createBranchFailed", { branch: branch.name }))
                     return
                 }
                 addCompanyBranch(response.data.data)
             }
             if (branches.length > 0) {
-                toast.success("Semua cabang berhasil dibuat!")
+                toast.success(ap("createBranchSuccess"))
             }
             setTimeout(() => {
                 onNext()
             }, 1000)
         } catch {
-            toast.error("Terjadi kesalahan saat membuat cabang. Silakan coba lagi.")
+            toast.error(ap('somethingWentWrong'))
         } finally {
             setIsLoading(false)
         }
@@ -161,18 +165,18 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                             <MapPin className="h-5 w-5 text-orange-600" />
                                         </motion.div>
                                         <div>
-                                            <CardTitle className="text-lg">Branch Setup</CardTitle>
-                                            <CardDescription>Step 2 of 4</CardDescription>
+                                            <CardTitle className="text-lg">{br('branchSetup')}</CardTitle>
+                                            <CardDescription>{br('step2of4')}</CardDescription>
                                         </div>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <p className="text-sm text-gray-600 leading-relaxed">
-                                        Add multiple locations if your company operates from different offices or branches.
+                                        {br('progressTip1')}
                                     </p>
                                     <div className="text-sm text-blue-700 bg-blue-50 p-3 rounded-lg border border-blue-200">
                                         <Info className="h-4 w-4 inline mr-2" />
-                                        This step is optional – skip if you have only one location
+                                        {br('progressTip2')}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -186,22 +190,22 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                         <motion.div whileHover={{ rotate: 15 }} transition={{ duration: 0.2 }}>
                                             <Building className="h-5 w-5 text-amber-600" />
                                         </motion.div>
-                                        <CardTitle className="text-lg text-amber-800">Quick Guide</CardTitle>
+                                        <CardTitle className="text-lg text-amber-800">{br('quickGuide')}</CardTitle>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="space-y-3">
                                         <motion.div className="flex gap-3" whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
                                             <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0" />
-                                            <p className="text-sm text-amber-700">Each branch can have its own contact details</p>
+                                            <p className="text-sm text-amber-700">{br('guide1')}</p>
                                         </motion.div>
                                         <motion.div className="flex gap-3" whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
                                             <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0" />
-                                            <p className="text-sm text-amber-700">Employees can be assigned to specific branches</p>
+                                            <p className="text-sm text-amber-700">{br('guide2')}</p>
                                         </motion.div>
                                         <motion.div className="flex gap-3" whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
                                             <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0" />
-                                            <p className="text-sm text-amber-700">You can add more branches later</p>
+                                            <p className="text-sm text-amber-700">{br('guide3')}</p>
                                         </motion.div>
                                     </div>
                                 </CardContent>
@@ -220,9 +224,9 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                             >
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                     <div>
-                                        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">Branch Locations</h2>
+                                        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">{br('branchTitle')}</h2>
                                         <p className="text-sm sm:text-base text-gray-600">
-                                            Add multiple locations for your company. You can skip this if you only have one office.
+                                            {br('branchDescription')}
                                         </p>
                                     </div>
                                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -232,7 +236,7 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                             disabled={isLoading || showForm}
                                         >
                                             <Plus className="w-4 h-4 mr-1" />
-                                            Add Branch Location
+                                            {br('addBranchLocationButton')}
                                         </Button>
                                     </motion.div>
                                 </div>
@@ -262,9 +266,9 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                         >
                                             <MapPin className="w-full h-full" />
                                         </motion.div>
-                                        <h3 className="text-lg font-semibold text-gray-800 mb-2">No Branches Added</h3>
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-2">{br('noBranchAdded')}</h3>
                                         <p className="text-sm text-gray-600 mb-4">
-                                            Start by adding your first branch location to assign employees later.
+                                            {br('noBranchDescription')}
                                         </p>
                                     </motion.div>
                                 )}
@@ -280,7 +284,7 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                         exit="exit"
                                         className="bg-white rounded-xl border border-orange-200 p-6 mb-6 shadow-sm"
                                     >
-                                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Add New Branch</h3>
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-4">{br('newBranchTitle')}</h3>
                                         <div className="space-y-4">
                                             <motion.div
                                                 className="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -289,7 +293,7 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                                 transition={{ duration: 0.3, delay: 0.1 }}
                                             >
                                                 <div>
-                                                    <Label className="text-gray-700 font-medium mb-1">Branch Name *</Label>
+                                                    <Label className="text-gray-700 font-medium mb-1">{br('branchName')}</Label>
                                                     <Input
                                                         value={newBranch.name}
                                                         onChange={(e) => setNewBranch((prev) => ({ ...prev, name: e.target.value }))}
@@ -298,7 +302,7 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                                     />
                                                 </div>
                                                 <div>
-                                                    <Label className="text-gray-700 font-medium mb-1">Email *</Label>
+                                                    <Label className="text-gray-700 font-medium mb-1">{br('branchEmail')}</Label>
                                                     <Input
                                                         type="email"
                                                         value={newBranch.email}
@@ -313,7 +317,7 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ duration: 0.3, delay: 0.2 }}
                                             >
-                                                <Label className="text-gray-700 font-medium mb-1">Phone *</Label>
+                                                <Label className="text-gray-700 font-medium mb-1"></Label>
                                                 <Input
                                                     value={newBranch.phone}
                                                     onChange={(e) => setNewBranch((prev) => ({ ...prev, phone: e.target.value }))}
@@ -326,7 +330,7 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ duration: 0.3, delay: 0.3 }}
                                             >
-                                                <Label className="text-gray-700 font-medium mb-1">Address *</Label>
+                                                <Label className="text-gray-700 font-medium mb-1">{br('branchAddress')}</Label>
                                                 <Textarea
                                                     value={newBranch.address}
                                                     onChange={(e) => setNewBranch((prev) => ({ ...prev, address: e.target.value }))}
@@ -342,12 +346,12 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                             >
                                                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                                     <Button onClick={handleAddBranch} className="bg-orange-400 hover:bg-orange-500">
-                                                        Add Branch
+                                                        {br('addBranchButton')}
                                                     </Button>
                                                 </motion.div>
                                                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                                     <Button variant="outline" onClick={() => setShowForm(false)}>
-                                                        Cancel
+                                                        {co('cancel')}
                                                     </Button>
                                                 </motion.div>
                                             </motion.div>
@@ -427,12 +431,12 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                             <>
                                                 {branches.length === 0 ? (
                                                     <>
-                                                        Skip This Step
+                                                        {br('skipThisStep')}
                                                         <ChevronRight className="w-4 h-4" />
                                                     </>
                                                 ) : (
                                                     <>
-                                                        Next Step
+                                                        {br('nextButton')}
                                                         <ChevronRight className="w-4 h-4" />
                                                     </>
                                                 )}

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Building2, Users, Briefcase, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTranslations } from "next-intl"
 
 interface WelcomeScreenProps {
     onStart: () => void
@@ -11,6 +12,7 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
     const [showContent, setShowContent] = useState(false)
+    const we = useTranslations('onboarding')
 
     useEffect(() => {
         const timer = setTimeout(() => setShowContent(true), 500)
@@ -42,7 +44,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
                     transition={{ duration: 0.6, delay: 0.6 }}
                     className="text-4xl lg:text-5xl font-bold text-gray-800 mb-4"
                 >
-                    Welcome to Our Platform
+                    {we('welcomeScreenTitle')}
                 </motion.h1>
 
                 <motion.p
@@ -51,8 +53,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
                     transition={{ duration: 0.6, delay: 0.8 }}
                     className="text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto"
                 >
-                    Before you can start using our HRIS system, you need to set up your company profile. This quick setup process
-                    will only take a few minutes and will help us customize the experience for your organization.
+                    {we('welcomeScreenDescription')}
                 </motion.p>
 
                 <motion.div
@@ -63,18 +64,18 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
                 >
                     <div className="flex flex-col items-center p-6 bg-white rounded-lg backdrop-blur-sm">
                         <Building2 className="w-8 h-8 text-orange-400 mb-3" />
-                        <h3 className="font-semibold text-gray-800 mb-2">Company Setup</h3>
-                        <p className="text-sm text-gray-600 text-center">Create your company profile and branch locations</p>
+                        <h3 className="font-semibold text-gray-800 mb-2">{we('step1')}</h3>
+                        <p className="text-sm text-gray-600 text-center">{we('step1Description')}</p>
                     </div>
                     <div className="flex flex-col items-center p-6 bg-white rounded-lg backdrop-blur-sm">
                         <Briefcase className="w-8 h-8 text-orange-400 mb-3" />
-                        <h3 className="font-semibold text-gray-800 mb-2">Organization Structure</h3>
-                        <p className="text-sm text-gray-600 text-center">Set up divisions and departments</p>
+                        <h3 className="font-semibold text-gray-800 mb-2">{we('step2')}</h3>
+                        <p className="text-sm text-gray-600 text-center">{we('step2Description')}</p>
                     </div>
                     <div className="flex flex-col items-center p-6 bg-white rounded-lg backdrop-blur-sm">
                         <Users className="w-8 h-8 text-orange-400 mb-3" />
-                        <h3 className="font-semibold text-gray-800 mb-2">Team Management</h3>
-                        <p className="text-sm text-gray-600 text-center">Add and manage your employees</p>
+                        <h3 className="font-semibold text-gray-800 mb-2">{we('step3')}</h3>
+                        <p className="text-sm text-gray-600 text-center">{we('step3Description')}</p>
                     </div>
                 </motion.div>
 
@@ -96,7 +97,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
                         size="lg"
                         className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-300"
                     >
-                        Start Company Setup
+                        {we('startSetup')}
                         <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
                 </motion.div>

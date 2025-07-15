@@ -15,6 +15,17 @@ export const api = {
             return Promise.reject(error)
         }
     },
+    async getCompanyByUserUuid(userUuid: string) {
+        try {
+            // const setCompany = useCompanyStore.getState().setCompany;
+            const response = await getAPI(`${API_URL.getCompanyByUserUuid}${userUuid}`);
+            console.log("Company response:", response);
+            // const formattedCompanyData = responseFormatter.formatGetCompanyByUserUuid(response)
+            // setCompany(formattedCompanyData);
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
     async getDivisionsByCompanyUuid(companyUuid: string) {
         try {
             const setDivisions = useCompanyStore.getState().setDivision;
