@@ -631,52 +631,63 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
-
                                     {/* Sub-divisions List */}
                                     <AnimatePresence>
                                         {subDivisions.length > 0 ? (
-                                            <motion.div
-                                                className="space-y-4"
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                transition={{ duration: 0.5 }}
-                                            >
-                                                {subDivisions.map((subDivision, index) => (
-                                                    <motion.div
-                                                        key={subDivision.uuid}
-                                                        variants={divisionItemVariants}
-                                                        initial="hidden"
-                                                        animate="visible"
-                                                        exit="exit"
-                                                        transition={{ delay: index * 0.1 }}
-                                                        whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
-                                                        className="bg-white rounded-lg border border-gray-200 p-4"
-                                                    >
-                                                        <div className="flex items-center justify-between">
-                                                            <div className="flex-1">
-                                                                <div className="flex items-center gap-2 mb-1">
-                                                                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                                                                        {getDivisionName(subDivision.department_group_uuid)}
-                                                                    </span>
-                                                                    <ChevronRight className="w-3 h-3 text-gray-400" />
-                                                                </div>
-                                                                <h4 className="font-semibold text-gray-900">{subDivision.name}</h4>
-                                                                {subDivision.desc && <p className="text-sm text-gray-600 mt-1">{subDivision.desc}</p>}
-                                                            </div>
-                                                            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                    onClick={() => handleRemoveSubDivision(subDivision.uuid || "")}
-                                                                    className="text-red-500 hover:text-red-700"
+                                            <>
+                                                {(() => {
+                                                    const shouldScroll = subDivisions.length > 4;
+                                                    const scrollClasses = shouldScroll
+                                                        ? "max-h-[32rem] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-orange-200 scrollbar-track-orange-50 scroll-smooth"
+                                                        : "";
+                                                    return (
+                                                        <motion.div
+                                                            className={`space-y-4 ${scrollClasses}`}
+                                                            initial={{ opacity: 0 }}
+                                                            animate={{ opacity: 1 }}
+                                                            transition={{ duration: 0.5 }}
+                                                        >
+                                                            {subDivisions.map((subDivision, index) => (
+                                                                <motion.div
+                                                                    key={subDivision.uuid}
+                                                                    variants={divisionItemVariants}
+                                                                    initial="hidden"
+                                                                    animate="visible"
+                                                                    exit="exit"
+                                                                    transition={{ delay: index * 0.1 }}
+                                                                    whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                                                                    className="bg-white rounded-lg border border-gray-200 p-4"
                                                                 >
-                                                                    <X className="w-4 h-4" />
-                                                                </Button>
-                                                            </motion.div>
-                                                        </div>
-                                                    </motion.div>
-                                                ))}
-                                            </motion.div>
+                                                                    <div className="flex items-center justify-between">
+                                                                        <div className="flex-1">
+                                                                            <div className="flex items-center gap-2 mb-1">
+                                                                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                                                                    {getDivisionName(subDivision.department_group_uuid)}
+                                                                                </span>
+                                                                                <ChevronRight className="w-3 h-3 text-gray-400" />
+                                                                            </div>
+                                                                            <h4 className="font-semibold text-gray-900">{subDivision.name}</h4>
+                                                                            {subDivision.desc && (
+                                                                                <p className="text-sm text-gray-600 mt-1">{subDivision.desc}</p>
+                                                                            )}
+                                                                        </div>
+                                                                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="sm"
+                                                                                onClick={() => handleRemoveSubDivision(subDivision.uuid || "")}
+                                                                                className="text-red-500 hover:text-red-700"
+                                                                            >
+                                                                                <X className="w-4 h-4" />
+                                                                            </Button>
+                                                                        </motion.div>
+                                                                    </div>
+                                                                </motion.div>
+                                                            ))}
+                                                        </motion.div>
+                                                    );
+                                                })()}
+                                            </>
                                         ) : (
                                             divisions.length > 0 &&
                                             !showSubDivisionForm && (
@@ -708,7 +719,6 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                     </AnimatePresence>
                                 </TabsContent>
                             </Tabs>
-
                             {/* Navigation */}
                             <motion.div
                                 className="flex justify-between items-center mt-12"

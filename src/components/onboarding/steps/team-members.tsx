@@ -7,6 +7,9 @@ import { HelpFooter } from "../layout/help-footer"
 import { motion } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
 import Link from "next/link"
+import { useEffect, useState } from "react"
+import { decrypt } from "@/lib/encrypt"
+import company from "@/lib/queries/company-queries"
 
 interface TeamMembersProps {
     finishOnboarding: () => void
@@ -15,6 +18,20 @@ interface TeamMembersProps {
 export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
     const divisions = useCompanyStore((state) => state.division)
     const subDivision = useCompanyStore((state) => state.subDivision)
+    const [resolvedCompanyUuid, setResolvedCompanyUuid] = useState("")
+    const storedCompanyUuid = sessionStorage.getItem("meta")
+
+    useEffect(() => {
+        decrypt(storedCompanyUuid?? "").then((decryptedUuid) => {
+            setResolvedCompanyUuid(decryptedUuid)
+        }).catch((error) => {
+            console.error("Decryption failed:", error)
+            setResolvedCompanyUuid("")
+        })
+    }, [storedCompanyUuid])
+
+    company.useGetDivisions(resolvedCompanyUuid ?? "")
+    company.useGetSubDivisions(resolvedCompanyUuid ?? "")
 
     const containerVariants = {
         hidden: { opacity: 0, y: 30 },

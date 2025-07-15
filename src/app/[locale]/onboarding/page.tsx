@@ -15,9 +15,8 @@ export default function OnboardingPage() {
     const [currentStep, setCurrentStep] = useState(1)
 
     const router = useRouter()
-
     const { isFetchingGetMe } = user.useGetUMe()
-
+    
     const handleCompanyNext = () => {
         setCurrentStep(2)
     }
@@ -36,6 +35,7 @@ export default function OnboardingPage() {
 
     const finishOnboarding = () => {
         sessionStorage.removeItem("onboardingStep")
+        sessionStorage.removeItem("meta")
         router.push("/dashboard")
     }
 
