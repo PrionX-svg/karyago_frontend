@@ -26,7 +26,7 @@ export type DivisionType = {
     company_uuid: string;
     name: string;
     desc: string;
-    responsible_uuid?: string;
+    responsible_uuid?: string | null;
 }
 
 export type SubDivisionType = {

@@ -2,6 +2,7 @@ import { useUserStore } from "@/stores/user-store"
 import getAPI from "./getAPI";
 import { API_URL } from "./constants";
 import { responseFormatter } from "./responseFormatter";
+import { useCompanyStore } from "@/stores/company-store";
 
 export const api = {
     async getMe() {
@@ -13,5 +14,27 @@ export const api = {
         } catch (error) {
             return Promise.reject(error)
         }
-    }
+    },
+    async getDivisionsByCompanyUuid(companyUuid: string) {
+        try {
+            const setDivisions = useCompanyStore.getState().setDivision;
+            const query = companyUuid ? `?company_uuid=${companyUuid}&limit=50` : "?limit=50";
+            const response = await getAPI(`${API_URL.getDivisionsByCompanyUuid}${query}`);
+            const formattedDivisions = responseFormatter.formatGetDivisionsByCompanyUuid(response)
+            setDivisions(formattedDivisions);
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
+    async getSubDivisionsByCompanyUuid(companyUuid: string){
+        try {
+            const setSubDivisions = useCompanyStore.getState().setSubDivision;
+            const query = companyUuid ? `?company_uuid=${companyUuid}&limit=50` : "?limit=50";
+            const response = await getAPI(`${API_URL.getSubDivisionsByCompanyUuid}${query}`);
+            const formattedSubDivisions = responseFormatter.formatGetSubDivisionsByCompanyUuid(response)
+            setSubDivisions(formattedSubDivisions);
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    } 
 }

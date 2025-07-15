@@ -17,6 +17,7 @@ import { motion, AnimatePresence, easeOut } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
 import { decrypt } from "@/lib/encrypt"
 import deleteAPI from "@/lib/api/deleteAPI"
+import company from "@/lib/queries/company-queries"
 
 interface OrganizationalStructureProps {
     onNext: (divisions: DivisionPayload[], subDivisions: SubDivisionPayload[]) => void
@@ -38,6 +39,8 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
     const addSubDivision = useCompanyStore((state) => state.addSubDivision)
     const removeDivision = useCompanyStore((state) => state.removeDivision)
     const removeSubDivision = useCompanyStore((state) => state.removeSubDivision)
+    company.useGetDivisions(resolvedCompanyUuid ?? "")
+    company.useGetSubDivisions(resolvedCompanyUuid ?? "")
 
     const [newDivision, setNewDivision] = useState<DivisionPayload>({
         company_uuid: "",
@@ -117,9 +120,26 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
         }
     }
 
-    const handleRemoveSubDivision = (id: string) => {
-        removeSubDivision(id)
-        toast.success("Sub-division removed!")
+    const handleRemoveSubDivision = async (id: string) => {
+        try {
+            setIsLoading(true)
+            if (!id) {
+                toast.error("Invalid sub-division ID")
+                return
+            }
+            const response = await deleteAPI({}, `/departments/delete/${id}`)
+            if (response.status === 200) {
+                removeSubDivision(id)
+                setNewSubDivision({ department_group_uuid: "", name: "", desc: "" })
+                toast.success("Sub-division removed successfully!")
+            } else {
+                toast.error("Failed to remove sub-division")
+            }
+        } catch {
+            toast.error("An unexpected error occurred")
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     const getDivisionName = (divisionId: string) => {
@@ -159,13 +179,10 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
         }
     }, [resolvedCompanyUuid])
 
-
     useEffect(() => {
         console.log("Divisions:", divisions)
-        console.log("newDivision:", newDivision)
         console.log("SubDivisions:", subDivisions)
-        console.log("newSubDivisions:", newSubDivision)
-    }, [divisions, subDivisions, newDivision, newSubDivision])
+    }, [divisions, subDivisions])
 
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -421,7 +438,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                     <AnimatePresence>
                                         {divisions.length > 0 ? (
                                             <motion.div
-                                                className="space-y-4"
+                                                className={`space-y-4 ${divisions.length > 4 ? "max-h-[32rem] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-orange-200 scrollbar-track-orange-50" : ""}`}
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ duration: 0.5 }}
@@ -434,8 +451,8 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                                         animate="visible"
                                                         exit="exit"
                                                         transition={{ delay: index * 0.1 }}
-                                                        whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
-                                                        className="bg-white rounded-lg border border-orange-200 p-4"
+                                                        whileHover={{ scale: 1, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                                                        className="bg-white rounded-lg border border-orange-200 p-6"
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex-1">

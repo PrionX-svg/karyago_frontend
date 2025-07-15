@@ -52,6 +52,20 @@ export interface CreateDivisionResponse {
     status: string;
 }
 
+export interface getDivisionsByCompanyUuidResponse {
+    data: Array<{
+        uuid: string;
+        name: string;
+        desc: string;
+        company_uuid: string;
+        responsible_uuid: string | null;
+    }>;
+    page: number;
+    limit: number;
+    total: number;
+    filtered: number;
+}
+
 export interface SubDivisionPayload {
     department_group_uuid: string;
     name: string;
@@ -67,4 +81,17 @@ export interface CreateSubDivisionResponse {
     };
     message: string;
     status: string;
+}
+
+export interface getSubDivisionsByCompanyUuidResponse {
+    data: Array<{
+        uuid: string;
+        department_group_uuid: string;
+        name: string;
+        desc: string;
+    }>;
+    page: number;
+    limit: number;
+    total: number;
+    filtered: number;
 }
