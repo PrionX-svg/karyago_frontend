@@ -17,5 +17,5 @@ export const responseFormatter = {
                 name: response.data.branch.name
             }
         }
-    }
+    },
 }

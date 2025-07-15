@@ -15,6 +15,8 @@ import postAPI from "@/lib/api/postAPI"
 import { HelpFooter } from "../layout/help-footer"
 import { motion, AnimatePresence, easeOut } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
+import { decrypt } from "@/lib/encrypt"
+import deleteAPI from "@/lib/api/deleteAPI"
 
 interface OrganizationalStructureProps {
     onNext: (divisions: DivisionPayload[], subDivisions: SubDivisionPayload[]) => void
@@ -26,7 +28,9 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
     const [isLoading, setIsLoading] = useState(false)
     const [showSkipDialog, setShowSkipDialog] = useState(false)
     const [activeTab, setActiveTab] = useState("divisions")
+    const [resolvedCompanyUuid, setResolvedCompanyUuid] = useState<string | null>(null)
 
+    const companyLocalStorage = sessionStorage.getItem("meta")
     const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
     const divisions = useCompanyStore((state) => state.division)
     const subDivisions = useCompanyStore((state) => state.subDivision)
@@ -36,15 +40,13 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
     const removeSubDivision = useCompanyStore((state) => state.removeSubDivision)
 
     const [newDivision, setNewDivision] = useState<DivisionPayload>({
-        id: "",
-        company_uuid: companyUuid,
+        company_uuid: "",
         name: "",
         desc: "",
     })
 
     const [newSubDivision, setNewSubDivision] = useState<SubDivisionPayload>({
-        id: "",
-        division_uuid: "",
+        department_group_uuid: "",
         name: "",
         desc: "",
     })
@@ -57,7 +59,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                 if (response.status === 201) {
                     const createdDivision = response.data.data
                     addDivision(createdDivision)
-                    setNewDivision({ id: "", company_uuid: companyUuid, name: "", desc: "" })
+                    setNewDivision({ company_uuid: resolvedCompanyUuid ?? "", name: "", desc: "" })
                     setShowDivisionForm(false)
                     toast.success("Division created successfully!")
                 } else {
@@ -72,14 +74,14 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
     }
 
     const handleAddSubDivision = async () => {
-        if (newSubDivision.name.trim() && newSubDivision.division_uuid) {
+        if (newSubDivision.name.trim() && newSubDivision.department_group_uuid) {
             try {
                 setIsLoading(true)
-                const response = await postAPI(newSubDivision, "/department/create")
+                const response = await postAPI(newSubDivision, "/departments/create")
                 if (response.status === 201) {
                     const createdSubDivision = response.data.data
                     addSubDivision(createdSubDivision)
-                    setNewSubDivision({ id: "", division_uuid: "", name: "", desc: "" })
+                    setNewSubDivision({ department_group_uuid: "", name: "", desc: "" })
                     setShowSubDivisionForm(false)
                     toast.success("Sub-division created successfully!")
                 } else {
@@ -93,9 +95,26 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
         }
     }
 
-    const handleRemoveDivision = (id: string) => {
-        removeDivision(id)
-        toast.success("Division and its sub-divisions removed!")
+    const handleRemoveDivision = async (id: string) => {
+        try {
+            setIsLoading(true)
+            if (!id) {
+                toast.error("Invalid division ID")
+                return
+            }
+            const response = await deleteAPI({}, `/department-groups/delete/${id}`)
+            if (response.status === 200) {
+                removeDivision(id)
+                setNewDivision({ company_uuid: resolvedCompanyUuid ?? "", name: "", desc: "" })
+                toast.success("Division removed successfully!")
+            } else {
+                toast.error("Failed to remove division")
+            }
+        } catch {
+            toast.error("An unexpected error occurred")
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     const handleRemoveSubDivision = (id: string) => {
@@ -108,7 +127,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
     }
 
     const getSubDivisionsByDivision = (divisionId: string) => {
-        return subDivisions.filter((sub) => sub.division_uuid === divisionId)
+        return subDivisions.filter((sub) => sub.department_group_uuid === divisionId)
     }
 
     const handleNext = async () => {
@@ -116,21 +135,37 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
             setShowSkipDialog(true)
             return
         }
-
         onNext(divisions, subDivisions)
     }
 
-
     useEffect(() => {
         if (companyUuid) {
-            setNewDivision((prev) => ({ ...prev, company_uuid: companyUuid }))
+            setResolvedCompanyUuid(companyUuid)
+        } else if (companyLocalStorage) {
+            decrypt(companyLocalStorage)
+                .then((decryptedUuid) => {
+                    setResolvedCompanyUuid(decryptedUuid)
+                })
+                .catch((err) => {
+                    console.error("❌ Failed to decrypt company UUID:", err)
+                    sessionStorage.removeItem("meta")
+                })
         }
-    }, [companyUuid])
+    }, [companyUuid, companyLocalStorage])
+
+    useEffect(() => {
+        if (resolvedCompanyUuid) {
+            setNewDivision((prev) => ({ ...prev, company_uuid: resolvedCompanyUuid }))
+        }
+    }, [resolvedCompanyUuid])
+
 
     useEffect(() => {
         console.log("Divisions:", divisions)
+        console.log("newDivision:", newDivision)
         console.log("SubDivisions:", subDivisions)
-    }, [divisions, subDivisions])
+        console.log("newSubDivisions:", newSubDivision)
+    }, [divisions, subDivisions, newDivision, newSubDivision])
 
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -417,7 +452,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="sm"
-                                                                    onClick={() => handleRemoveDivision(division.uuid || "")}
+                                                                    onClick={() => handleRemoveDivision(division.uuid)}
                                                                     className="text-red-500 hover:text-red-700"
                                                                 >
                                                                     <X className="w-4 h-4" />
@@ -515,9 +550,9 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                                     >
                                                         <Label className="text-gray-700 font-medium mb-2">Parent Division *</Label>
                                                         <Select
-                                                            value={newSubDivision.division_uuid}
+                                                            value={newSubDivision.department_group_uuid}
                                                             onValueChange={(value) =>
-                                                                setNewSubDivision((prev) => ({ ...prev, division_uuid: value }))
+                                                                setNewSubDivision((prev) => ({ ...prev, department_group_uuid: value }))
                                                             }
                                                         >
                                                             <SelectTrigger className="border-orange-200 focus:border-orange-400">
@@ -525,7 +560,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 {divisions.map((division) => (
-                                                                    <SelectItem key={division.name} value={division.name}>
+                                                                    <SelectItem key={division.name} value={division.uuid}>
                                                                         {division.name}
                                                                     </SelectItem>
                                                                 ))}
@@ -604,7 +639,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                                             <div className="flex-1">
                                                                 <div className="flex items-center gap-2 mb-1">
                                                                     <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                                                                        {getDivisionName(subDivision.division_uuid)}
+                                                                        {getDivisionName(subDivision.department_group_uuid)}
                                                                     </span>
                                                                     <ChevronRight className="w-3 h-3 text-gray-400" />
                                                                 </div>

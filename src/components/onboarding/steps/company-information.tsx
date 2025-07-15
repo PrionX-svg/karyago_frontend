@@ -20,6 +20,7 @@ import { useUserStore } from "@/stores/user-store"
 import { useTranslations } from "next-intl"
 import { motion } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
+import { encrypt } from "@/lib/encrypt"
 
 interface CompanyInformationProps {
     onNext: () => void
@@ -52,6 +53,9 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
             if (response.status === 201) {
                 toast.success(ap("companyCreated"))
                 setCompanyStore([response.data.data])
+
+                const encryptedUuid = await encrypt(response.data.data.uuid)
+                sessionStorage.setItem("meta", encryptedUuid)
                 setTimeout(() => {
                     onNext();
                 }, 1000)

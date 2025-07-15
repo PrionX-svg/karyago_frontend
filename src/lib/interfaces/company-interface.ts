@@ -33,16 +33,38 @@ export interface BranchPayload {
     phone: string
 }
 
-export type DivisionPayload = {
+export interface DivisionPayload {
     id?: string;
     name: string
     company_uuid: string
     desc: string
 }
 
-export type SubDivisionPayload = {
-    id?: string
-    division_uuid: string
-    name: string
-    desc: string
+export interface CreateDivisionResponse {
+    data: {
+        uuid: string;
+        name: string;
+        desc: string;
+        company_uuid: string;
+        responsible_uuid: string | null;
+    };
+    message: string;
+    status: string;
+}
+
+export interface SubDivisionPayload {
+    department_group_uuid: string;
+    name: string;
+    desc: string;
+}
+
+export interface CreateSubDivisionResponse {
+    data: {
+        uuid: string;
+        department_group_uuid: string;
+        name: string;
+        description: string;
+    };
+    message: string;
+    status: string;
 }

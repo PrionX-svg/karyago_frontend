@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { HelpFooter } from "../layout/help-footer"
 import { motion } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
+import Link from "next/link"
 
 interface TeamMembersProps {
     finishOnboarding: () => void
@@ -126,10 +127,12 @@ export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
                                                     </p>
                                                 </div>
                                                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                                    <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
-                                                        <Plus className="h-4 w-4 mr-2" />
-                                                        Add Employee Now
-                                                    </Button>
+                                                    <Link href="/onboarding/add-employee">
+                                                        <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
+                                                            <Plus className="h-4 w-4 mr-2" />
+                                                            Add Employee Now
+                                                        </Button>
+                                                    </Link>
                                                 </motion.div>
                                             </CardContent>
                                         </Card>

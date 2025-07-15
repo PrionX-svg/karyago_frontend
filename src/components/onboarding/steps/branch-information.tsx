@@ -14,7 +14,7 @@ import postAPI from "@/lib/api/postAPI"
 import { HelpFooter } from "../layout/help-footer"
 import { motion, AnimatePresence, easeOut } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
-
+import { decrypt } from "@/lib/encrypt"
 interface BranchLocationsProps {
     onNext: () => void
 }
@@ -23,7 +23,9 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
     const [branches, setBranches] = useState<BranchPayload[]>([])
     const [showForm, setShowForm] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [resolvedCompanyUuid, setResolvedCompanyUuid] = useState<string | null>(null)
     const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
+    const companyLocalStorage = sessionStorage.getItem("meta")
 
     const [newBranch, setNewBranch] = useState<BranchPayload>({
         company_uuid: companyUuid,
@@ -35,9 +37,9 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
 
     const handleAddBranch = () => {
         if (newBranch.name.trim()) {
-            setBranches((prev) => [...prev, { ...newBranch }])
+            setBranches((prev) => [...prev, { ...newBranch, company_uuid: resolvedCompanyUuid ?? "" }])
             setNewBranch({
-                company_uuid: companyUuid,
+                company_uuid: resolvedCompanyUuid ?? "",
                 name: "",
                 address: "",
                 email: "",
@@ -78,9 +80,17 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
 
     useEffect(() => {
         if (companyUuid) {
-            setNewBranch((prev) => ({ ...prev, company_uuid: companyUuid }))
+            setResolvedCompanyUuid(companyUuid)
+        } else if (companyLocalStorage) {
+            decrypt(companyLocalStorage)
+                .then((uuid) => setResolvedCompanyUuid(uuid))
+                .catch((err) => {
+                    console.error("Failed to decrypt UUID:", err)
+                    sessionStorage.removeItem("meta")
+                })
         }
-    }, [companyUuid])
+    }, [companyUuid, companyLocalStorage])
+
 
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },

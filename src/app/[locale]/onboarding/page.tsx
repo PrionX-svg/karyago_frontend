@@ -14,7 +14,6 @@ export default function OnboardingPage() {
     const [showWelcome, setShowWelcome] = useState(true)
     const [currentStep, setCurrentStep] = useState(1)
 
-
     const router = useRouter()
 
     const { isFetchingGetMe } = user.useGetUMe()
@@ -36,13 +35,13 @@ export default function OnboardingPage() {
     }
 
     const finishOnboarding = () => {
-        localStorage.removeItem("onboardingStep")
+        sessionStorage.removeItem("onboardingStep")
         router.push("/dashboard")
     }
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const savedStep = localStorage.getItem("onboardingStep")
+            const savedStep = sessionStorage.getItem("onboardingStep")
             if (savedStep) {
                 setCurrentStep(parseInt(savedStep))
                 setShowWelcome(parseInt(savedStep) === 1)
@@ -52,7 +51,7 @@ export default function OnboardingPage() {
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            localStorage.setItem("onboardingStep", String(currentStep))
+            sessionStorage.setItem("onboardingStep", String(currentStep))
             if (currentStep > 1) {
                 setShowWelcome(false)
             }

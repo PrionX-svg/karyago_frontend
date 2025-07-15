@@ -31,7 +31,7 @@ export type DivisionType = {
 
 export type SubDivisionType = {
     uuid: string;
-    division_uuid: string;
+    department_group_uuid: string;
     name: string;
     desc: string;
 }
