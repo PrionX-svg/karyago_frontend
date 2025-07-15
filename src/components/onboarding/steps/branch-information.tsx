@@ -293,23 +293,30 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                                 transition={{ duration: 0.3, delay: 0.1 }}
                                             >
                                                 <div>
-                                                    <Label className="text-gray-700 font-medium mb-1">{br('branchName')}</Label>
+                                                    <Label className="text-gray-700 font-medium mb-1">{br('branchName')} *</Label>
                                                     <Input
                                                         value={newBranch.name}
                                                         onChange={(e) => setNewBranch((prev) => ({ ...prev, name: e.target.value }))}
                                                         placeholder="Jakarta Branch"
                                                         className="h-10 border-orange-200 focus:border-orange-400"
+                                                        required
                                                     />
                                                 </div>
                                                 <div>
-                                                    <Label className="text-gray-700 font-medium mb-1">{br('branchEmail')}</Label>
+                                                    <Label className="text-gray-700 font-medium mb-1">{br('branchEmail')} *</Label>
                                                     <Input
                                                         type="email"
                                                         value={newBranch.email}
                                                         onChange={(e) => setNewBranch((prev) => ({ ...prev, email: e.target.value }))}
                                                         placeholder="jakarta@company.com"
-                                                        className="h-10 border-orange-200 focus:border-orange-400"
+                                                        className={`h-10 ${newBranch.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newBranch.email) 
+                                                            ? 'border-red-500 focus:border-red-500' 
+                                                            : 'border-orange-200 focus:border-orange-400'}`}
+                                                        required
                                                     />
+                                                    {newBranch.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newBranch.email) && (
+                                                        <p className="text-red-500 text-sm mt-1">{br('emailInvalid')}</p>
+                                                    )}
                                                 </div>
                                             </motion.div>
                                             <motion.div
@@ -317,12 +324,13 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ duration: 0.3, delay: 0.2 }}
                                             >
-                                                <Label className="text-gray-700 font-medium mb-1"></Label>
+                                                <Label className="text-gray-700 font-medium mb-1">{br('branchPhone')} *</Label>
                                                 <Input
                                                     value={newBranch.phone}
                                                     onChange={(e) => setNewBranch((prev) => ({ ...prev, phone: e.target.value }))}
                                                     placeholder="021-12345678"
                                                     className="h-10 border-orange-200 focus:border-orange-400"
+                                                    required
                                                 />
                                             </motion.div>
                                             <motion.div
@@ -330,12 +338,13 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ duration: 0.3, delay: 0.3 }}
                                             >
-                                                <Label className="text-gray-700 font-medium mb-1">{br('branchAddress')}</Label>
+                                                <Label className="text-gray-700 font-medium mb-1">{br('branchAddress')} *</Label>
                                                 <Textarea
                                                     value={newBranch.address}
                                                     onChange={(e) => setNewBranch((prev) => ({ ...prev, address: e.target.value }))}
                                                     placeholder="Complete branch address"
                                                     className="resize-none min-h-[80px] border-orange-200 focus:border-orange-400"
+                                                    required
                                                 />
                                             </motion.div>
                                             <motion.div
@@ -345,7 +354,11 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                                 transition={{ duration: 0.3, delay: 0.4 }}
                                             >
                                                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                                    <Button onClick={handleAddBranch} className="bg-orange-400 hover:bg-orange-500">
+                                                    <Button 
+                                                        onClick={handleAddBranch} 
+                                                        className="bg-orange-400 hover:bg-orange-500"
+                                                        disabled={!newBranch.name.trim() || !newBranch.email.trim() || !newBranch.phone.trim() || !newBranch.address.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newBranch.email)}
+                                                    >
                                                         {br('addBranchButton')}
                                                     </Button>
                                                 </motion.div>
