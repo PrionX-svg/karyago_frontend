@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Building2, Users, Briefcase, ArrowRight } from "lucide-react"
+import { Building2, Users, Briefcase, ArrowRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTranslations } from "next-intl"
 
 interface WelcomeScreenProps {
     onStart: () => void
+    loadingState?: boolean
 }
 
-export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
+export function WelcomeScreen({ onStart, loadingState }: WelcomeScreenProps) {
     const [showContent, setShowContent] = useState(false)
     const we = useTranslations('onboarding')
 
@@ -95,10 +96,25 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
                     <Button
                         onClick={onStart}
                         size="lg"
-                        className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-300"
+                        disabled={loadingState}
+                        className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-orange-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {we('startSetup')}
-                        <ArrowRight className="w-5 h-5 ml-2" />
+                        {loadingState ? (
+                            <>
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                    className="mr-2"
+                                >
+                                    <Loader2 className="w-5 h-5" />
+                                </motion.div>
+                            </>
+                        ) : (
+                            <>
+                                {we('startSetup')}
+                                <ArrowRight className="w-5 h-5 ml-2" />
+                            </>
+                        )}
                     </Button>
                 </motion.div>
             </motion.div>

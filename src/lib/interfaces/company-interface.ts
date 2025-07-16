@@ -16,6 +16,44 @@ export interface CreateCompanyResponse {
     status: string;
 }
 
+export interface GetCompanyByUserUuidResponse {
+    data: {
+        uuid: string;
+        logo: string;
+        name: string;
+        address: string;
+        email: string;
+        phone: string;
+        user: {
+            uuid: string;
+            firstname: string;
+            lastname: string;
+        };
+    };
+    message: string;
+    status: string;
+}
+
+export interface GetBranchesByCompanyUuidResponse {
+    data: Array<{
+        uuid: string;
+        name: string;
+        address: string;
+        email: string;
+        phone: string;
+        company: {
+            uuid: string;
+            logo: string;
+            name: string;
+            address: string;
+            email: string;
+            phone: string;
+        };
+    }>;
+    message: string;
+    status: string;
+}
+
 export interface CompanyPayload {
     user_uuid: string
     name: string

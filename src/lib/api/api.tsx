@@ -3,6 +3,7 @@ import getAPI from "./getAPI";
 import { API_URL } from "./constants";
 import { responseFormatter } from "./responseFormatter";
 import { useCompanyStore } from "@/stores/company-store";
+import { useEmployeeStore } from "@/stores/employee-store";
 
 export const api = {
     async getMe() {
@@ -17,11 +18,20 @@ export const api = {
     },
     async getCompanyByUserUuid(userUuid: string) {
         try {
-            // const setCompany = useCompanyStore.getState().setCompany;
+            const setAddCompany = useCompanyStore.getState().setAddCompany;
             const response = await getAPI(`${API_URL.getCompanyByUserUuid}${userUuid}`);
-            console.log("Company response:", response);
-            // const formattedCompanyData = responseFormatter.formatGetCompanyByUserUuid(response)
-            // setCompany(formattedCompanyData);
+            const formattedCompanyData = responseFormatter.formatGetCompanyByUserUuid(response)
+            setAddCompany(formattedCompanyData);
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
+    async getBranchesByCompanyUuid(companyUuid: string) {
+        try {
+            const setBranches = useCompanyStore.getState().setCompanyBranch;
+            const response = await getAPI(`${API_URL.getBranchesByCompanyUuid}${companyUuid}`);
+            const formattedBranches = responseFormatter.formatGetBranchesByCompanyUuid(response)
+            setBranches(formattedBranches);
         } catch (error) {
             return Promise.reject(error)
         }
@@ -37,7 +47,7 @@ export const api = {
             return Promise.reject(error)
         }
     },
-    async getSubDivisionsByCompanyUuid(companyUuid: string){
+    async getSubDivisionsByCompanyUuid(companyUuid: string) {
         try {
             const setSubDivisions = useCompanyStore.getState().setSubDivision;
             const query = companyUuid ? `?company_uuid=${companyUuid}&limit=50` : "?limit=50";
@@ -47,5 +57,15 @@ export const api = {
         } catch (error) {
             return Promise.reject(error)
         }
-    } 
+    },
+    async getEmployeeByCompanyUuid(companyUuid: string) {
+        try{
+            const setEmployees = useEmployeeStore.getState().setEmployees;
+            const response = await getAPI(`${API_URL.getEmployeeByCompanyUuid}${companyUuid}`);
+            const formattedEmployees = responseFormatter.formatGetEmployeeByCompanyUuid(response)
+            setEmployees(formattedEmployees);
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    }
 }

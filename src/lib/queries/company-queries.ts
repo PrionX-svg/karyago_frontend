@@ -25,6 +25,29 @@ const company = {
 
         return { fetchCompanyByUserUuid, isFetchingCompany }
     },
+    useGetBranchesByCompanyUuid: (companyUuid: string) => {
+        const [isFetchingBranches, setIsFetchingBranches] = useState(false);
+
+        const fetchBranchesByCompanyUuid = useCallback(async () => {
+            setIsFetchingBranches(true);
+            if (!companyUuid) {
+                return;
+            }
+            try {
+                return await api.getBranchesByCompanyUuid(companyUuid);
+            } catch (error) {
+                return Promise.reject(error);
+            } finally {
+                setIsFetchingBranches(false);
+            }
+        }, [companyUuid])
+
+        useEffect(() => {
+            fetchBranchesByCompanyUuid().catch((error) => console.error(error))
+        }, [fetchBranchesByCompanyUuid])
+
+        return { fetchBranchesByCompanyUuid, isFetchingBranches }
+    },
     useGetDivisions: (companyUuid: string) => {
         const [isFetchingDivisions, setIsFetchingDivisions] = useState(false);
 

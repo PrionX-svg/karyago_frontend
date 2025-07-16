@@ -1,6 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import {
+    useEffect, useState
+} from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,16 +18,23 @@ import { motion, AnimatePresence, easeOut } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
 import { decrypt } from "@/lib/encrypt"
 import { useTranslations } from "next-intl"
+import deleteAPI from "@/lib/api/deleteAPI"
+import company from "@/lib/queries/company-queries"
+import BranchSetupSkeletonWithShimmer from "../loading/branch-loading"
 interface BranchLocationsProps {
     onNext: () => void
 }
 
 export function BranchLocations({ onNext }: BranchLocationsProps) {
-    const [branches, setBranches] = useState<BranchPayload[]>([])
     const [showForm, setShowForm] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [resolvedCompanyUuid, setResolvedCompanyUuid] = useState<string | null>(null)
+    const { isFetchingBranches } = company.useGetBranchesByCompanyUuid(resolvedCompanyUuid || "")
+
+    const addBranch = useCompanyStore((state) => state.addCompanyBranch)
     const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
+    const companyBranches = useCompanyStore.getState().companyBranch
+    const removeBranches = useCompanyStore((state) => state.removeCompanyBranch)
     const companyLocalStorage = sessionStorage.getItem("meta")
     const ap = useTranslations("api")
     const br = useTranslations("onboarding")
@@ -39,47 +48,66 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
         phone: "",
     })
 
-    const handleAddBranch = () => {
+    const handleAddBranch = async () => {
         if (newBranch.name.trim()) {
-            setBranches((prev) => [...prev, { ...newBranch, company_uuid: resolvedCompanyUuid ?? "" }])
-            setNewBranch({
-                company_uuid: resolvedCompanyUuid ?? "",
-                name: "",
-                address: "",
-                email: "",
-                phone: "",
-            })
-            setShowForm(false)
+            try {
+                const res = await postAPI(newBranch, "/branches/create")
+                if (res.status === 201) {
+                    const createdBranch = res.data.data
+                    addBranch(createdBranch)
+                    setNewBranch({
+                        company_uuid: resolvedCompanyUuid || companyUuid,
+                        name: "",
+                        address: "",
+                        email: "",
+                        phone: "",
+                    })
+                    toast.success(ap("createBranchSuccess"))
+                    setShowForm(false)
+                } else {
+                    toast.error(ap('createBranchFailed', { branch: newBranch.name }))
+                }
+            } catch {
+                toast.error(ap('somethingWentWrong'))
+            } finally {
+                setIsLoading(false)
+            }
         }
     }
 
-    const handleRemoveBranch = (index: number) => {
-        setBranches((prev) => prev.filter((_, i) => i !== index))
-    }
-
-    const handleNext = async () => {
-        setIsLoading(true)
+    const handleRemoveBranch = async (index: string) => {
         try {
-            const addCompanyBranch = useCompanyStore.getState().addCompanyBranch
-            for (const branch of branches) {
-                const response = await postAPI(branch, "/branches/create")
-                if (response.status !== 201) {
-                    toast.error(ap("createBranchFailed", { branch: branch.name }))
-                    return
-                }
-                addCompanyBranch(response.data.data)
+            setIsLoading(true)
+            if (!index) {
+                toast.error(ap('missingId'))
+                return
             }
-            if (branches.length > 0) {
-                toast.success(ap("createBranchSuccess"))
+            const response = await deleteAPI({}, `/branches/delete/${index}`)
+            if (response.status === 200) {
+                removeBranches(index)
+                setNewBranch({
+                    company_uuid: resolvedCompanyUuid || companyUuid,
+                    name: "",
+                    address: "",
+                    email: "",
+                    phone: "",
+                })
+                toast.success('deleteDivisionSuccess')
+            } else {
+                toast.error(ap('deleteDivisionFailed'))
             }
-            setTimeout(() => {
-                onNext()
-            }, 1000)
         } catch {
             toast.error(ap('somethingWentWrong'))
         } finally {
             setIsLoading(false)
         }
+    }
+
+    const handleNext = async () => {
+        setIsLoading(true)
+        setTimeout(() => {
+            onNext()
+        }, 1000)
     }
 
     useEffect(() => {
@@ -90,10 +118,13 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                 .then((uuid) => setResolvedCompanyUuid(uuid))
                 .catch((err) => {
                     console.error("Failed to decrypt UUID:", err)
-                    sessionStorage.removeItem("meta")
                 })
         }
     }, [companyUuid, companyLocalStorage])
+
+    useEffect(() => {
+        console.log("cb:", companyBranches)
+    }, [companyBranches])
 
 
     const containerVariants = {
@@ -145,6 +176,12 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
             x: 20,
             transition: { duration: 0.3 },
         },
+    }
+
+    if(isFetchingBranches) {
+        return (
+            <BranchSetupSkeletonWithShimmer />
+        )
     }
 
     return (
@@ -244,7 +281,7 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
 
                             {/* Empty State */}
                             <AnimatePresence>
-                                {branches.length === 0 && !showForm && (
+                                {companyBranches.length === 0 && !showForm && (
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
@@ -309,8 +346,8 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                                         value={newBranch.email}
                                                         onChange={(e) => setNewBranch((prev) => ({ ...prev, email: e.target.value }))}
                                                         placeholder="jakarta@company.com"
-                                                        className={`h-10 ${newBranch.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newBranch.email) 
-                                                            ? 'border-red-500 focus:border-red-500' 
+                                                        className={`h-10 ${newBranch.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newBranch.email)
+                                                            ? 'border-red-500 focus:border-red-500'
                                                             : 'border-orange-200 focus:border-orange-400'}`}
                                                         required
                                                     />
@@ -354,8 +391,8 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                                 transition={{ duration: 0.3, delay: 0.4 }}
                                             >
                                                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                                    <Button 
-                                                        onClick={handleAddBranch} 
+                                                    <Button
+                                                        onClick={handleAddBranch}
                                                         className="bg-orange-400 hover:bg-orange-500"
                                                         disabled={!newBranch.name.trim() || !newBranch.email.trim() || !newBranch.phone.trim() || !newBranch.address.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newBranch.email)}
                                                     >
@@ -375,16 +412,16 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
 
                             {/* Branch List */}
                             <AnimatePresence>
-                                {branches.length > 0 && (
+                                {companyBranches.length > 0 && (
                                     <motion.div
                                         className="space-y-4 mb-8"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         transition={{ duration: 0.5 }}
                                     >
-                                        {branches.map((branch, index) => (
+                                        {companyBranches.map((branch, index) => (
                                             <motion.div
-                                                key={index}
+                                                key={branch.uuid || index}
                                                 variants={branchItemVariants}
                                                 initial="hidden"
                                                 animate="visible"
@@ -404,7 +441,7 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        onClick={() => handleRemoveBranch(index)}
+                                                        onClick={() => handleRemoveBranch(branch.uuid || "")}
                                                         className="text-red-500 hover:text-red-700"
                                                     >
                                                         <X className="w-4 h-4" />
@@ -438,11 +475,10 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                                                 >
                                                     <LoadingSpinner size="sm" />
                                                 </motion.div>
-                                                {branches.length > 0 ? "Creating Branches..." : "Continuing..."}
                                             </>
                                         ) : (
                                             <>
-                                                {branches.length === 0 ? (
+                                                {companyBranches.length === 0 ? (
                                                     <>
                                                         {br('skipThisStep')}
                                                         <ChevronRight className="w-4 h-4" />

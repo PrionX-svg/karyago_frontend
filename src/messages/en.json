@@ -46,7 +46,7 @@
     "checkInputs": "Please check your inputs and try again.",
     "userUuidMissing": "User UUID is missing!",
     "createBranchFailed": "Failed to create branch: {branch} Please try again.",
-    "createBranchSuccess": "Branches created successfully!",
+    "createBranchSuccess": "Branch created successfully!",
     "createDivisionSuccess": "Division created successfully!",
     "createDivisionFailed": "Failed to create division! Please try again.",
     "createSubDivisionSuccess": "Sub-division created successfully!",
@@ -256,7 +256,7 @@
     "noSubDivisionsDescription": "Add departments within your divisions.",
     "creatingStructure": "Creating structure...",
     "skipTitle": "Skip Organizational Structure Setup?",
-    "skipDescription": "If you skip this step, <strong>you cannot immediately add employees</strong> in the next step.",
+    "skipDescription1": "If you skip this step, <strong>you cannot immediately add employees</strong> in the next step.",
     "skipDescription2": "However, you can still add employees later after creating new divisions.",
     "skipButton": "Skip Anyway"
   },

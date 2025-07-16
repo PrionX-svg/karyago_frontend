@@ -69,6 +69,7 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
             }
         } catch {
             toast.error(ap("somethingWentWrong"))
+            
         } finally {
             setIsLoading(false)
         }

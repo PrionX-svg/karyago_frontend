@@ -22,12 +22,14 @@ export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
     const storedCompanyUuid = sessionStorage.getItem("meta")
 
     useEffect(() => {
-        decrypt(storedCompanyUuid?? "").then((decryptedUuid) => {
-            setResolvedCompanyUuid(decryptedUuid)
-        }).catch((error) => {
-            console.error("Decryption failed:", error)
-            setResolvedCompanyUuid("")
-        })
+        if (storedCompanyUuid) {
+            decrypt(storedCompanyUuid).then((decryptedUuid) => {
+                setResolvedCompanyUuid(decryptedUuid)
+            }).catch((error) => {
+                console.error("Decryption failed:", error)
+                setResolvedCompanyUuid("")
+            })
+        }
     }, [storedCompanyUuid])
 
     company.useGetDivisions(resolvedCompanyUuid ?? "")

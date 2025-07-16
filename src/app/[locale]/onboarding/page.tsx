@@ -10,16 +10,22 @@ import user from "@/lib/queries/user-queries"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
+import { useUserStore } from "@/stores/user-store"
+import { api } from "@/lib/api/api"
+import { useCompanyStore } from "@/stores/company-store"
 
 export default function OnboardingPage() {
     const [showWelcome, setShowWelcome] = useState(true)
     const [currentStep, setCurrentStep] = useState(1)
+    const [loading, setLoading] = useState(false)
+    const companyStoreData = useCompanyStore.getState().company;
+    const companyUuid = useCompanyStore.getState().company[0]?.uuid;
 
-    const router = useRouter()
     const { isFetchingGetMe } = user.useGetUMe()
-    
+    const router = useRouter()
+    const userUuid = useUserStore((state) => state.user.uuid)
     const lo = useTranslations("onboarding")
-    
+
     const handleCompanyNext = () => {
         setCurrentStep(2)
     }
@@ -32,15 +38,57 @@ export default function OnboardingPage() {
 
     const handleStartOnboarding = () => {
         setTimeout(() => {
-            setShowWelcome(false)
-        }, 750)
-    }
+            if (companyStoreData === null || companyStoreData === undefined) {
+                setCurrentStep(1);
+            } else {
+                setCurrentStep(2);
+            }
+            setShowWelcome(false);
+        }, 250);
+    };
 
     const finishOnboarding = () => {
         sessionStorage.removeItem("onboardingStep")
         sessionStorage.removeItem("meta")
         router.push("/dashboard")
     }
+
+    useEffect(() => {
+        const fetchCompanyData = async () => {
+            if (userUuid) {
+                setLoading(true);
+                try {
+                    await api.getCompanyByUserUuid(userUuid);
+                } finally {
+                    setLoading(false);
+                }
+            }
+        }
+        fetchCompanyData();
+    }, [userUuid]);
+
+    useEffect(() => {
+        const fetchCompanyDivisions = async () => {
+            if (companyUuid) {
+                try {
+                    await api.getDivisionsByCompanyUuid(companyUuid);
+                } catch (error) {
+                    console.error("Failed to fetch company divisions:", error);
+                }
+            }
+        }
+        const fetchCompanySubDivisions = async () => {
+            if (companyUuid) {
+                try {
+                    await api.getSubDivisionsByCompanyUuid(companyUuid);
+                } catch (error) {
+                    console.error("Failed to fetch company subdivisions:", error);
+                }
+            }
+        }
+        fetchCompanyDivisions();
+        fetchCompanySubDivisions();
+    }, [companyUuid]);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -53,9 +101,21 @@ export default function OnboardingPage() {
     }, [])
 
     useEffect(() => {
+        const steps = sessionStorage.getItem("onboardingStep")
+        if (steps && steps !== "4") {
+            setShowWelcome(false)
+        }
+    }, [])
+
+    useEffect(() => {
         if (typeof window !== "undefined") {
-            sessionStorage.setItem("onboardingStep", String(currentStep))
-            if (currentStep > 1) {
+            const stored = sessionStorage.getItem("onboardingStep")
+
+            if (!stored) {
+                sessionStorage.setItem("onboardingStep", String(currentStep))
+            }
+
+            if (currentStep > 1 && currentStep !== 4) {
                 setShowWelcome(false)
             }
         }
@@ -79,7 +139,7 @@ export default function OnboardingPage() {
         )
     }
     if (showWelcome) {
-        return <WelcomeScreen onStart={handleStartOnboarding} />
+        return <WelcomeScreen onStart={handleStartOnboarding} loadingState={loading} />
     }
     return (
         <div className="min-h-screen bg-gradient-to-br from-orange-25 via-orange-50 to-amber-25">

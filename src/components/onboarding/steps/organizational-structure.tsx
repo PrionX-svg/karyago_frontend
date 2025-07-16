@@ -17,7 +17,6 @@ import { motion, AnimatePresence, easeOut } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
 import { decrypt } from "@/lib/encrypt"
 import deleteAPI from "@/lib/api/deleteAPI"
-import company from "@/lib/queries/company-queries"
 import { useTranslations } from "next-intl"
 
 interface OrganizationalStructureProps {
@@ -40,8 +39,6 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
     const addSubDivision = useCompanyStore((state) => state.addSubDivision)
     const removeDivision = useCompanyStore((state) => state.removeDivision)
     const removeSubDivision = useCompanyStore((state) => state.removeSubDivision)
-    company.useGetDivisions(resolvedCompanyUuid ?? "")
-    company.useGetSubDivisions(resolvedCompanyUuid ?? "")
     const ap = useTranslations("api");
     const or = useTranslations("onboarding");
     const co = useTranslations("common");
@@ -783,7 +780,9 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                 {or('skipTitle')}
                             </h2>
                             <p className="text-sm text-gray-700 mb-4">
-                                {or('skipDescription')}
+                                {or.rich('skipDescription1', {
+                                    strong: (chunks) => <strong>{chunks}</strong>
+                                })}
                                 <br />
                                 {or('skipDescription2')}
                             </p>
