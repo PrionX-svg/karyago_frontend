@@ -105,9 +105,7 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
 
     const handleNext = async () => {
         setIsLoading(true)
-        setTimeout(() => {
-            onNext()
-        }, 1000)
+        onNext()
     }
 
     useEffect(() => {

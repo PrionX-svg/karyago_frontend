@@ -18,7 +18,6 @@ import { useCompanyStore } from "@/stores/company-store"
 import { useUserStore } from "@/stores/user-store"
 import { api } from "@/lib/api/api"
 import { useEmployeeStore } from "@/stores/employee-store"
-import employee from "@/lib/queries/employee-queries"
 
 export interface FormData {
     company_uuid: string
@@ -59,11 +58,11 @@ export default function AddUserManually() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [copied, setCopied] = useState(false)
     const router = useRouter()
-    const addEmployee = useEmployeeStore.getState().addEmployee
+
     const employees = useEmployeeStore((state) => state.employees)
-    
     const userUuid = useUserStore((state) => state.user.uuid)
     const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
+    const addEmployee = useEmployeeStore.getState().addEmployee
 
     const containerVariants = {
         hidden: { opacity: 0, y: 30 },
@@ -198,7 +197,6 @@ export default function AddUserManually() {
                     password: "",
                     confirmPassword: "",
                     dob: "",
-                    gender: "",
                     is_freelance: false,
                 }))
             } else {
@@ -242,6 +240,20 @@ export default function AddUserManually() {
         }
         fetchCompanyData();
     }, [userUuid]);
+
+    useEffect(() => {
+        const fetchEmployeeData = async () => {
+            if (companyUuid) {
+                setLoading(true);
+                try {
+                    await api.getEmployeeByCompanyUuid(companyUuid);
+                } finally {
+                    setLoading(false);
+                }
+            }
+        }
+        fetchEmployeeData();
+    }, [companyUuid]);
 
     useEffect(() => {
         setFormData((prev) => ({
@@ -596,7 +608,7 @@ export default function AddUserManually() {
                                                                                 'bg-gray-100 text-gray-700'
                                                                             }`}
                                                                         >
-                                                                            {employee.gender}
+                                                                            {employee.gender || "Invalid"}
                                                                         </Badge>
                                                                     </div>
                                                                 </div>

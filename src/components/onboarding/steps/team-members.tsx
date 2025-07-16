@@ -194,13 +194,15 @@ export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
                                                     </p>
                                                 </div>
                                                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                                    <Button
-                                                        variant="outline"
-                                                        className="w-full border-blue-300 text-blue-700 hover:bg-blue-50 bg-transparent"
-                                                    >
-                                                        <Upload className="h-4 w-4 mr-2" />
-                                                        Import from Excel
-                                                    </Button>
+                                                    <Link href="/onboarding/import-excel">
+                                                        <Button
+                                                            variant="outline"
+                                                            className="w-full border-blue-300 text-blue-700 hover:bg-blue-50 bg-transparent"
+                                                        >
+                                                            <Upload className="h-4 w-4 mr-2" />
+                                                            Import from Excel
+                                                        </Button>
+                                                    </Link>
                                                 </motion.div>
                                             </CardContent>
                                         </Card>

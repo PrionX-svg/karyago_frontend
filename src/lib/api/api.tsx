@@ -61,7 +61,8 @@ export const api = {
     async getEmployeeByCompanyUuid(companyUuid: string) {
         try{
             const setEmployees = useEmployeeStore.getState().setEmployees;
-            const response = await getAPI(`${API_URL.getEmployeeByCompanyUuid}${companyUuid}`);
+            const query = companyUuid ? `?company_uuid=${companyUuid}&limit=50` : "?limit=50";
+            const response = await getAPI(`${API_URL.getEmployeeByCompanyUuid}${query}`);
             const formattedEmployees = responseFormatter.formatGetEmployeeByCompanyUuid(response)
             setEmployees(formattedEmployees);
         } catch (error) {

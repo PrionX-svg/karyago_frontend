@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useCallback } from "react"
-import { ArrowLeft, Upload, Download, FileSpreadsheet, CheckCircle, AlertCircle, X } from "lucide-react"
+import { Upload, Download, CheckCircle, AlertCircle, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -209,31 +209,6 @@ export default function ImportFromExcel({ onBack, onImport }: ImportFromExcelPro
         >
             <div className="container mx-auto px-4 py-8 flex-1">
                 <motion.div className="w-full max-w-4xl mx-auto" variants={itemVariants}>
-                    {/* Header */}
-                    <motion.div className="mb-8" variants={itemVariants}>
-                        <Button variant="ghost" onClick={onBack} className="mb-4 text-gray-600 hover:text-gray-900">
-                            <ArrowLeft className="h-4 w-4 mr-2" />
-                            Back to Setup
-                        </Button>
-                        <div className="text-center">
-                            <motion.div
-                                className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4"
-                                animate={{
-                                    y: [0, -5, 0],
-                                }}
-                                transition={{
-                                    duration: 2,
-                                    repeat: Number.POSITIVE_INFINITY,
-                                    repeatType: "reverse",
-                                }}
-                            >
-                                <FileSpreadsheet className="h-8 w-8 text-orange-600" />
-                            </motion.div>
-                            <h1 className="text-3xl font-bold text-gray-900">Import from Excel</h1>
-                            <p className="text-gray-600 mt-2">Upload an Excel file to add multiple employees at once</p>
-                        </div>
-                    </motion.div>
-
                     <div className="space-y-6">
                         {/* Template Download */}
                         <motion.div variants={itemVariants}>

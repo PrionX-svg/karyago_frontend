@@ -28,12 +28,15 @@ export default function OnboardingPage() {
 
     const handleCompanyNext = () => {
         setCurrentStep(2)
+        sessionStorage.setItem("onboardingStep", String(2))
     }
     const handleBranchNext = () => {
         setCurrentStep(3)
+        sessionStorage.setItem("onboardingStep", String(3))
     }
     const handleDivisionNext = () => {
         setCurrentStep(4)
+        sessionStorage.setItem("onboardingStep", String(4))
     }
 
     const handleStartOnboarding = () => {
@@ -143,7 +146,7 @@ export default function OnboardingPage() {
     }
     return (
         <div className="min-h-screen bg-gradient-to-br from-orange-25 via-orange-50 to-amber-25">
-            {currentStep === 1 && <CompanyInformation onNext={handleCompanyNext} />}
+            {currentStep === 1 && <CompanyInformation onNext={handleCompanyNext} companyUuid={companyUuid} />}
             {currentStep === 2 && (
                 <BranchLocations onNext={handleBranchNext} />
             )}

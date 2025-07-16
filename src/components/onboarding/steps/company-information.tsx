@@ -21,12 +21,14 @@ import { useTranslations } from "next-intl"
 import { motion } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
 import { encrypt } from "@/lib/encrypt"
+import CompanySkeleton from "../loading/company-loading"
 
 interface CompanyInformationProps {
     onNext: () => void
+    companyUuid?: string
 }
 
-export function CompanyInformation({ onNext }: CompanyInformationProps) {
+export function CompanyInformation({ onNext, companyUuid }: CompanyInformationProps) {
     const [formData, setFormData] = useState<CompanyPayload>({
         user_uuid: "",
         name: "",
@@ -92,6 +94,12 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
         }
     }, [user.uuid])
 
+    useEffect(() => {
+        onNext()
+        sessionStorage.setItem("onboardingStep", String(2))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [companyUuid])
+
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },
         visible: {
@@ -120,6 +128,12 @@ export function CompanyInformation({ onNext }: CompanyInformationProps) {
             x: 0,
             transition: { duration: 0.4 },
         },
+    }
+
+    if (isLoading || companyUuid) {
+        return (
+            <CompanySkeleton />
+        )
     }
 
     return (

@@ -68,16 +68,23 @@ export const responseFormatter = {
         }));
     },
     formatGetEmployeeByCompanyUuid(response: GetEmployeeByCompanyUuid): EmployeeType[] {
-        if (!response.data) return [];
-        return response.data.map(employee => ({
-            firstname: employee.full_name,
-            lastname: employee.full_name,
+    if (!response.data) return [];
+
+    return response.data.map(employee => {
+        const [firstname, ...rest] = employee.full_name.split(" ");
+        const lastname = rest.join(" "); 
+
+        return {
+            firstname,
+            lastname,
             phone: employee.phone,
             email: employee.email,
             dob: employee.dob,
             gender: employee.gender,
             is_freelance: employee.is_freelance,
             company_uuid: employee.company?.uuid
-        }))
-    }
+        };
+    });
+}
+
 }
