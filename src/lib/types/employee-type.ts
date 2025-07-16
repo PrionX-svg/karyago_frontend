@@ -1,5 +1,6 @@
 export type EmployeeType = {
     company_uuid?: string;
+    user_uuid?: string;
     firstname: string;
     lastname: string;
     phone: string;

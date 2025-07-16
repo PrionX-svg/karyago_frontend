@@ -3,7 +3,7 @@ import { GetMeResponse } from "../interfaces/user-interface";
 import { CompanyBranchType, CompanyType, DivisionType, SubDivisionType } from "../types/company-type";
 import { UserType } from "../types/user-type";
 import { EmployeeType } from "../types/employee-type";
-import { GetEmployeeByCompanyUuid } from "../interfaces/employee-interface";
+import { GetEmployeeByCompanyUuidResponse } from "../interfaces/employee-interface";
 
 export const responseFormatter = {
     formatUserData(response: GetMeResponse): UserType {
@@ -67,7 +67,7 @@ export const responseFormatter = {
             desc: subDivision.desc,
         }));
     },
-    formatGetEmployeeByCompanyUuid(response: GetEmployeeByCompanyUuid): EmployeeType[] {
+    formatGetEmployeeByCompanyUuid(response: GetEmployeeByCompanyUuidResponse): EmployeeType[] {
     if (!response.data) return [];
 
     return response.data.map(employee => {
@@ -77,6 +77,7 @@ export const responseFormatter = {
         return {
             firstname,
             lastname,
+            user_uuid: employee.user_uuid,
             phone: employee.phone,
             email: employee.email,
             dob: employee.dob,

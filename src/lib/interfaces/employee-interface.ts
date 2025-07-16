@@ -1,4 +1,4 @@
-export interface GetEmployeeByCompanyUuid {
+export interface GetEmployeeByCompanyUuidResponse {
     data: Array<{
         user_uuid: string;
         full_name: string;

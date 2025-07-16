@@ -58,6 +58,16 @@ export const api = {
             return Promise.reject(error)
         }
     },
+    // async createEmployee(employeeData: EmployeeType) {
+    //     try {
+    //         const addEmployee = useEmployeeStore.getState().addEmployee;
+    //         const response = await postAPI(employeeData, `${API_URL.createEmployeeByCompanyUuid}`);
+    //         const formattedEmployee = responseFormatter.formatCreateEmployee(response);
+    //         addEmployee(formattedEmployee);
+    //     } catch (error) {
+    //         return Promise.reject(error)
+    //     }
+    // },
     async getEmployeeByCompanyUuid(companyUuid: string) {
         try{
             const setEmployees = useEmployeeStore.getState().setEmployees;

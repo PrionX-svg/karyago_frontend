@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useEffect, useState } from "react"
-import { Save, User, Mail, Phone, Calendar, Lock, Users, UserCheck, Briefcase } from "lucide-react"
+import { Save, User, Mail, Phone, Calendar, Lock, Users, UserCheck, Briefcase, Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -56,6 +56,7 @@ export default function AddUserManually() {
     const [errors, setErrors] = useState<FormErrors>({})
     const [loading, setLoading] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    // const [isEditing, setIsEditing] = useState(false)
     const [copied, setCopied] = useState(false)
     const router = useRouter()
 
@@ -161,10 +162,8 @@ export default function AddUserManually() {
         if (!validateForm()) {
             return
         }
-
         setIsSubmitting(true)
         try {
-            console.log("Form data to be submitted:", formData)
             const res = await postAPI({
                 company_uuid: formData.company_uuid,
                 firstname: formData.firstname,
@@ -177,7 +176,7 @@ export default function AddUserManually() {
                 is_freelance: formData.is_freelance
             }, '/users/create')
             if (res.status === 201) {
-                toast.success("User created successfully!")
+                toast.success("Employee created successfully!")
                 addEmployee({
                     company_uuid: formData.company_uuid,
                     firstname: formData.firstname,
@@ -200,13 +199,23 @@ export default function AddUserManually() {
                     is_freelance: false,
                 }))
             } else {
-                toast.error("Failed to create user. Please try again.")
+                toast.error("Failed to create employee. Please try again.")
             }
         } catch (error) {
-            console.error("Error saving user:", error)
+            console.error("Error saving employee:", error)
         } finally {
             setIsSubmitting(false)
         }
+    }
+
+    const handleRemoveEmployee = (uuid: string) => {
+        toast.warning("This feature is not implemented yet.")
+        console.log("Remove employee with UUID:", uuid)
+    }
+
+    const handleEditEmployee = (uuid: string) => {
+        toast.warning("This feature is not implemented yet.")
+        console.log("Edit employee with UUID:", uuid)
     }
 
     const formatDate = (dateString: string) => {
@@ -566,7 +575,7 @@ export default function AddUserManually() {
                                                             initial={{ opacity: 0, x: 20 }}
                                                             animate={{ opacity: 1, x: 0 }}
                                                             transition={{ delay: index * 0.1 }}
-                                                            className="p-4 hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 transition-all duration-200"
+                                                            className="p-4 hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 transition-all duration-200 group"
                                                         >
                                                             <div className="flex items-start space-x-3">
                                                                 <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -611,6 +620,26 @@ export default function AddUserManually() {
                                                                             {employee.gender || "Invalid"}
                                                                         </Badge>
                                                                     </div>
+                                                                </div>
+                                                                <div className="flex flex-col space-y-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                                        onClick={() => {
+                                                                            handleEditEmployee(employee.user_uuid || "undefined");
+                                                                        }}
+                                                                    >
+                                                                        <Edit className="h-3 w-3" />
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                                        onClick={() => handleRemoveEmployee(employee.user_uuid || "undefined")}
+                                                                    >
+                                                                        <Trash2 className="h-3 w-3" />
+                                                                    </Button>
                                                                 </div>
                                                             </div>
                                                         </motion.div>
