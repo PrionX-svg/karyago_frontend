@@ -4,6 +4,8 @@ import { API_URL } from "./constants";
 import { responseFormatter } from "./responseFormatter";
 import { useCompanyStore } from "@/stores/company-store";
 import { useEmployeeStore } from "@/stores/employee-store";
+import { CreateEmployeeHistoryPayload, CreateEmployeePayload, UpdateEmployeePayload } from "../interfaces/employee-interface";
+import postAPI from "./postAPI";
 
 export const api = {
     async getMe() {
@@ -58,16 +60,31 @@ export const api = {
             return Promise.reject(error)
         }
     },
-    // async createEmployee(employeeData: EmployeeType) {
-    //     try {
-    //         const addEmployee = useEmployeeStore.getState().addEmployee;
-    //         const response = await postAPI(employeeData, `${API_URL.createEmployeeByCompanyUuid}`);
-    //         const formattedEmployee = responseFormatter.formatCreateEmployee(response);
-    //         addEmployee(formattedEmployee);
-    //     } catch (error) {
-    //         return Promise.reject(error)
-    //     }
-    // },
+    async createEmployee(employeeData: CreateEmployeePayload) {
+        const addEmployee = useEmployeeStore.getState().addEmployee;
+        try {
+            const response = await postAPI(employeeData, `${API_URL.createEmployeeByCompanyUuid}`);
+            if(response.status === 201){
+                const formattedEmployee = responseFormatter.formatCreateEmployeeResponse(response.data);
+                addEmployee(formattedEmployee);
+                return formattedEmployee;
+            }
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
+    async createEmployeeHistory(employeeHistoryData: CreateEmployeeHistoryPayload) {
+        const addEmployeeHistory = useEmployeeStore.getState().addEmployeeHistory;
+        try {
+            const response = await postAPI(employeeHistoryData, `${API_URL.createEmployeeHistory}`);
+            if(response.status === 201){
+                const formattedEmployeeHistory = responseFormatter.formatCreateEmployeeHistoryResponse(response.data);
+                addEmployeeHistory(formattedEmployeeHistory);
+            }
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
     async getEmployeeByCompanyUuid(companyUuid: string) {
         try{
             const setEmployees = useEmployeeStore.getState().setEmployees;
@@ -75,6 +92,18 @@ export const api = {
             const response = await getAPI(`${API_URL.getEmployeeByCompanyUuid}${query}`);
             const formattedEmployees = responseFormatter.formatGetEmployeeByCompanyUuid(response)
             setEmployees(formattedEmployees);
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
+    async updateEmployeeByUuid(employeeUuid: string, employeeData: UpdateEmployeePayload) {
+        try{
+            const updateEmployee = useEmployeeStore.getState().updateEmployee;
+            const response = await postAPI(employeeData, `${API_URL.updateEmployeeByUuid}${employeeUuid}`);
+            if(response.status === 200){
+                const formattedEmployee = responseFormatter.formatUpdateEmployeeResponse(response.data);
+                updateEmployee(formattedEmployee);
+            }
         } catch (error) {
             return Promise.reject(error)
         }

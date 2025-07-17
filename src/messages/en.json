@@ -11,7 +11,9 @@
     "error": "Error",
     "success": "Success",
     "register": "Register",
-    "disabled": "Disabled"
+    "disabled": "Disabled",
+    "copy": "Copy",
+    "copied": "Copied!"
   },
   "navigation": {
     "home": "Home",
@@ -55,7 +57,9 @@
     "deleteDivisionFailed": "Failed to delete division! Please try again.",
     "deleteSubDivisionSuccess": "Sub-division deleted successfully!",
     "deleteSubDivisionFailed": "Failed to delete sub-division! Please try again.",
-    "missingId": "Missing ID parameter in request."
+    "missingId": "Missing ID parameter in request.",
+    "createEmployeeSuccess": "Employee created successfully!",
+    "createEmployeeFailed": "Failed to create employee!"
   },
   "auth": {
     "title": "Welcome",
@@ -259,6 +263,45 @@
     "skipDescription1": "If you skip this step, <strong>you cannot immediately add employees</strong> in the next step.",
     "skipDescription2": "However, you can still add employees later after creating new divisions.",
     "skipButton": "Skip Anyway"
+  },
+  "employeeOnboarding": {
+    "firstNameMissing": "First name is required",
+    "lastNameMissing": "Last name is required",
+    "phoneMissing": "Phone number is required",
+    "emailMissing": "Email address is required",
+    "emailInvalid": "Please enter a valid email address",
+    "passwordMissing": "Password is required",
+    "password<8": "Password must be at least 8 characters",
+    "dobMissing": "Date of birth is required",
+    "genderMissing": "Gender is required",
+    "positionMissing": "Position is required",
+    "startDateMissing": "Start date is required",
+    "endDateMissing": "End date is required if the employee is not currently working",
+    "endDateError": "End date cannot be before start date",
+    "firstFormTitle": "Personal Information",
+    "firstFormDescription": "You cannot modify a created employee.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone Number",
+    "dob": "Date of Birth",
+    "gender": "Gender",
+    "genderPlaceholder": "Select Gender",
+    "male": "Male",
+    "female": "Female",
+    "isFreelance": "Is Freelance?",
+    "isActive": "Currently Working?",
+    "secondFormTitle": "Employee Information",
+    "position": "Position",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "thirdFormTitle": "Account Information",
+    "email": "Email Address",
+    "password": "Password",
+    "generatePassword": "Generate Password",
+    "creatingEmployee": "Creating Employee...",
+    "creatingAccount": "Creating Account...",
+    "createAccount": "Create Account",
+    "complete": "Complete Onboarding"
   },
   "brand": {
     "brandingTitle": "HRIS Portal",
