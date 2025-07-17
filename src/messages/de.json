@@ -297,7 +297,15 @@
     "skipTitle": "Organisationsstruktur-Einrichtung überspringen?",
     "skipDescription": "Wenn Sie diesen Schritt überspringen, <strong>können Sie im nächsten Schritt nicht sofort Mitarbeiter hinzufügen</strong>.",
     "skipDescription2": "Sie können jedoch später noch Mitarbeiter hinzufügen, nachdem Sie neue Bereiche erstellt haben.",
-    "skipButton": "Trotzdem überspringen"
+    "skipButton": "Trotzdem überspringen",
+    "tmTitle": "Setup abgeschlossen!",
+    "tmDesc": "Ihre Organisationsstruktur ist bereit. Sie können jetzt Mitarbeiter hinzufügen und das HRIS-System nutzen.",
+    "addEmployeeTitle": "Mitarbeiter manuell hinzufügen",
+    "addEmployeeDescription": "Fügen Sie Teammitglieder einzeln mit detaillierten Informationen hinzu",
+    "addEmployeeButton": "Jetzt Mitarbeiter hinzufügen",
+    "importExcel": "Mitarbeiter aus Excel importieren",
+    "importExcelDescription": "Laden Sie eine Excel-Datei hoch, um mehrere Mitarbeiter gleichzeitig hinzuzufügen",
+    "importExcelButton": "Aus Excel importieren"
   },
   "employees": {
     "title": "Mitarbeiter",

@@ -262,7 +262,15 @@
     "skipTitle": "Skip Organizational Structure Setup?",
     "skipDescription1": "If you skip this step, <strong>you cannot immediately add employees</strong> in the next step.",
     "skipDescription2": "However, you can still add employees later after creating new divisions.",
-    "skipButton": "Skip Anyway"
+    "skipButton": "Skip Anyway",
+    "tmTitle": "Setup Complete!",
+    "tmDesc": "Your organizational structure is ready. You can now start adding employees and begin using the HRIS system.",
+    "addEmployeeTitle": "Add Employee Manually",
+    "addEmployeeDescription": "Add team members one by one with detailed information",
+    "addEmployeeButton": "Add Employee Now",
+    "importExcel": "Import Employees from Excel",
+    "importExcelDescription": "Upload an Excel file to add multiple employees at once",
+    "importExcelButton": "Import from Excel"
   },
   "employeeOnboarding": {
     "firstNameMissing": "First name is required",

@@ -10,6 +10,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { decrypt } from "@/lib/encrypt"
 import company from "@/lib/queries/company-queries"
+import { useTranslations } from "next-intl"
 
 interface TeamMembersProps {
     finishOnboarding: () => void
@@ -20,6 +21,8 @@ export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
     const subDivision = useCompanyStore((state) => state.subDivision)
     const [resolvedCompanyUuid, setResolvedCompanyUuid] = useState("")
     const storedCompanyUuid = sessionStorage.getItem("meta")
+    const tm = useTranslations("onboarding")
+    const eo = useTranslations("employeeOnboarding")
 
     useEffect(() => {
         if (storedCompanyUuid) {
@@ -94,10 +97,9 @@ export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
                                         <CheckCircle className="h-12 w-12 text-green-600" />
                                     </motion.div>
                                     <div>
-                                        <CardTitle className="text-3xl font-bold text-gray-900">Setup Complete!</CardTitle>
+                                        <CardTitle className="text-3xl font-bold text-gray-900">{tm('tmTitle')}</CardTitle>
                                         <CardDescription className="text-lg mt-2">
-                                            Your organizational structure is ready. You can now start adding employees and begin using the
-                                            HRIS system.
+                                            {tm('tmDesc')}
                                         </CardDescription>
                                     </div>
                                 </motion.div>
@@ -140,16 +142,16 @@ export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
                                                     <Plus className="h-8 w-8 text-orange-600" />
                                                 </motion.div>
                                                 <div>
-                                                    <h3 className="font-semibold text-lg text-gray-900">Add Employee Manually</h3>
+                                                    <h3 className="font-semibold text-lg text-gray-900">{tm('addEmployeeTitle')}</h3>
                                                     <p className="text-sm text-gray-600 mt-2">
-                                                        Add team members one by one with detailed information
+                                                        {tm('addEmployeeDescription')}
                                                     </p>
                                                 </div>
                                                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                                     <Link href="/onboarding/add-employee">
                                                         <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
                                                             <Plus className="h-4 w-4 mr-2" />
-                                                            Add Employee Now
+                                                            {tm('addEmployeeButton')}
                                                         </Button>
                                                     </Link>
                                                 </motion.div>
@@ -188,9 +190,9 @@ export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
                                                     <Upload className="h-8 w-8 text-blue-600" />
                                                 </motion.div>
                                                 <div>
-                                                    <h3 className="font-semibold text-lg text-gray-900">Import from Excel</h3>
+                                                    <h3 className="font-semibold text-lg text-gray-900">{tm('importExcel')}</h3>
                                                     <p className="text-sm text-gray-600 mt-2">
-                                                        Upload an Excel file to add multiple employees at once
+                                                        {tm('importExcelDescription')}
                                                     </p>
                                                 </div>
                                                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -200,7 +202,7 @@ export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
                                                             className="w-full border-blue-300 text-blue-700 hover:bg-blue-50 bg-transparent"
                                                         >
                                                             <Upload className="h-4 w-4 mr-2" />
-                                                            Import from Excel
+                                                            {tm('importExcelButton')}
                                                         </Button>
                                                     </Link>
                                                 </motion.div>
@@ -214,7 +216,7 @@ export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
                                     <div />
                                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                         <Button size="lg" onClick={finishOnboarding} className="bg-green-600 hover:bg-green-700 text-white px-8">
-                                            Complete Setup
+                                            {eo('complete')}
                                             <ArrowRight className="ml-2 h-5 w-5" />
                                         </Button>
                                     </motion.div>

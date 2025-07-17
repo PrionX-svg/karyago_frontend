@@ -297,7 +297,15 @@
         "skipTitle": "Lewati Pengaturan Struktur Organisasi?",
         "skipDescription": "Jika Anda melewati langkah ini, <strong>Anda tidak dapat langsung menambahkan karyawan</strong> di langkah selanjutnya.",
         "skipDescription2": "Namun, Anda masih dapat menambahkan karyawan nanti setelah membuat divisi baru.",
-        "skipButton": "Tetap Lewati"
+        "skipButton": "Tetap Lewati",
+        "tmTitle": "Pengaturan Selesai!",
+        "tmDesc": "Struktur organisasi Anda sudah siap. Anda sekarang dapat mulai menambahkan karyawan dan mulai menggunakan sistem HRIS.",
+        "addEmployeeTitle": "Tambah Karyawan Manual",
+        "addEmployeeDescription": "Tambah anggota tim satu per satu dengan informasi detail",
+        "addEmployeeButton": "Tambah Karyawan Sekarang",
+        "importExcel": "Impor Karyawan dari Excel",
+        "importExcelDescription": "Unggah file Excel untuk menambah beberapa karyawan sekaligus",
+        "importExcelButton": "Impor dari Excel"
     },
     "employees": {
         "title": "Karyawan",
