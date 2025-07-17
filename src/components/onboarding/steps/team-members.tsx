@@ -20,7 +20,7 @@ export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
     const divisions = useCompanyStore((state) => state.division)
     const subDivision = useCompanyStore((state) => state.subDivision)
     const [resolvedCompanyUuid, setResolvedCompanyUuid] = useState("")
-    const storedCompanyUuid = sessionStorage.getItem("meta")
+    const storedCompanyUuid = localStorage.getItem("meta")
     const tm = useTranslations("onboarding")
     const eo = useTranslations("employeeOnboarding")
 

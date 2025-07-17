@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl"
 import { useUserStore } from "@/stores/user-store"
 import { api } from "@/lib/api/api"
 import { useCompanyStore } from "@/stores/company-store"
+import { encrypt } from "@/lib/encrypt"
 
 export default function OnboardingPage() {
     const [showWelcome, setShowWelcome] = useState(true)
@@ -28,15 +29,35 @@ export default function OnboardingPage() {
 
     const handleCompanyNext = () => {
         setCurrentStep(2)
-        sessionStorage.setItem("onboardingStep", String(2))
+        localStorage.setItem("onboardingStep", String(2))
     }
     const handleBranchNext = () => {
         setCurrentStep(3)
-        sessionStorage.setItem("onboardingStep", String(3))
+        const fetchCompanyDivisions = async () => {
+            if (companyUuid) {
+                try {
+                    await api.getDivisionsByCompanyUuid(companyUuid);
+                } catch (error) {
+                    console.error("Failed to fetch company divisions:", error);
+                }
+            }
+        }
+        const fetchCompanySubDivisions = async () => {
+            if (companyUuid) {
+                try {
+                    await api.getSubDivisionsByCompanyUuid(companyUuid);
+                } catch (error) {
+                    console.error("Failed to fetch company subdivisions:", error);
+                }
+            }
+        }
+        fetchCompanyDivisions();
+        fetchCompanySubDivisions();
+        localStorage.setItem("onboardingStep", String(3))
     }
     const handleDivisionNext = () => {
         setCurrentStep(4)
-        sessionStorage.setItem("onboardingStep", String(4))
+        localStorage.setItem("onboardingStep", String(4))
     }
 
     const handleStartOnboarding = () => {
@@ -51,8 +72,8 @@ export default function OnboardingPage() {
     };
 
     const finishOnboarding = () => {
-        sessionStorage.removeItem("onboardingStep")
-        sessionStorage.removeItem("meta")
+        localStorage.removeItem("onboardingStep")
+        localStorage.removeItem("meta")
         router.push("/dashboard")
     }
 
@@ -62,12 +83,15 @@ export default function OnboardingPage() {
                 setLoading(true);
                 try {
                     await api.getCompanyByUserUuid(userUuid);
+                    const encryptedUuid = await encrypt(companyUuid)
+                    localStorage.setItem("meta", encryptedUuid)
                 } finally {
                     setLoading(false);
                 }
             }
         }
         fetchCompanyData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userUuid]);
 
     useEffect(() => {
@@ -95,7 +119,7 @@ export default function OnboardingPage() {
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const savedStep = sessionStorage.getItem("onboardingStep")
+            const savedStep = localStorage.getItem("onboardingStep")
             if (savedStep) {
                 setCurrentStep(parseInt(savedStep))
                 setShowWelcome(parseInt(savedStep) === 1)
@@ -104,7 +128,7 @@ export default function OnboardingPage() {
     }, [])
 
     useEffect(() => {
-        const steps = sessionStorage.getItem("onboardingStep")
+        const steps = localStorage.getItem("onboardingStep")
         if (steps && steps !== "4") {
             setShowWelcome(false)
         }
@@ -112,10 +136,10 @@ export default function OnboardingPage() {
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const stored = sessionStorage.getItem("onboardingStep")
+            const stored = localStorage.getItem("onboardingStep")
 
             if (!stored) {
-                sessionStorage.setItem("onboardingStep", String(currentStep))
+                localStorage.setItem("onboardingStep", String(currentStep))
             }
 
             if (currentStep > 1 && currentStep !== 4) {

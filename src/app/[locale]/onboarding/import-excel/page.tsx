@@ -1,12 +1,17 @@
 "use client"
 
 import type React from "react"
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Upload, Download, CheckCircle, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
+import employee from "@/lib/queries/employee-queries"
+import { useUserStore } from "@/stores/user-store"
+import { api } from "@/lib/api/api"
+import ExcelImportSkeleton from "./loading"
+import { useCompanyStore } from "@/stores/company-store"
 
 export type EmployeeType = {
   company_uuid?: string
@@ -19,46 +24,16 @@ export type EmployeeType = {
   is_freelance: boolean
 }
 
-interface ImportStatus {
-  total: number
-  success: number
-  errors: number
-  warnings: number
-}
-
 export default function ImportFromExcel() {
   const [dragActive, setDragActive] = useState<boolean>(false)
   const [file, setFile] = useState<File | null>(null)
   const [importing, setImporting] = useState<boolean>(false)
-  const [progress, setProgress] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(false)
+  const companyUuid = useCompanyStore.getState().company[0]?.uuid;
+  
   const router = useRouter()
-
-  // TODO: Implement Excel parsing function
-  const parseExcelFile = async (file: File): Promise<EmployeeType[]> => {
-    // Parse Excel file and convert to EmployeeType[]
-    // Handle columns: firstname, lastname, phone, email, dob, gender, is_freelance
-    // Note: company_uuid will be added server-side, not from Excel
-    return []
-  }
-
-  // TODO: Implement employee import API call
-  const importEmployees = async (employees: EmployeeType[]): Promise<ImportStatus> => {
-    // Call your API to import employees
-    // Return import status with success/error counts
-    return {
-      total: employees.length,
-      success: 0,
-      errors: 0,
-      warnings: 0,
-    }
-  }
-
-  // TODO: Implement template generation
-  const generateTemplate = (): void => {
-    // Generate Excel template with columns:
-    // firstname, lastname, phone, email, dob, gender, is_freelance
-    // Note: company_uuid should NOT be included in template
-  }
+  const { exportExcel, isExportingExcel } = employee.useExportExcel()
+  const userUuid = useUserStore((state) => state.user.uuid)
 
   const containerVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -108,7 +83,6 @@ export default function ImportFromExcel() {
         droppedFile.name.endsWith(".xls")
       ) {
         setFile(droppedFile)
-        // TODO: Preview first few rows
       }
     }
   }, [])
@@ -123,7 +97,6 @@ export default function ImportFromExcel() {
   const handleImport = async (): Promise<void> => {
     if (!file) return
     setImporting(true)
-    setProgress(0)
 
     try {
       // TODO: Parse Excel file
@@ -145,21 +118,37 @@ export default function ImportFromExcel() {
   }
 
   const downloadTemplate = (): void => {
-    // TODO: Generate and download template
-    // generateTemplate()
-
-    // Temporary fallback - replace with actual template generation
-    const link = document.createElement("a")
-    link.href = "/employee-template.xlsx"
-    link.download = "employee-template.xlsx"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    exportExcel(companyUuid)
   }
 
   const resetFile = (): void => {
     setFile(null)
-    setProgress(0)
+  }
+
+  useEffect(() => {
+    if (!userUuid) {
+      api.getMe()
+    }
+  }, [userUuid])
+
+  useEffect(() => {
+    const fetchCompanyData = async () => {
+      if (userUuid) {
+        setLoading(true)
+        try {
+          await api.getCompanyByUserUuid(userUuid)
+        } finally {
+          setLoading(false)
+        }
+      }
+    }
+    fetchCompanyData()
+  }, [userUuid])
+
+  if (loading) {
+    return (
+      <ExcelImportSkeleton />
+    )
   }
 
   return (
@@ -188,6 +177,7 @@ export default function ImportFromExcel() {
                         variant="outline"
                         onClick={downloadTemplate}
                         className="border-orange-300 text-orange-700 hover:bg-orange-50 bg-transparent"
+                        disabled={isExportingExcel}
                       >
                         <Download className="h-4 w-4 mr-2" />
                         Download Template
@@ -207,13 +197,12 @@ export default function ImportFromExcel() {
                 </CardHeader>
                 <CardContent>
                   <motion.div
-                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                      dragActive
-                        ? "border-orange-400 bg-orange-50"
-                        : file
-                          ? "border-green-400 bg-green-50"
-                          : "border-gray-300 hover:border-gray-400"
-                    }`}
+                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive
+                      ? "border-orange-400 bg-orange-50"
+                      : file
+                        ? "border-green-400 bg-green-50"
+                        : "border-gray-300 hover:border-gray-400"
+                      }`}
                     onDragEnter={handleDrag}
                     onDragLeave={handleDrag}
                     onDragOver={handleDrag}

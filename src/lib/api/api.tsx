@@ -64,7 +64,7 @@ export const api = {
         const addEmployee = useEmployeeStore.getState().addEmployee;
         try {
             const response = await postAPI(employeeData, `${API_URL.createEmployeeByCompanyUuid}`);
-            if(response.status === 201){
+            if (response.status === 201) {
                 const formattedEmployee = responseFormatter.formatCreateEmployeeResponse(response.data);
                 addEmployee(formattedEmployee);
                 return formattedEmployee;
@@ -77,7 +77,7 @@ export const api = {
         const addEmployeeHistory = useEmployeeStore.getState().addEmployeeHistory;
         try {
             const response = await postAPI(employeeHistoryData, `${API_URL.createEmployeeHistory}`);
-            if(response.status === 201){
+            if (response.status === 201) {
                 const formattedEmployeeHistory = responseFormatter.formatCreateEmployeeHistoryResponse(response.data);
                 addEmployeeHistory(formattedEmployeeHistory);
             }
@@ -86,7 +86,7 @@ export const api = {
         }
     },
     async getEmployeeByCompanyUuid(companyUuid: string) {
-        try{
+        try {
             const setEmployees = useEmployeeStore.getState().setEmployees;
             const query = companyUuid ? `?company_uuid=${companyUuid}&limit=50` : "?limit=50";
             const response = await getAPI(`${API_URL.getEmployeeByCompanyUuid}${query}`);
@@ -97,15 +97,31 @@ export const api = {
         }
     },
     async updateEmployeeByUuid(employeeUuid: string, employeeData: UpdateEmployeePayload) {
-        try{
+        try {
             const updateEmployee = useEmployeeStore.getState().updateEmployee;
             const response = await postAPI(employeeData, `${API_URL.updateEmployeeByUuid}${employeeUuid}`);
-            if(response.status === 200){
+            if (response.status === 200) {
                 const formattedEmployee = responseFormatter.formatUpdateEmployeeResponse(response.data);
                 updateEmployee(formattedEmployee);
             }
         } catch (error) {
             return Promise.reject(error)
+        }
+    },
+    async exportEmployeeToExcel(companyUuid: string) {
+        try {
+            const query = companyUuid ? `?company_uuid=${companyUuid}` : "";
+            const blob = await getAPI(`${API_URL.exportEmployeeToExcel}${query}`, "blob");
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "employees.xlsx");
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode?.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            return Promise.reject(error);
         }
     }
 }

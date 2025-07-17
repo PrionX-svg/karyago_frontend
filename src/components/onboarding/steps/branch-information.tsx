@@ -35,7 +35,7 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
     const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
     const companyBranches = useCompanyStore.getState().companyBranch
     const removeBranches = useCompanyStore((state) => state.removeCompanyBranch)
-    const companyLocalStorage = sessionStorage.getItem("meta")
+    const companyLocalStorage = localStorage.getItem("meta")
     const ap = useTranslations("api")
     const br = useTranslations("onboarding")
     const co = useTranslations("common")
@@ -119,11 +119,6 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
                 })
         }
     }, [companyUuid, companyLocalStorage])
-
-    useEffect(() => {
-        console.log("cb:", companyBranches)
-    }, [companyBranches])
-
 
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },

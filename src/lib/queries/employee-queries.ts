@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { api } from "../api/api";
 import { CreateEmployeeHistoryPayload, CreateEmployeePayload, UpdateEmployeePayload } from "../interfaces/employee-interface";
 
-
 const employee = {
     useCreateEmployee: () => {
         const [isCreatingEmployee, setIsCreatingEmployee] = useState(false);
@@ -63,6 +62,21 @@ const employee = {
             }
         }, []);
         return { updateEmployee, isUpdatingEmployee };
+    },
+    useExportExcel: () => {
+        const [isExportingExcel, setIsExportingExcel] = useState(false);
+        const exportExcel = useCallback(async (companyUuid: string) => {
+            setIsExportingExcel(true);
+            try {
+                const response = await api.exportEmployeeToExcel(companyUuid);
+                return response;
+            } catch (error) {
+                return Promise.reject(error);
+            } finally {
+                setIsExportingExcel(false);
+            }
+        }, []);
+        return { exportExcel, isExportingExcel };
     }
 }
 

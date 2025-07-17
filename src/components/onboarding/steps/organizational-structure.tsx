@@ -30,7 +30,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
     const [activeTab, setActiveTab] = useState("divisions")
     const [resolvedCompanyUuid, setResolvedCompanyUuid] = useState<string | null>(null)
 
-    const companyLocalStorage = sessionStorage.getItem("meta")
+    const companyLocalStorage = localStorage.getItem("meta")
     const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
     const divisions = useCompanyStore((state) => state.division)
     const subDivisions = useCompanyStore((state) => state.subDivision)

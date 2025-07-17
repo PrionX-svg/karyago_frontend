@@ -57,7 +57,7 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
                 setCompanyStore([response.data.data])
 
                 const encryptedUuid = await encrypt(response.data.data.uuid)
-                sessionStorage.setItem("meta", encryptedUuid)
+                localStorage.setItem("meta", encryptedUuid)
                 setTimeout(() => {
                     onNext();
                 }, 1000)
@@ -96,7 +96,7 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
 
     useEffect(() => {
         onNext()
-        sessionStorage.setItem("onboardingStep", String(2))
+        localStorage.setItem("onboardingStep", String(2))
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [companyUuid])
 

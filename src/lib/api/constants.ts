@@ -9,5 +9,6 @@ export const API_URL = {
     createEmployeeByCompanyUuid: "/users/create",
     createEmployeeHistory: "/employment-histories/create",
     getEmployeeByCompanyUuid: "/users/get-all/dt",
-    updateEmployeeByUuid: "users/update/"
+    updateEmployeeByUuid: "/users/update/",
+    exportEmployeeToExcel: "/users/export"
 }
