@@ -75,6 +75,24 @@ describe("Register Form Test Black Box", () => {
         expect(screen.getByRole("button", { name: "Create Account" })).toBeDisabled();
     });
 
+    it("enables submit button when all fields are valid", async () => {
+        render(<RegisterForm />);
+        // Fill required fields using userEvent for proper async updates
+        await userEvent.type(screen.getByLabelText("firstName"), "John");
+        await userEvent.type(screen.getByLabelText("lastName"), "Doe");
+        await userEvent.type(screen.getByLabelText("Phone"), "+628123456789");
+        await userEvent.type(screen.getByLabelText("Email"), "john@example.com");
+        await userEvent.type(screen.getByLabelText(/password/i), "StrongPass123!");
+        await userEvent.type(screen.getByLabelText("Confirm Password"), "StrongPass123!");
+        const cbs = screen.getAllByRole("checkbox");
+        for (const cb of cbs) {
+            await userEvent.click(cb);
+        }
+        await waitFor(() => {
+            expect(screen.getByRole("button", { name: "Create Account" })).toBeEnabled();
+        });
+    });
+
 });
 
 describe("RegisterForm White Box Tests", () => {
@@ -136,13 +154,13 @@ describe("RegisterForm White Box Tests", () => {
         expect(confirmPasswordInput).toHaveAttribute("type", "text");
     });
 
-    // it("shows password strength requirements", () => {
-    //     render(<RegisterForm />);
-    //     fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "test" } });
-    //     expect(screen.getByText("Min 8 chars")).toBeInTheDocument();
-    //     expect(screen.getByText("Upper & lowercase")).toBeInTheDocument();
-    //     expect(screen.getByText("At least 1 number")).toBeInTheDocument();
-    //     expect(screen.getByText("At least 1 special char")).toBeInTheDocument();
+    it("shows password strength requirements", async () => {
+        render(<RegisterForm />);
+        await userEvent.type(screen.getByLabelText(/password/i), "StrongPass123!");
+        expect(screen.getByText("Min 8 chars")).toBeInTheDocument();
+        expect(screen.getByText("Upper & lowercase")).toBeInTheDocument();
+        expect(screen.getByText("At least 1 number")).toBeInTheDocument();
+        expect(screen.getByText("At least 1 special char")).toBeInTheDocument();
 
-    // });
+    });
 });
