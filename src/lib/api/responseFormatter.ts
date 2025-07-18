@@ -4,6 +4,8 @@ import { CompanyBranchType, CompanyType, DivisionType, SubDivisionType } from ".
 import { UserType } from "../types/user-type";
 import { EmployeeHistoryType, EmployeeType } from "../types/employee-type";
 import { CreateEmployeeHistoryResponse, CreateEmployeeResponse, GetEmployeeByCompanyUuidResponse, UpdateEmployeeResponse } from "../interfaces/employee-interface";
+import { RoleType } from "../types/role-type";
+import { GetRoleByCompanyUuidResponse } from "../interfaces/role-interface";
 
 export const responseFormatter = {
     formatUserData(response: GetMeResponse): UserType {
@@ -152,5 +154,12 @@ export const responseFormatter = {
             gender: response.data?.gender ?? "",
             is_freelance: response.data?.is_freelance ?? false,
         }
-    }
+    },
+    formatGetRolesByCompanyUuid(response: GetRoleByCompanyUuidResponse): RoleType[] {
+        if (!Array.isArray(response.data)) return [];
+        return response.data.map(role => ({
+            uuid: role?.uuid ?? "",
+            name: role?.name ?? ""
+        }));
+    },
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { Upload, Download, CheckCircle, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,6 +12,11 @@ import { useUserStore } from "@/stores/user-store"
 import { api } from "@/lib/api/api"
 import ExcelImportSkeleton from "./loading"
 import { useCompanyStore } from "@/stores/company-store"
+import postAPI from "@/lib/api/postAPI"
+import roles from "@/lib/queries/role-queries"
+import { useRoleStore } from "@/stores/role-store"
+import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 
 export type EmployeeType = {
   company_uuid?: string
@@ -29,11 +34,17 @@ export default function ImportFromExcel() {
   const [file, setFile] = useState<File | null>(null)
   const [importing, setImporting] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
   const companyUuid = useCompanyStore.getState().company[0]?.uuid;
-  
+  const employeeRole = useRoleStore.getState().roles[0]?.uuid;
+
   const router = useRouter()
   const { exportExcel, isExportingExcel } = employee.useExportExcel()
+  const { isFetchingRoles } = roles.useGetRolesByCompanyUuid(companyUuid)
   const userUuid = useUserStore((state) => state.user.uuid)
+  const ap = useTranslations("api");
+  const ie = useTranslations("import-excel");
+  const co = useTranslations("common");
 
   const containerVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -58,6 +69,10 @@ export default function ImportFromExcel() {
 
   const onBack = () => {
     router.push("/onboarding")
+  }
+
+  const openFileExplorer = () => {
+    fileInputRef.current?.click()
   }
 
   const handleDrag = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -95,27 +110,28 @@ export default function ImportFromExcel() {
   }
 
   const handleImport = async (): Promise<void> => {
-    if (!file) return
-    setImporting(true)
+    if (!file || !companyUuid) return;
+    setImporting(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("company_uuid", companyUuid);
+    formData.append("role_uuid", employeeRole);
 
     try {
-      // TODO: Parse Excel file
-      // const employees = await parseExcelFile(file)
-      // setProgress(50)
-
-      // TODO: Import employees via API
-      // const status = await importEmployees(employees)
-      // setImportStatus(status)
-      // setProgress(100)
-
-      console.log("Import function called - implement API calls here")
+      const res = await postAPI(formData, "/users/import");
+      if (res.status === 200) {
+        toast.success(ap('importSuccess'))
+      } else {
+        toast.error(ap('importFailed'))
+      }
     } catch (error) {
-      console.error("Error importing employees:", error)
-      // TODO: Handle import errors
+      console.error("Import error:", error);
+      toast.error(ap('somethingWentWrong'))
     } finally {
-      setImporting(false)
+      setImporting(false);
     }
-  }
+  };
 
   const downloadTemplate = (): void => {
     exportExcel(companyUuid)
@@ -145,7 +161,7 @@ export default function ImportFromExcel() {
     fetchCompanyData()
   }, [userUuid])
 
-  if (loading) {
+  if (loading || isFetchingRoles) {
     return (
       <ExcelImportSkeleton />
     )
@@ -167,9 +183,9 @@ export default function ImportFromExcel() {
                 <CardContent className="px-6 py-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-semibold text-gray-900">Download Template</h3>
+                      <h3 className="font-semibold text-gray-900">{ie('downloadTemplate')}</h3>
                       <p className="text-sm text-gray-600 mt-1">
-                        Use our template to ensure your data is formatted correctly
+                        {ie('downloadTemplateDescription')}
                       </p>
                     </div>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -180,7 +196,7 @@ export default function ImportFromExcel() {
                         disabled={isExportingExcel}
                       >
                         <Download className="h-4 w-4 mr-2" />
-                        Download Template
+                        {ie("downloadTemplate")}
                       </Button>
                     </motion.div>
                   </div>
@@ -192,8 +208,8 @@ export default function ImportFromExcel() {
             <motion.div variants={itemVariants}>
               <Card className="border-0 shadow-xl backdrop-blur-sm">
                 <CardHeader>
-                  <CardTitle className="text-xl text-gray-900">Upload Excel File</CardTitle>
-                  <CardDescription>Drag and drop your Excel file here, or click to browse</CardDescription>
+                  <CardTitle className="text-xl text-gray-900">{ie('uploadFile')}</CardTitle>
+                  <CardDescription>{ie('uploadFileDescription')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <motion.div
@@ -228,29 +244,31 @@ export default function ImportFromExcel() {
                           className="text-gray-500 hover:text-gray-700"
                         >
                           <X className="h-4 w-4 mr-1" />
-                          Remove
+                          {co("remove")}
                         </Button>
                       </motion.div>
                     ) : (
                       <motion.div className="space-y-4">
                         <Upload className="h-12 w-12 text-gray-400 mx-auto" />
                         <div>
-                          <p className="text-lg font-semibold text-gray-900">Drop your Excel file here</p>
-                          <p className="text-sm text-gray-600 mt-1">Supports .xlsx and .xls files up to 10MB</p>
+                          <p className="text-lg font-semibold text-gray-900">{ie('dropZone')}</p>
+                          <p className="text-sm text-gray-600 mt-1">{ie("fileFormat")}</p>
                         </div>
                         <div>
                           <input
+                            ref={fileInputRef}
                             type="file"
                             accept=".xlsx,.xls"
                             onChange={handleFileInput}
                             className="hidden"
-                            id="file-upload"
                           />
-                          <label htmlFor="file-upload">
-                            <Button variant="outline" className="cursor-pointer bg-transparent">
-                              Browse Files
-                            </Button>
-                          </label>
+                          <Button
+                            variant="outline"
+                            className="cursor-pointer bg-transparent"
+                            onClick={openFileExplorer}
+                          >
+                            {co("browseFiles")}
+                          </Button>
                         </div>
                       </motion.div>
                     )}
@@ -267,7 +285,7 @@ export default function ImportFromExcel() {
                 className="border-gray-300 text-gray-700 hover:bg-gray-50 bg-transparent"
                 disabled={importing}
               >
-                Cancel
+                {co('cancel')}
               </Button>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
@@ -284,12 +302,12 @@ export default function ImportFromExcel() {
                       >
                         <Upload className="h-4 w-4" />
                       </motion.div>
-                      Importing...
+                      {ie('importing')}
                     </>
                   ) : (
                     <>
                       <Upload className="h-4 w-4 mr-2" />
-                      Import Employees
+                      {ie('importExcelButton')}
                     </>
                   )}
                 </Button>

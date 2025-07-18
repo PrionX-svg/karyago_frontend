@@ -13,7 +13,9 @@
         "register": "Daftar",
         "disabled": "Dinonaktifkan",
         "copy": "Salin",
-        "copied": "Disalin!"
+        "copied": "Disalin!",
+        "remove": "Hapus",
+        "browseFiles": "Telusuri Berkas"
     },
     "navigation": {
         "home": "Beranda",
@@ -306,6 +308,16 @@
         "importExcel": "Impor Karyawan dari Excel",
         "importExcelDescription": "Unggah file Excel untuk menambah beberapa karyawan sekaligus",
         "importExcelButton": "Impor dari Excel"
+    },
+    "import-excel": {
+        "downloadTemplate": "Unduh Template",
+        "downloadTemplateDescription": "Gunakan template kami agar data Anda diformat dengan benar",
+        "uploadFile": "Unggah File Excel",
+        "uploadFileDescription": "Seret dan lepas file Excel Anda di sini, atau klik untuk mencari",
+        "dropZone": "Letakkan file Anda di sini",
+        "fileFormat": "Format yang didukung: .xlsx, .xls",
+        "importing": "Mengimpor Karyawan...",
+        "importExcelButton": "Impor Karyawan"
     },
     "employees": {
         "title": "Karyawan",

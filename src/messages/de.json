@@ -13,7 +13,9 @@
     "register": "Registrieren",
     "disabled": "Deaktiviert",
     "copy": "Kopieren",
-    "copied": "Kopiert!"
+    "copied": "Kopiert!",
+    "remove": "Entfernen",
+    "browseFiles": "Dateien durchsuchen"
   },
   "navigation": {
     "home": "Startseite",
@@ -306,6 +308,16 @@
     "importExcel": "Mitarbeiter aus Excel importieren",
     "importExcelDescription": "Laden Sie eine Excel-Datei hoch, um mehrere Mitarbeiter gleichzeitig hinzuzufügen",
     "importExcelButton": "Aus Excel importieren"
+  },
+    "import-excel": {
+    "downloadTemplate": "Vorlage herunterladen",
+    "downloadTemplateDescription": "Verwenden Sie unsere Vorlage, um sicherzustellen, dass Ihre Daten korrekt formatiert sind",
+    "uploadFile": "Excel-Datei hochladen",
+    "uploadFileDescription": "Ziehen Sie Ihre Excel-Datei hierher oder klicken Sie, um zu durchsuchen",
+    "dropZone": "Datei hier ablegen",
+    "fileFormat": "Unterstützte Formate: .xlsx, .xls",
+    "importing": "Mitarbeiter werden importiert...",
+    "importExcelButton": "Mitarbeiter importieren"
   },
   "employees": {
     "title": "Mitarbeiter",

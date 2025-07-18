@@ -10,5 +10,6 @@ export const API_URL = {
     createEmployeeHistory: "/employment-histories/create",
     getEmployeeByCompanyUuid: "/users/get-all/dt",
     updateEmployeeByUuid: "/users/update/",
-    exportEmployeeToExcel: "/users/export"
+    exportEmployeeToExcel: "/users/export",
+    getRolesByCompanyUuid: "/roles/get-all/dt"
 }

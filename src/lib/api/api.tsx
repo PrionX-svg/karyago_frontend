@@ -6,6 +6,7 @@ import { useCompanyStore } from "@/stores/company-store";
 import { useEmployeeStore } from "@/stores/employee-store";
 import { CreateEmployeeHistoryPayload, CreateEmployeePayload, UpdateEmployeePayload } from "../interfaces/employee-interface";
 import postAPI from "./postAPI";
+import { useRoleStore } from "@/stores/role-store";
 
 export const api = {
     async getMe() {
@@ -120,6 +121,17 @@ export const api = {
             link.click();
             link.parentNode?.removeChild(link);
             window.URL.revokeObjectURL(url);
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    },
+    async getRolesByCompanyUuid(companyUuid: string) {
+        try {
+            const setRoles = useRoleStore.getState().setRoles;
+            const query = companyUuid ? `?company_uuid=${companyUuid}&limit=50` : "?limit=50";
+            const response = await getAPI(`${API_URL.getRolesByCompanyUuid}${query}`);
+            const formattedRoles = responseFormatter.formatGetRolesByCompanyUuid(response.data);
+            setRoles(formattedRoles);
         } catch (error) {
             return Promise.reject(error);
         }
