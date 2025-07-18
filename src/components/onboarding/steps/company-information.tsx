@@ -58,9 +58,7 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
 
                 const encryptedUuid = await encrypt(response.data.data.uuid)
                 localStorage.setItem("meta", encryptedUuid)
-                setTimeout(() => {
-                    onNext();
-                }, 1000)
+                onNext();
             } else if (response.status === 400) {
                 toast.error(ap("companyCreationFailed"), {
                     description: ap("checkInputs"),
@@ -71,7 +69,7 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
             }
         } catch {
             toast.error(ap("somethingWentWrong"))
-            
+
         } finally {
             setIsLoading(false)
         }
@@ -95,10 +93,13 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
     }, [user.uuid])
 
     useEffect(() => {
-        onNext()
-        localStorage.setItem("onboardingStep", String(2))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (companyUuid && companyUuid !== "undefined" && companyUuid !== "") {
+            onNext()
+            localStorage.setItem("onboardingStep", String(2))
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [companyUuid])
+
 
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -130,7 +131,7 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
         },
     }
 
-    if (isLoading || companyUuid) {
+    if (isLoading) {
         return (
             <CompanySkeleton />
         )
@@ -139,7 +140,7 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
     return (
         <motion.div className="min-h-screen flex flex-col" initial="hidden" animate="visible" variants={containerVariants}>
             <div className="flex-1 flex flex-col lg:flex-row items-start px-8 py-8 gap-4 sm:gap-16 max-w-7xl mx-auto w-full">
-                <motion.div className="lg:w-80 space-y-6 py-4" variants={itemVariants}>
+                <motion.div className="w-full lg:w-80 space-y-6 py-4" variants={itemVariants}>
                     <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
                         <Card className="border-orange-200 bg-white/80 backdrop-blur-sm">
                             <CardHeader>
@@ -187,7 +188,7 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
                                     <motion.div whileHover={{ rotate: 15 }} transition={{ duration: 0.2 }}>
                                         <CheckCircle className="h-5 w-5 text-amber-600" />
                                     </motion.div>
-                                    <CardTitle className="text-lg text-amber-800">Pro Tips</CardTitle>
+                                    <CardTitle className="text-lg text-amber-800">{ci('proTips')}</CardTitle>
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -216,8 +217,8 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
                     </motion.div>
                 </motion.div>
 
-                <motion.div className="flex-1" variants={itemVariants}>
-                    <div className="max-w-2xl mx-auto p-4 lg:mx-0">
+                <motion.div className="flex-1 w-full" variants={itemVariants}>
+                    <div className="w-full p-4 lg:max-w-2xl lg:mx-0 mx-auto">
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -312,7 +313,7 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ duration: 0.3 }}
                                         >
-                                        {ci("emailIsRequired")}
+                                            {ci("emailIsRequired")}
                                         </motion.p>
                                     )}
                                     {/* Email validation message */}

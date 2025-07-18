@@ -81,6 +81,7 @@ export default function AddUserManually() {
     const [loading, setLoading] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [copied, setCopied] = useState(false)
+    const [showConfirm, setShowConfirm] = useState(false)
     const router = useRouter()
 
     const employees = useEmployeeStore((state) => state.employees)
@@ -123,13 +124,13 @@ export default function AddUserManually() {
         const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         const numbers = "0123456789"
         const special = "!@#$%^&*"
-        
+
         let password = ""
         password += lowercase.charAt(Math.floor(Math.random() * lowercase.length))
         password += uppercase.charAt(Math.floor(Math.random() * uppercase.length))
         password += numbers.charAt(Math.floor(Math.random() * numbers.length))
         password += special.charAt(Math.floor(Math.random() * special.length))
-        
+
         const allCharacters = lowercase + uppercase + numbers + special
         for (let i = 4; i < length; i++) {
             password += allCharacters.charAt(Math.floor(Math.random() * allCharacters.length))
@@ -504,6 +505,7 @@ export default function AddUserManually() {
                                                                 id="is_freelance"
                                                                 checked={formData.is_freelance}
                                                                 onCheckedChange={(checked) => handleInputChange("is_freelance", checked as boolean)}
+                                                                className="data-[state=checked]:bg-orange-500"
                                                             />
                                                             <Label htmlFor="is_freelance" className="text-sm font-medium text-gray-700 cursor-pointer">
                                                                 {ae('isFreelance')}
@@ -519,6 +521,7 @@ export default function AddUserManually() {
                                                                         handleEmployeeHistoryChange("end_date", "")
                                                                     }
                                                                 }}
+                                                                className="data-[state=checked]:bg-orange-500"
                                                             />
                                                             <Label htmlFor="is_present" className="text-sm font-medium text-gray-700 cursor-pointer">
                                                                 {ae('isActive')}
@@ -726,6 +729,7 @@ export default function AddUserManually() {
                                                     {co('cancel')}
                                                 </Button>
                                                 <div className="flex flex-row gap-2">
+                                                    {/* Save Button */}
                                                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                                         <Button
                                                             type="submit"
@@ -734,23 +738,22 @@ export default function AddUserManually() {
                                                         >
                                                             <Save className="h-4 w-4 mr-2" />
                                                             {isCreatingEmployee
-                                                                ? ae('creatingEmployee')
+                                                                ? ae("creatingEmployee")
                                                                 : isSubmitting
-                                                                    ? ae('creatingAccount')
-                                                                    : ae('createAccount')}
+                                                                    ? ae("creatingAccount")
+                                                                    : ae("createAccount")}
                                                         </Button>
                                                     </motion.div>
-                                                    <motion.div className="flex gap-2" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                                                        <Link href="/dashboard">
-                                                            <Button
-                                                                onClick={handleComplete}
-                                                                className="h-12 px-8 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-                                                                disabled={isSubmitting || loading || isCreatingEmployee || isCreatingEmployeeHistory}
-                                                            >
-                                                                <CheckCircle className="h-4 w-4 mr-2" />
-                                                                {ae('complete')}
-                                                            </Button>
-                                                        </Link>
+                                                    {/* Complete Button with Confirmation */}
+                                                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                                                        <Button
+                                                            onClick={() => setShowConfirm(true)}
+                                                            className="h-12 px-8 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                                                            disabled={isSubmitting || loading || isCreatingEmployee || isCreatingEmployeeHistory}
+                                                        >
+                                                            <CheckCircle className="h-4 w-4 mr-2" />
+                                                            {ae("complete")}
+                                                        </Button>
                                                     </motion.div>
                                                 </div>
                                             </motion.div>
@@ -766,81 +769,86 @@ export default function AddUserManually() {
                                 <Card className="h-full border-0 shadow-2xl backdrop-blur-sm bg-white/80 overflow-hidden sticky top-4">
                                     <CardContent className="p-0 pb-8">
                                         <div className="max-h-[600px] overflow-y-auto">
-                                            {employees.length === 0 ? (
+                                            {employees.filter(e => e.role?.name !== "owner").length === 0 ? (
                                                 <div className="p-8 text-center">
                                                     <div className="w-16 h-16 bg-gradient-to-r from-orange-100 to-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                                         <Users className="h-8 w-8 text-orange-400" />
                                                     </div>
-                                                    <p className="text-gray-500 text-sm">No employees added yet</p>
-                                                    <p className="text-gray-400 text-xs mt-1">Start by creating your first employee</p>
+                                                    <p className="text-gray-500 text-sm">{ae('noEmployee')}</p>
+                                                    <p className="text-gray-400 text-xs mt-1">{ae('noEmployeeDescription')}</p>
                                                 </div>
                                             ) : (
                                                 <div className="divide-y divide-gray-100">
-                                                    {employees.map((employee, index) => (
-                                                        <motion.div
-                                                            key={`${employee.email}-${index}`}
-                                                            initial={{ opacity: 0, x: 20 }}
-                                                            animate={{ opacity: 1, x: 0 }}
-                                                            transition={{ delay: index * 0.1 }}
-                                                            className="p-4 hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 transition-all duration-200 group"
-                                                        >
-                                                            <div className="flex items-start space-x-3">
-                                                                <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                                                    <span className="text-white font-medium text-sm">
-                                                                        {employee.name.firstname.charAt(0).toUpperCase()}
-                                                                        {employee.name.lastname.charAt(0).toUpperCase()}
-                                                                    </span>
-                                                                </div>
-                                                                <div className="flex-1 min-w-0">
-                                                                    <div className="flex items-center space-x-2 mb-1">
-                                                                        <h4 className="font-medium text-gray-900 text-sm truncate">
-                                                                            {employee.name.firstname} {employee.name.lastname}
-                                                                        </h4>
-                                                                        {employee.is_freelance && (
-                                                                            <Badge variant="outline" className="text-xs border-amber-200 text-amber-600">
-                                                                                <Briefcase className="h-3 w-3 mr-1" />
-                                                                                Freelance
-                                                                            </Badge>
-                                                                        )}
+                                                    {employees
+                                                        .filter(employee => employee.role?.name !== "owner")
+                                                        .map((employee, index) => (
+                                                            <motion.div
+                                                                key={`${employee.email}-${index}`}
+                                                                initial={{ opacity: 0, x: 20 }}
+                                                                animate={{ opacity: 1, x: 0 }}
+                                                                transition={{ delay: index * 0.1 }}
+                                                                className="p-4 hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 transition-all duration-200 group"
+                                                            >
+                                                                <div className="flex items-start space-x-3">
+                                                                    <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                                                        <span className="text-white font-medium text-sm">
+                                                                            {employee.name.firstname.charAt(0).toUpperCase()}
+                                                                            {employee.name.lastname.charAt(0).toUpperCase()}
+                                                                        </span>
                                                                     </div>
-                                                                    <div className="flex items-center space-x-1 text-xs text-gray-500 mb-1">
-                                                                        <Mail className="h-3 w-3" />
-                                                                        <span className="truncate">{employee.email}</span>
-                                                                    </div>
-                                                                    <div className="flex items-center space-x-1 text-xs text-gray-500 mb-1">
-                                                                        <Phone className="h-3 w-3" />
-                                                                        <span>{employee.phone}</span>
-                                                                    </div>
-                                                                    <div className="flex items-center justify-between mt-2">
-                                                                        <div className="flex items-center space-x-1 text-xs text-gray-400">
-                                                                            <Calendar className="h-3 w-3" />
-                                                                            <span>Born {formatDate(employee.dob || "")}</span>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <div className="flex items-center space-x-2 mb-1">
+                                                                            <h4 className="font-medium text-gray-900 text-sm truncate">
+                                                                                {employee.name.firstname} {employee.name.lastname}
+                                                                            </h4>
+                                                                            {employee.is_freelance && (
+                                                                                <Badge variant="outline" className="text-xs border-amber-200 text-amber-600">
+                                                                                    <Briefcase className="h-3 w-3 mr-1" />
+                                                                                    {ae('freelanceStatus')}
+                                                                                </Badge>
+                                                                            )}
                                                                         </div>
-                                                                        <Badge
-                                                                            variant="secondary"
-                                                                            className={`text-xs ${employee.gender === "male"
-                                                                                ? "bg-blue-100 text-blue-700"
-                                                                                : employee.gender === "female"
-                                                                                    ? "bg-pink-100 text-pink-700"
-                                                                                    : "bg-gray-100 text-gray-700"
-                                                                                }`}
-                                                                        >
-                                                                            {employee.gender || "Invalid"}
-                                                                        </Badge>
+                                                                        <div className="flex items-center space-x-1 text-xs text-gray-500 mb-1">
+                                                                            <Mail className="h-3 w-3" />
+                                                                            <span className="truncate">{employee.email}</span>
+                                                                        </div>
+                                                                        <div className="flex items-center space-x-1 text-xs text-gray-500 mb-1">
+                                                                            <Phone className="h-3 w-3" />
+                                                                            <span>{employee.phone}</span>
+                                                                        </div>
+                                                                        <div className="flex items-center justify-between mt-2">
+                                                                            <div className="flex items-center space-x-1 text-xs text-gray-400">
+                                                                                <Calendar className="h-3 w-3" />
+                                                                                <span>{ae('born')} {formatDate(employee.dob || "")}</span>
+                                                                            </div>
+                                                                            <Badge
+                                                                                variant="secondary"
+                                                                                className={`text-xs ${employee.gender === "male"
+                                                                                    ? "bg-blue-100 text-blue-700"
+                                                                                    : employee.gender === "female"
+                                                                                        ? "bg-pink-100 text-pink-700"
+                                                                                        : "bg-gray-100 text-gray-700"
+                                                                                    }`}
+                                                                            >
+                                                                                {employee.gender || "Invalid"}
+                                                                            </Badge>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </motion.div>
-                                                    ))}
+                                                            </motion.div>
+                                                        ))}
                                                 </div>
                                             )}
                                         </div>
-                                        {employees.length > 0 && (
+                                        {employees.filter(e => e.role?.name !== "owner").length > 0 && (
                                             <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 border-t border-orange-100 absolute bottom-0 left-0 right-0">
                                                 <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
                                                     <UserCheck className="h-4 w-4 text-orange-500" />
                                                     <span>
-                                                        Total: {employees.length} employee{employees.length !== 1 ? "s" : ""}
+                                                        {ae('total', {
+                                                            count: employees.filter(e => e.role?.name !== "owner").length,
+                                                            plural: employees.filter(e => e.role?.name !== "owner").length !== 1 ? "s" : ""
+                                                        })}
                                                     </span>
                                                 </div>
                                             </div>
@@ -851,6 +859,44 @@ export default function AddUserManually() {
                         </div>
                     </div>
                 </motion.div>
+                {/* Confirmation Dialog */}
+                {showConfirm && (
+                    <div
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="confirm-dialog-title"
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.2 }}
+                            className="bg-white rounded-lg shadow-2xl p-8 max-w-sm w-full"
+                        >
+                            <h2 id="confirm-dialog-title" className="text-lg font-semibold mb-4">
+                                {ae("confirmCompleteTitle")}
+                            </h2>
+                            <p className="mb-6 text-gray-600">{ae("confirmCompleteDesc")}</p>
+                            <div className="flex justify-end gap-2">
+                                <Button variant="outline" onClick={() => setShowConfirm(false)} className="px-4">
+                                    {co("cancel")}
+                                </Button>
+                                <Link href="/dashboard">
+                                    <Button
+                                        onClick={() => {
+                                            handleComplete();
+                                            setShowConfirm(false);
+                                        }}
+                                        className="px-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white"
+                                    >
+                                        {ae("confirmCompleteButton")}
+                                    </Button>
+                                </Link>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
             </div>
         </motion.div>
     )

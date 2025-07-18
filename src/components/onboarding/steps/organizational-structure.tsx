@@ -229,7 +229,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
         <motion.div className="flex flex-col min-h-screen" initial="hidden" animate="visible" variants={containerVariants}>
             <main className="flex-1">
                 <div className="flex-1 flex flex-col lg:flex-row items-start px-8 py-8 gap-4 sm:gap-16 max-w-7xl mx-auto w-full">
-                    <motion.div className="lg:w-80 space-y-6 py-4" variants={itemVariants}>
+                    <motion.div className="lg:w-80 space-y-6 py-4 w-full" variants={itemVariants}>
                         {/* Progress Card */}
                         <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
                             <Card className="border-orange-200 bg-white/80 backdrop-blur-sm">
@@ -312,8 +312,8 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                     </motion.div>
 
                     {/* Main Content */}
-                    <motion.section className="flex-1 p-4" variants={itemVariants}>
-                        <div className="max-w-3xl">
+                    <motion.section className="flex-1 p-4 w-full" variants={itemVariants}>
+                        <div className="lg:max-w-3xl w-full">
                             <motion.div
                                 className="mb-8"
                                 initial={{ opacity: 0, y: -20 }}

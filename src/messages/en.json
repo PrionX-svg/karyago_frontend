@@ -313,7 +313,15 @@
     "creatingEmployee": "Creating Employee...",
     "creatingAccount": "Creating Account...",
     "createAccount": "Create Account",
-    "complete": "Complete Onboarding"
+    "complete": "Complete Onboarding",
+    "noEmployee": "No employee added yet",
+    "noEmployeeDescription": "Start by creating your first employee",
+    "freelanceStatus": "Freelance",
+    "born": "Born",
+    "total": "Total: {count} employee{plural}",
+    "confirmCompleteTitle": "Complete Onboarding?",
+    "confirmCompleteDesc": "Are you sure you want to complete the onboarding process?",
+    "confirmCompleteButton": "Yes, Complete Onboarding"
   },
   "brand": {
     "brandingTitle": "HRIS Portal",

@@ -61,14 +61,12 @@ export default function OnboardingPage() {
     }
 
     const handleStartOnboarding = () => {
-        setTimeout(() => {
-            if (companyStoreData === null || companyStoreData === undefined) {
-                setCurrentStep(1);
-            } else {
-                setCurrentStep(2);
-            }
-            setShowWelcome(false);
-        }, 250);
+        if (!companyStoreData[0]) {
+            setCurrentStep(1);
+        } else {
+            setCurrentStep(2);
+        }
+        setShowWelcome(false);
     };
 
     const finishOnboarding = () => {
@@ -79,19 +77,25 @@ export default function OnboardingPage() {
 
     useEffect(() => {
         const fetchCompanyData = async () => {
+            if (!userUuid) return;
             if (userUuid) {
                 setLoading(true);
                 try {
                     await api.getCompanyByUserUuid(userUuid);
-                    const encryptedUuid = await encrypt(companyUuid)
-                    localStorage.setItem("meta", encryptedUuid)
+                    if (!companyStoreData[0]) {
+                        setCurrentStep(1);
+                    } else {
+                        const encryptedUuid = await encrypt(companyUuid)
+                        console.log("Encrypted UUID:", encryptedUuid)
+                        localStorage.setItem("meta", encryptedUuid)
+                    }
                 } finally {
                     setLoading(false);
                 }
             }
         }
         fetchCompanyData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userUuid]);
 
     useEffect(() => {
@@ -147,6 +151,12 @@ export default function OnboardingPage() {
             }
         }
     }, [currentStep])
+
+    useEffect(() => {
+        console.log("current step:", currentStep)
+        console.log('user uuid:', userUuid)
+        console.log("company store data:", companyStoreData)
+    }, [companyStoreData, currentStep, userUuid])
 
     if (isFetchingGetMe) {
         return (

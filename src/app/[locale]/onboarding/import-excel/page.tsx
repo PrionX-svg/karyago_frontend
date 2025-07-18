@@ -235,7 +235,9 @@ export default function ImportFromExcel() {
                         <CheckCircle className="h-12 w-12 text-green-600 mx-auto" />
                         <div>
                           <p className="text-lg font-semibold text-gray-900">{file.name}</p>
-                          <p className="text-sm text-gray-600">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                            <p className="text-sm text-gray-600">
+                            {(file.size / (1024 * 1024)).toLocaleString(undefined, { maximumFractionDigits: 2 })} MB
+                            </p>
                         </div>
                         <Button
                           variant="ghost"

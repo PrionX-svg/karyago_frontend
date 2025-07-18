@@ -212,10 +212,10 @@ export function TeamMembers({ finishOnboarding }: TeamMembersProps) {
                                 </motion.div>
 
                                 {/* Navigation */}
-                                <motion.div className="flex justify-between pt-6" variants={itemVariants}>
+                                <motion.div className="flex justify-between" variants={itemVariants}>
                                     <div />
                                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                        <Button size="lg" onClick={finishOnboarding} className="bg-green-600 hover:bg-green-700 text-white px-8">
+                                        <Button size="lg" onClick={finishOnboarding} className="bg-green-600 hover:bg-green-700 text-white px-8 w-full">
                                             {eo('complete')}
                                             <ArrowRight className="ml-2 h-5 w-5" />
                                         </Button>

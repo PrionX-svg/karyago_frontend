@@ -190,7 +190,15 @@
         "creatingEmployee": "Sedang membuat karyawan...",
         "creatingAccount": "Sedang membuat akun...",
         "createAccount": "Buat Akun",
-        "complete": "Selesaikan Onboarding"
+        "complete": "Selesaikan Onboarding",
+        "noEmployee": "Belum ada karyawan yang ditambahkan",
+        "noEmployeeDescription": "Mulai dengan membuat karyawan pertama Anda",
+        "freelanceStatus": "Status Freelance",
+        "born": "Lahir",
+        "total": "Total: {count} karyawan{plural}",
+        "confirmCompleteTitle": "Selesaikan Onboarding?",
+        "confirmCompleteDesc": "Apakah Anda yakin ingin menyelesaikan proses onboarding?",
+        "confirmCompleteButton": "Ya, Selesaikan Onboarding"
     },
     "brand": {
         "brandingTitle": "Portal HRIS",

@@ -24,7 +24,8 @@ export const responseFormatter = {
             }
         }
     },
-    formatGetCompanyByUserUuid(response: GetCompanyByUserUuidResponse): CompanyType {
+    formatGetCompanyByUserUuid(response: GetCompanyByUserUuidResponse): CompanyType | null {
+        if (response.data === null) return null;
         return {
             uuid: response.data?.uuid,
             logo: response.data?.logo,

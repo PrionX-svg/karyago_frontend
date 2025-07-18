@@ -168,7 +168,7 @@
     "endDateMissing": "Enddatum ist erforderlich, wenn der Mitarbeiter nicht mehr arbeitet",
     "endDateError": "Enddatum kann nicht vor dem Startdatum liegen",
     "firstFormTitle": "Persönliche Informationen",
-    "firstFormDescription": "Sie können einen erstellten Mitarbeiter nicht mehr ändern.",
+    "firstFormDescription": "Ein erstellter Mitarbeiter kann nicht mehr geändert werden.",
     "firstName": "Vorname",
     "lastName": "Nachname",
     "phone": "Telefonnummer",
@@ -190,7 +190,15 @@
     "creatingEmployee": "Mitarbeiter wird erstellt...",
     "creatingAccount": "Konto wird erstellt...",
     "createAccount": "Konto erstellen",
-    "complete": "Onboarding abschließen"
+    "complete": "Onboarding abschließen",
+    "noEmployee": "Noch kein Mitarbeiter hinzugefügt",
+    "noEmployeeDescription": "Beginnen Sie mit dem Hinzufügen Ihres ersten Mitarbeiters",
+    "freelanceStatus": "Freiberufler",
+    "born": "Geboren",
+    "total": "Insgesamt: {count} Mitarbeiter{plural}",
+    "confirmCompleteTitle": "Onboarding abschließen?",
+    "confirmCompleteDesc": "Möchten Sie den Onboarding-Prozess wirklich abschließen?",
+    "confirmCompleteButton": "Ja, Onboarding abschließen"
   },
   "brand": {
     "brandingTitle": "HRIS Portal",
@@ -309,7 +317,7 @@
     "importExcelDescription": "Laden Sie eine Excel-Datei hoch, um mehrere Mitarbeiter gleichzeitig hinzuzufügen",
     "importExcelButton": "Aus Excel importieren"
   },
-    "import-excel": {
+  "import-excel": {
     "downloadTemplate": "Vorlage herunterladen",
     "downloadTemplateDescription": "Verwenden Sie unsere Vorlage, um sicherzustellen, dass Ihre Daten korrekt formatiert sind",
     "uploadFile": "Excel-Datei hochladen",
