@@ -86,6 +86,21 @@ export const api = {
             return Promise.reject(error)
         }
     },
+    async importEmployee(formData: FormData) {
+        const setEmployee = useEmployeeStore.getState().setEmployees
+        const setEmployeeHistory = useEmployeeStore.getState().setEmployeeHistory
+        try{
+            const response = await postAPI(formData, `${API_URL.importEmployee}`)
+            if (response.status === 200) {
+                const employeesData = responseFormatter.formatImportEmployeeData(response.data)
+                const employeeHistoryData = responseFormatter.formatImportEmployeeHistoryData(response.data)
+                setEmployee(employeesData)
+                setEmployeeHistory(employeeHistoryData);
+            }
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
     async getEmployeeByCompanyUuid(companyUuid: string) {
         try {
             const setEmployees = useEmployeeStore.getState().setEmployees;

@@ -1,9 +1,14 @@
-import React, { useState } from "react"
-import { Upload } from "lucide-react"
+"use client"
+
+import type React from "react"
+import { useState } from "react"
+import { Upload, Trash2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { toast } from "sonner"
 import Image from "next/image"
+import postAPI from "./api/postAPI"
+import { Button } from "@/components/ui/button"
 
 type Props = {
     value?: string
@@ -11,9 +16,9 @@ type Props = {
     onChange: (value: string) => void
 }
 
-export default function FileDropUploader({ value, folder, onChange }: Props) {
+export default function FileDropUploader({ value, onChange, folder }: Props) {
     const [dragActive, setDragActive] = useState(false)
-    const [preview, setPreview] = useState<string | null>(value ? `/r2/${value}` : null)
+    const [preview, setPreview] = useState<string | null>(value ?? null)
     const [progress, setProgress] = useState<number | null>(null)
 
     const validateFile = (file: File): boolean => {
@@ -29,42 +34,60 @@ export default function FileDropUploader({ value, folder, onChange }: Props) {
     }
 
     const uploadFile = async (file: File) => {
+        if (!file) return
+        setProgress(0)
+
         const formData = new FormData()
         formData.append("file", file)
-        formData.append("folder", `upload/${folder}`)
+        formData.append("folder", folder)
 
-        const xhr = new XMLHttpRequest()
-        xhr.open("POST", "/api/upload", true)
+        try {
+            const res = await postAPI(formData, "/upload/")
+            if (res.status === 200) {
+                setProgress(100)
+                setTimeout(() => setProgress(null), 1500)
 
-        xhr.upload.onprogress = (e) => {
-            if (e.lengthComputable) {
-                const percent = (e.loaded / e.total) * 100
-                setProgress(percent)
-            }
-        }
-
-        xhr.onload = () => {
-            setProgress(null)
-            try {
-                const res = JSON.parse(xhr.responseText)
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    setPreview(res.url)
-                    onChange(res.name)
-                    toast.success("Upload success")
+                const url = res.data?.url?.URL
+                if (url) {
+                    setPreview(url)
+                    onChange(url)
+                    toast.success("File uploaded successfully!")
                 } else {
-                    toast.error(res.error || "Upload failed")
+                    throw new Error("No URL returned from upload response.")
                 }
-            } catch {
-                toast.error("Upload failed")
+            } else {
+                setProgress(null)
+                throw new Error("Upload failed")
             }
+        } catch (error) {
+            console.error("Upload error:", error)
+            toast.error("Failed to upload file. Please try again.")
         }
+    }
 
-        xhr.onerror = () => {
-            setProgress(null)
-            toast.error("Upload error")
+    const deleteFile = async () => {
+        if (!preview) return
+
+        try {
+            // Extract filename from URL
+            const urlParts = preview.split("/")
+            // Remove query params from filename
+            const fileNameWithParams = urlParts[urlParts.length - 1]
+            const fileName = fileNameWithParams.split("?")[0]
+
+            const res = await postAPI({ file_name: fileName }, "/upload/delete")
+
+            if (res.status === 200) {
+                setPreview(null)
+                onChange("")
+                toast.success("File deleted successfully!")
+            } else {
+                throw new Error("Delete failed")
+            }
+        } catch (error) {
+            console.error("Delete error:", error)
+            toast.error("Failed to delete file. Please try again.")
         }
-
-        xhr.send(formData)
     }
 
     const handleFile = async (file: File) => {
@@ -94,6 +117,9 @@ export default function FileDropUploader({ value, folder, onChange }: Props) {
         }
     }
 
+    console.log("Preview URL:", preview)
+    console.log("Value: ", value)
+
     return (
         <div
             className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${dragActive ? "border-orange-400 bg-orange-50" : "border-gray-300 hover:border-orange-300 hover:bg-orange-50/50"
@@ -110,20 +136,35 @@ export default function FileDropUploader({ value, folder, onChange }: Props) {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
             <div className="space-y-3">
-                <div className="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <Upload className="h-6 w-6 text-orange-600" />
-                </div>
+                {!preview && (
+                    <div className="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <Upload className="h-6 w-6 text-orange-600" />
+                    </div>
+                )}
                 {preview ? (
                     <div className="space-y-2">
-                        <Image
-                            src={preview}
-                            alt="Preview"
-                            className="mx-auto max-h-40 rounded-md object-contain"
-                            onError={(e) => {
-                                e.currentTarget.src = "/placeholder.svg"
-                            }}
-                        />
-                        <p className="text-sm text-gray-600">Click to change or drag a new image</p>
+                        <div className="relative w-40 h-40 mx-auto group">
+                            <Image
+                                src={preview || "/placeholder.svg"}
+                                alt="Preview"
+                                width={160}
+                                height={160}
+                                className="rounded-md object-contain mx-auto"
+                            />
+                            <Button
+                                variant="destructive"
+                                size="icon"
+                                className="absolute -top-2 -right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    deleteFile()
+                                }}
+                                type="button"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
+                        <p className="text-sm text-gray-600 text-center">Click to change or drag a new image</p>
                     </div>
                 ) : (
                     <div className="space-y-2">

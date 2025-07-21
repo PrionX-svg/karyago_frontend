@@ -7,6 +7,7 @@ export const API_URL = {
     getDivisionsByCompanyUuid: "/department-groups/get-all/dt",
     getSubDivisionsByCompanyUuid: "/departments/get-all/dt",
     createEmployeeByCompanyUuid: "/users/create",
+    importEmployee: "/users/import",
     createEmployeeHistory: "/employment-histories/create",
     getEmployeeByCompanyUuid: "/users/get-all/dt",
     updateEmployeeByUuid: "/users/update/",

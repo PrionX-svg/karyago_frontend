@@ -93,13 +93,17 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
     }, [user.uuid])
 
     useEffect(() => {
-        if (companyUuid && companyUuid !== "undefined" && companyUuid !== "") {
-            onNext()
-            localStorage.setItem("onboardingStep", String(2))
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [companyUuid])
+        const isValidCompanyUuid =
+            companyUuid &&
+            typeof companyUuid === "string" &&
+            companyUuid.trim() !== "" &&
+            companyUuid !== "undefined";
 
+        if (!isValidCompanyUuid) return;
+
+        onNext();
+        localStorage.setItem("onboardingStep", "2");
+    }, [companyUuid, onNext]);
 
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -244,8 +248,8 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
                                 </Label>
                                 <FileDropUploader
                                     value={formData.logo}
-                                    folder="company/logo"
                                     onChange={(val) => setFormData({ ...formData, logo: val })}
+                                    folder="company-logo"
                                 />
                             </motion.div>
 

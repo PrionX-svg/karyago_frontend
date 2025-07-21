@@ -15,7 +15,8 @@
         "copy": "Salin",
         "copied": "Disalin!",
         "remove": "Hapus",
-        "browseFiles": "Telusuri Berkas"
+        "browseFiles": "Telusuri Berkas",
+        "close": "Tutup"
     },
     "navigation": {
         "home": "Beranda",
@@ -325,7 +326,24 @@
         "dropZone": "Letakkan file Anda di sini",
         "fileFormat": "Format yang didukung: .xlsx, .xls",
         "importing": "Mengimpor Karyawan...",
-        "importExcelButton": "Impor Karyawan"
+        "importExcelButton": "Impor Karyawan",
+        "importRules": "Aturan Impor",
+        "importRulesDescription": "Silakan tinjau aturan berikut sebelum mengimpor file Excel Anda",
+        "rule1Title": "Kolom Wajib",
+        "rule1Description": "Semua kolom wajib diisi.",
+        "rule1Additional": "Jika `is_present` bernilai true, `end_date` harus kosong.",
+        "rule2Additional": "Jika `is_present` bernilai false, `end_date` harus diisi.",
+        "rule2Title": "Kolom Peran & Cabang",
+        "rule2Description": "Kolom peran dan cabang bersifat opsional saat onboarding.",
+        "rule3Title": "Pemeriksaan Duplikasi Email",
+        "rule3Description": "Sistem secara otomatis memeriksa alamat email yang duplikat. Baris dengan email yang sudah ada akan dilewati.",
+        "rule4Title": "Kebijakan Password Default",
+        "rule4Description": "Semua pengguna yang diimpor akan diberikan password default yang aman",
+        "rule4Additional": "(Pengguna diwajibkan mengganti password saat login pertama.)",
+        "uploadedData": "Data Terunggah",
+        "uploadedDataDescription": "Berikut adalah detail dari file yang Anda unggah.",
+        "employees": "Karyawan yang Diimpor",
+        "viewUploadedData": "Lihat Data yang Diimpor"
     },
     "employees": {
         "title": "Karyawan",

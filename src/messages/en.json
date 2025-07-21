@@ -15,7 +15,8 @@
     "copy": "Copy",
     "copied": "Copied!",
     "remove": "Remove",
-    "browseFiles": "Browse Files"
+    "browseFiles": "Browse Files",
+    "close": "Close"
   },
   "navigation": {
     "home": "Home",
@@ -341,7 +342,24 @@
     "dropZone": "Drop your file here",
     "fileFormat": "Supported formats: .xlsx, .xls",
     "importing": "Importing Employees...",
-    "importExcelButton": "Import Employees"
+    "importExcelButton": "Import Employees",
+    "importRules": "Import Rules",
+    "importRulesDescription": "Please review these rules before importing your Excel file",
+    "rule1Title": "Mandatory Fields",
+    "rule1Description": "All columns are required.",
+    "rule1Additional": "If `is_present` is true, `end_date` must be empty.",
+    "rule2Additional": "If `is_present` is false, `end_date` must be filled.",
+    "rule2Title": "Role & Branch Fields",
+    "rule2Description": "Role and branch fields are optional during onboarding.",
+    "rule3Title": "Email Duplication Check",
+    "rule3Description": "The system automatically checks for duplicate email addresses. Rows with existing emails will be skipped.",
+    "rule4Title": "Default Password Policy",
+    "rule4Description": "All imported users will be assigned a secure default password",
+    "rule4Additional": "(Users are required to change their password upon first login.)",
+    "uploadedData": "Uploaded Data",
+    "uploadedDataDescription": "Here are the details from your uploaded file.",
+    "employees": "Imported Employees",
+    "viewUploadedData": "View Imported Data"
   },
   "employees": {
     "title": "Employees",

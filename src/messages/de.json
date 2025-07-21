@@ -15,7 +15,8 @@
     "copy": "Kopieren",
     "copied": "Kopiert!",
     "remove": "Entfernen",
-    "browseFiles": "Dateien durchsuchen"
+    "browseFiles": "Dateien durchsuchen",
+    "close": "Schließen"
   },
   "navigation": {
     "home": "Startseite",
@@ -319,13 +320,30 @@
   },
   "import-excel": {
     "downloadTemplate": "Vorlage herunterladen",
-    "downloadTemplateDescription": "Verwenden Sie unsere Vorlage, um sicherzustellen, dass Ihre Daten korrekt formatiert sind",
+    "downloadTemplateDescription": "Verwenden Sie unsere Vorlage, um sicherzustellen, dass Ihre Daten korrekt formatiert sind.",
     "uploadFile": "Excel-Datei hochladen",
-    "uploadFileDescription": "Ziehen Sie Ihre Excel-Datei hierher oder klicken Sie, um zu durchsuchen",
+    "uploadFileDescription": "Ziehen Sie Ihre Excel-Datei hierher oder klicken Sie, um sie auszuwählen.",
     "dropZone": "Datei hier ablegen",
     "fileFormat": "Unterstützte Formate: .xlsx, .xls",
     "importing": "Mitarbeiter werden importiert...",
-    "importExcelButton": "Mitarbeiter importieren"
+    "importExcelButton": "Mitarbeiter importieren",
+    "importRules": "Importregeln",
+    "importRulesDescription": "Bitte überprüfen Sie diese Regeln, bevor Sie Ihre Excel-Datei importieren.",
+    "rule1Title": "Pflichtfelder",
+    "rule1Description": "Alle Spalten sind erforderlich.",
+    "rule1Additional": "Wenn `is_present` wahr ist, muss `end_date` leer sein.",
+    "rule2Additional": "Wenn `is_present` falsch ist, muss `end_date` ausgefüllt sein.",
+    "rule2Title": "Rollen- & Filialfelder",
+    "rule2Description": "Rollen- und Filialfelder sind während des Onboardings optional.",
+    "rule3Title": "E-Mail-Duplikatsprüfung",
+    "rule3Description": "Das System prüft automatisch auf doppelte E-Mail-Adressen. Zeilen mit vorhandenen E-Mails werden übersprungen.",
+    "rule4Title": "Standard-Passwortrichtlinie",
+    "rule4Description": "Allen importierten Nutzern wird ein sicheres Standardpasswort zugewiesen.",
+    "rule4Additional": "(Benutzer müssen ihr Passwort beim ersten Login ändern.)",
+    "uploadedData": "Hochgeladene Daten",
+    "uploadedDataDescription": "Hier sind die Details aus Ihrer hochgeladenen Datei.",
+    "employees": "Importierte Mitarbeiter",
+    "viewUploadedData": "Importierte Daten anzeigen"
   },
   "employees": {
     "title": "Mitarbeiter",

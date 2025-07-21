@@ -38,3 +38,28 @@ export type EmployeeHistoryType = {
     start_date: string;
     end_date?: string | null;
 }
+
+export type MergedEmployeeType = {
+    user_uuid: string;
+    employee_uuid: string;
+    name: {
+        fullname: string;
+        firstname: string;
+        lastname: string;
+    };
+    email: string;
+    phone: string;
+    dob: string | null;
+    gender: string | null;
+    is_freelance: boolean;
+    company_uuid: string;
+    company_name?: string;
+    role_name: string;
+    role_uuid: string;
+    position?: string;
+    is_present?: boolean;
+    start_date?: string;
+    end_date?: string | null;
+    source: "basic" | "history";
+};
+

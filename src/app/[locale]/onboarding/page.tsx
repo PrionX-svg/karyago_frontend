@@ -16,11 +16,12 @@ import { useCompanyStore } from "@/stores/company-store"
 import { encrypt } from "@/lib/encrypt"
 
 export default function OnboardingPage() {
-    const [showWelcome, setShowWelcome] = useState(true)
     const [currentStep, setCurrentStep] = useState(1)
+    const [showWelcome, setShowWelcome] = useState(true)
     const [loading, setLoading] = useState(false)
-    const companyStoreData = useCompanyStore.getState().company;
-    const companyUuid = useCompanyStore.getState().company[0]?.uuid;
+
+    const companyData = useCompanyStore((state) => state.company);
+    const companyUuid = companyData[0]?.uuid;
 
     const { isFetchingGetMe } = user.useGetUMe()
     const router = useRouter()
@@ -33,26 +34,6 @@ export default function OnboardingPage() {
     }
     const handleBranchNext = () => {
         setCurrentStep(3)
-        const fetchCompanyDivisions = async () => {
-            if (companyUuid) {
-                try {
-                    await api.getDivisionsByCompanyUuid(companyUuid);
-                } catch (error) {
-                    console.error("Failed to fetch company divisions:", error);
-                }
-            }
-        }
-        const fetchCompanySubDivisions = async () => {
-            if (companyUuid) {
-                try {
-                    await api.getSubDivisionsByCompanyUuid(companyUuid);
-                } catch (error) {
-                    console.error("Failed to fetch company subdivisions:", error);
-                }
-            }
-        }
-        fetchCompanyDivisions();
-        fetchCompanySubDivisions();
         localStorage.setItem("onboardingStep", String(3))
     }
     const handleDivisionNext = () => {
@@ -61,13 +42,24 @@ export default function OnboardingPage() {
     }
 
     const handleStartOnboarding = () => {
-        if (!companyStoreData[0]) {
-            setCurrentStep(1);
-        } else {
+        const company = companyData[0];
+        const isValidCompany =
+            company &&
+            typeof company.uuid === "string" &&
+            company.uuid.trim() !== "" &&
+            company.uuid !== "undefined";
+
+        if (isValidCompany) {
             setCurrentStep(2);
+            localStorage.setItem("onboardingStep", "2");
+        } else {
+            setCurrentStep(1);
+            localStorage.setItem("onboardingStep", "1");
         }
+
         setShowWelcome(false);
     };
+
 
     const finishOnboarding = () => {
         localStorage.removeItem("onboardingStep")
@@ -76,89 +68,72 @@ export default function OnboardingPage() {
     }
 
     useEffect(() => {
-        const fetchCompanyData = async () => {
-            if (!userUuid) return;
+        const initializeOnboarding = async () => {
+            setLoading(true);
+            let initialStep = 1;
+            let shouldShowWelcome = true;
+
             if (userUuid) {
-                setLoading(true);
                 try {
                     await api.getCompanyByUserUuid(userUuid);
-                    if (!companyStoreData[0]) {
-                        setCurrentStep(1);
-                    } else {
-                        const encryptedUuid = await encrypt(companyUuid)
-                        console.log("Encrypted UUID:", encryptedUuid)
-                        localStorage.setItem("meta", encryptedUuid)
-                    }
-                } finally {
-                    setLoading(false);
+                } catch (error) {
+                    console.error("Failed to fetch company data:", error);
                 }
             }
-        }
-        fetchCompanyData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
+            const updatedCompanyData = useCompanyStore.getState().company;
+            const hasCompany = updatedCompanyData[0];
+
+            if (typeof window !== "undefined") {
+                const savedStep = localStorage.getItem("onboardingStep");
+                if (savedStep) {
+                    initialStep = parseInt(savedStep);
+                    console.log("Found onboarding step in localStorage:", initialStep);
+                } else {
+                    console.log("No onboarding step found in localStorage.");
+                    initialStep = hasCompany ? 2 : 1;
+                }
+            }
+
+            shouldShowWelcome = (initialStep === 1);
+
+            setCurrentStep(initialStep);
+            setShowWelcome(shouldShowWelcome);
+
+            if (hasCompany) {
+                const currentCompanyUuid = updatedCompanyData[0]?.uuid;
+                if (currentCompanyUuid) {
+                    const encryptedUuid = await encrypt(currentCompanyUuid);
+                    localStorage.setItem("meta", encryptedUuid);
+                }
+            }
+            setLoading(false);
+        };
+
+        initializeOnboarding();
     }, [userUuid]);
 
     useEffect(() => {
-        const fetchCompanyDivisions = async () => {
+        const fetchCompanyRelatedData = async () => {
             if (companyUuid) {
                 try {
                     await api.getDivisionsByCompanyUuid(companyUuid);
-                } catch (error) {
-                    console.error("Failed to fetch company divisions:", error);
-                }
-            }
-        }
-        const fetchCompanySubDivisions = async () => {
-            if (companyUuid) {
-                try {
                     await api.getSubDivisionsByCompanyUuid(companyUuid);
                 } catch (error) {
-                    console.error("Failed to fetch company subdivisions:", error);
+                    console.error("Failed to fetch company related data:", error);
                 }
             }
         }
-        fetchCompanyDivisions();
-        fetchCompanySubDivisions();
+        fetchCompanyRelatedData();
     }, [companyUuid]);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const savedStep = localStorage.getItem("onboardingStep")
-            if (savedStep) {
-                setCurrentStep(parseInt(savedStep))
-                setShowWelcome(parseInt(savedStep) === 1)
-            }
-        }
-    }, [])
-
-    useEffect(() => {
-        const steps = localStorage.getItem("onboardingStep")
-        if (steps && steps !== "4") {
-            setShowWelcome(false)
-        }
-    }, [])
-
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            const stored = localStorage.getItem("onboardingStep")
-
-            if (!stored) {
-                localStorage.setItem("onboardingStep", String(currentStep))
-            }
-
-            if (currentStep > 1 && currentStep !== 4) {
-                setShowWelcome(false)
-            }
+            localStorage.setItem("onboardingStep", String(currentStep))
         }
     }, [currentStep])
 
-    useEffect(() => {
-        console.log("current step:", currentStep)
-        console.log('user uuid:', userUuid)
-        console.log("company store data:", companyStoreData)
-    }, [companyStoreData, currentStep, userUuid])
-
-    if (isFetchingGetMe) {
+    if (isFetchingGetMe || loading) {
         return (
             <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-[#fff7f1] to-white px-4">
                 <div className="flex flex-col items-center gap-6">
@@ -175,9 +150,11 @@ export default function OnboardingPage() {
             </div>
         )
     }
+
     if (showWelcome) {
         return <WelcomeScreen onStart={handleStartOnboarding} loadingState={loading} />
     }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-orange-25 via-orange-50 to-amber-25">
             {currentStep === 1 && <CompanyInformation onNext={handleCompanyNext} companyUuid={companyUuid} />}

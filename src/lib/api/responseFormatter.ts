@@ -3,7 +3,7 @@ import { GetMeResponse } from "../interfaces/user-interface";
 import { CompanyBranchType, CompanyType, DivisionType, SubDivisionType } from "../types/company-type";
 import { UserType } from "../types/user-type";
 import { EmployeeHistoryType, EmployeeType } from "../types/employee-type";
-import { CreateEmployeeHistoryResponse, CreateEmployeeResponse, GetEmployeeByCompanyUuidResponse, UpdateEmployeeResponse } from "../interfaces/employee-interface";
+import { CreateEmployeeHistoryResponse, CreateEmployeeResponse, GetEmployeeByCompanyUuidResponse, ImportEmployeeResponse, UpdateEmployeeResponse } from "../interfaces/employee-interface";
 import { RoleType } from "../types/role-type";
 import { GetRoleByCompanyUuidResponse } from "../interfaces/role-interface";
 
@@ -24,8 +24,7 @@ export const responseFormatter = {
             }
         }
     },
-    formatGetCompanyByUserUuid(response: GetCompanyByUserUuidResponse): CompanyType | null {
-        if (response.data === null) return null;
+    formatGetCompanyByUserUuid(response: GetCompanyByUserUuidResponse): CompanyType {
         return {
             uuid: response.data?.uuid,
             logo: response.data?.logo,
@@ -92,6 +91,52 @@ export const responseFormatter = {
             end_date: response?.data?.end_date ?? null
         }
     },
+    formatImportEmployeeData(response: ImportEmployeeResponse): EmployeeType[] {
+        if (!response.data) return [];
+        return response.data?.map(employee => ({
+            company_uuid: employee?.company?.uuid ?? "",
+            user_uuid: employee?.user_uuid ?? "",
+            employee_uuid: employee?.employee_uuid ?? "",
+            role: {
+                name: employee?.role?.name ?? "",
+                uuid: employee?.role?.uuid ?? ""
+            },
+            name: {
+                fullname: employee?.full_name ?? "",
+                firstname: employee?.first_name ?? "",
+                lastname: employee?.last_name ?? ""
+            },
+            phone: employee?.phone ?? "",
+            email: employee?.email ?? "",
+            dob: employee?.dob ?? "",
+            gender: employee?.gender ?? "",
+            is_freelance: employee?.is_freelance ?? false,
+        }))
+    },
+    formatImportEmployeeHistoryData(response: ImportEmployeeResponse): EmployeeHistoryType[] {
+        return response.data?.flatMap(user =>
+            user.employment_histories?.map(history => ({
+                uuid: history?.uuid ?? "",
+                employee: {
+                    uuid: history?.employee?.uuid ?? "",
+                    full_name: history?.employee?.full_name ?? "",
+                    email: history?.employee?.email ?? ""
+                },
+                company: {
+                    uuid: history?.company?.uuid ?? "",
+                    name: history?.company?.name ?? ""
+                },
+                role: {
+                    uuid: history?.role?.uuid ?? "",
+                    name: history?.role?.name ?? ""
+                },
+                position: history?.position ?? "",
+                is_present: history?.is_present ?? false,
+                start_date: history?.start_date ?? "",
+                end_date: history?.end_date ?? null
+            }))
+        )
+    },
     formatGetEmployeeByCompanyUuid(response: GetEmployeeByCompanyUuidResponse): EmployeeType[] {
         if (!response.data) return [];
         return response.data?.map(employee => ({
@@ -102,7 +147,7 @@ export const responseFormatter = {
                 name: employee?.role?.name ?? "",
                 uuid: employee?.role?.uuid ?? ""
             },
-            name : {
+            name: {
                 fullname: employee?.full_name ?? "",
                 firstname: employee?.first_name ?? "",
                 lastname: employee?.last_name ?? ""
@@ -123,7 +168,7 @@ export const responseFormatter = {
                 name: response?.data?.role?.name ?? "",
                 uuid: response?.data?.role?.uuid ?? ""
             },
-            name : {
+            name: {
                 fullname: response?.data?.full_name ?? "",
                 firstname: response?.data?.first_name ?? "",
                 lastname: response?.data?.last_name ?? ""
@@ -144,7 +189,7 @@ export const responseFormatter = {
                 name: response?.data?.role?.name ?? "",
                 uuid: response?.data?.role?.uuid ?? ""
             },
-            name : {
+            name: {
                 fullname: response?.data?.full_name ?? "",
                 firstname: response?.data?.first_name ?? "",
                 lastname: response?.data?.last_name ?? ""

@@ -32,6 +32,20 @@ const employee = {
         }, []);
         return { createEmployeeHistory, isCreatingEmployeeHistory };
     },
+    useImportEmployee: () => {
+        const [isImportingEmployee, setIsImportingEmployee] = useState(false)
+        const importEmployee = useCallback(async (formData: FormData) => {
+            setIsImportingEmployee(true)
+            try {
+                await api.importEmployee(formData)
+            } catch (error) {
+                return Promise.reject(error)
+            } finally {
+                setIsImportingEmployee(false)
+            }
+        }, [])
+        return { isImportingEmployee, importEmployee }
+    },
     useGetEmployeeByCompanyUuid: (companyUuid: string) => {
         const [isFetchingEmployee, setIsFetchingEmployee] = useState(false);
         const fetchEmployee = useCallback(async () => {

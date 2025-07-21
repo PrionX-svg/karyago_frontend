@@ -141,3 +141,48 @@ export interface UpdateEmployeePayload {
     gender: string;
     is_freelance: boolean;
 }
+
+export interface ImportEmployeeResponse {
+    data: {
+        user_uuid: string;
+        employee_uuid: string;
+        first_name: string;
+        last_name: string;
+        full_name: string;
+        email: string;
+        phone: string;
+        gender: string;
+        dob: string;
+        is_freelance: boolean;
+        role: {
+            uuid: string;
+            name: string;
+        };
+        company: {
+            uuid: string;
+            name: string;
+        };
+        employment_histories: {
+            uuid: string;
+            employee: {
+                uuid: string;
+                full_name: string;
+                email: string;
+            };
+            company: {
+                uuid: string;
+                name: string;
+            };
+            role: {
+                uuid: string;
+                name: string;
+            };
+            position: string;
+            is_present: boolean;
+            start_date: string;
+            end_date?: string | null;
+        }[];
+    }[];
+    message: string;
+    status: string;
+}
