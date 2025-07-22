@@ -23,7 +23,7 @@ export default function OnboardingPage() {
     const companyData = useCompanyStore((state) => state.company);
     const companyUuid = companyData[0]?.uuid;
 
-    const { isFetchingGetMe } = user.useGetUMe()
+    const { isFetchingGetMe } = user.useGetMe()
     const router = useRouter()
     const userUuid = useUserStore((state) => state.user.uuid)
     const lo = useTranslations("onboarding")

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { api } from "../api/api";
 
 const user = {
-    useGetUMe: () => {
+    useGetMe: () => {
         const [isFetchingGetMe, setIsFetchingGetMe] = useState(false);
 
         const fetchGetMe = useCallback(async () => {

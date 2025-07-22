@@ -33,7 +33,7 @@ export function BranchLocations({ onNext }: BranchLocationsProps) {
 
     const addBranch = useCompanyStore((state) => state.addCompanyBranch)
     const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
-    const companyBranches = useCompanyStore.getState().companyBranch
+    const companyBranches = useCompanyStore((state) => state.companyBranch)
     const removeBranches = useCompanyStore((state) => state.removeCompanyBranch)
     const companyLocalStorage = localStorage.getItem("meta")
     const ap = useTranslations("api")

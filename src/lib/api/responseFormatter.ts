@@ -1,4 +1,4 @@
-import { GetBranchesByCompanyUuidResponse, GetCompanyByUserUuidResponse, getDivisionsByCompanyUuidResponse, getSubDivisionsByCompanyUuidResponse } from "../interfaces/company-interface";
+import { GetBranchesByCompanyUuidResponse, GetCompaniesByUserUuidResponse, GetCompanyByUserUuidResponse, getDivisionsByCompanyUuidResponse, getSubDivisionsByCompanyUuidResponse } from "../interfaces/company-interface";
 import { GetMeResponse } from "../interfaces/user-interface";
 import { CompanyBranchType, CompanyType, DivisionType, SubDivisionType } from "../types/company-type";
 import { UserType } from "../types/user-type";
@@ -38,6 +38,23 @@ export const responseFormatter = {
                 lastName: response.data?.user?.lastname
             }
         };
+    },
+    formatGetCompaniesByUserUuid(response: GetCompaniesByUserUuidResponse): CompanyType[] {
+        if (!response.data) return [];
+        return response.data?.map(company => ({
+            uuid: company?.uuid,
+            logo: company?.logo,
+            name: company?.name,
+            address: company?.address,
+            email: company?.email,
+            phone: company?.phone,
+            user: {
+                uuid: company?.user?.uuid,
+                firstName: company?.user?.firstname,
+                lastName: company?.user?.lastname,
+                role: company?.user?.role
+            }
+        }));
     },
     formatGetBranchesByCompanyUuid(response: GetBranchesByCompanyUuidResponse): CompanyBranchType[] {
         if (!response.data) return [];
