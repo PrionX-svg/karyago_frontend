@@ -73,7 +73,7 @@ export default function FileDropUploader({ value, onChange, folder }: Props) {
             const urlParts = preview.split("/")
             // Remove query params from filename
             const fileNameWithParams = urlParts[urlParts.length - 1]
-            const fileName = fileNameWithParams.split("?")[0]
+            const fileName = `${folder}/${fileNameWithParams.split("?")[0]}`
 
             const res = await postAPI({ file_name: fileName }, "/upload/delete")
 
@@ -143,13 +143,13 @@ export default function FileDropUploader({ value, onChange, folder }: Props) {
                 )}
                 {preview ? (
                     <div className="space-y-2">
-                        <div className="relative w-40 h-40 mx-auto group">
+                        <div className="relative w-64 h-64 mx-auto group">
                             <Image
                                 src={preview || "/placeholder.svg"}
                                 alt="Preview"
-                                width={160}
-                                height={160}
-                                className="rounded-md object-contain mx-auto"
+                                width={640}
+                                height={640}
+                                className="rounded-md object-contain mx-auto w-full h-full"
                             />
                             <Button
                                 variant="destructive"
