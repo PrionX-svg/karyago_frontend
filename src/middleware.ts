@@ -7,7 +7,7 @@ const intlMiddleware = createMiddleware(routing);
 
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  
+
   const staticExtensions = [
     ".ico",
     ".png",
@@ -31,7 +31,7 @@ export default async function middleware(req: NextRequest) {
   // First, handle internationalization for ALL requests
   // This ensures locale detection works properly
   const intlResponse = intlMiddleware(req);
-  
+
   // If intlMiddleware returns a redirect (for locale detection), return it immediately
   if (intlResponse.status === 302 || intlResponse.status === 307) {
     return intlResponse;
@@ -66,7 +66,7 @@ export default async function middleware(req: NextRequest) {
       `script-src 'self' 'nonce-${nonce}'`,
       `style-src 'self' 'unsafe-inline' fonts.googleapis.com`,
       "font-src 'self' fonts.gstatic.com",
-      "img-src 'self' blob: data:",
+      "img-src 'self' blob: data: https://a93237d2b97806cf3621e5e5e0d8d6e7.r2.cloudflarestorage.com",
       "connect-src 'self' http://127.0.0.1:8080",
       "object-src 'none'",
       "base-uri 'self'",
@@ -129,7 +129,7 @@ export default async function middleware(req: NextRequest) {
         // Use the intl response and add auth cookies
         intlResponse.cookies.set("authOK", "true", { path: "/" });
         intlResponse.cookies.set("access_token", data.accessToken, { path: "/" });
-        
+
         // Add CSP headers
         const nonce = nanoid(16);
         const cspHeader = [
@@ -137,8 +137,8 @@ export default async function middleware(req: NextRequest) {
           `script-src 'self' 'nonce-${nonce}'`,
           `style-src 'self' 'unsafe-inline' fonts.googleapis.com`,
           "font-src 'self' fonts.gstatic.com",
-          "img-src 'self' blob: data:",
-          "connect-src 'self' http://127.0.0.1:8080 https://helpernet-api.lagilapar.com",
+          "img-src 'self' blob: data: https://a93237d2b97806cf3621e5e5e0d8d6e7.r2.cloudflarestorage.com",
+          "connect-src 'self' http://127.0.0.1:8080",
           "object-src 'none'",
           "base-uri 'self'",
           "form-action 'self'",
@@ -165,8 +165,8 @@ export default async function middleware(req: NextRequest) {
     `script-src 'self' 'nonce-${nonce}'`,
     `style-src 'self' 'unsafe-inline' fonts.googleapis.com`,
     "font-src 'self' fonts.gstatic.com",
-    "img-src 'self' blob: data:",
-    "connect-src 'self' http://127.0.0.1:8080 https://helpernet-api.lagilapar.com",
+    "img-src 'self' blob: data: https://a93237d2b97806cf3621e5e5e0d8d6e7.r2.cloudflarestorage.com",
+    "connect-src 'self' http://127.0.0.1:8080",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
