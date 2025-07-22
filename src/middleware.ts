@@ -56,9 +56,8 @@ export default async function middleware(req: NextRequest) {
   const isLocaleOnly = /^\/(en|de|id)\/?$/.test(pathname);
   const isActivationPath = /^\/(en|de|id)\/activation\/?$/.test(pathname);
 
-
-  // Allow schedule paths, landing page, and locale-only paths to bypass authentication
-  if (isSchedulePath || isLandingPath || isLocaleOnly || isActivationPath) {
+  // Allow schedule paths, landing page, and activation path to bypass authentication
+  if (isSchedulePath || isLandingPath || isActivationPath) {
     // Add nonce and CSP headers to the intl response
     const nonce = nanoid(16);
     const cspHeader = [
@@ -77,21 +76,26 @@ export default async function middleware(req: NextRequest) {
     return intlResponse;
   }
 
+  // Handle locale-only paths first (before other authentication checks)
+  if (isLocaleOnly) {
+    if (authOK === "true") {
+      url.pathname = `/${locale}/choose-company`;
+      return NextResponse.redirect(url);
+    } else {
+      url.pathname = `/${locale}/auth`;
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Case 1: First time access without authentication
-  if (!authOK && !refreshToken && !isAuthPage && !isLocaleOnly) {
+  if (!authOK && !refreshToken && !isAuthPage) {
     // Redirect to auth page for the corresponding locale
     url.pathname = `/${locale}/auth`;
     return NextResponse.redirect(url);
   }
 
   // Case 2: User has logged out or is not authenticated and not on auth page
-  if (
-    authOK === "false" &&
-    !isAuthPage &&
-    !isSchedulePath &&
-    !isLandingPath &&
-    !isLocaleOnly
-  ) {
+  if (authOK === "false" && !isAuthPage) {
     url.pathname = `/${locale}/auth`; // Redirect to auth page based on locale
     url.searchParams.set("logout", "true");
     return NextResponse.redirect(url);
@@ -99,19 +103,12 @@ export default async function middleware(req: NextRequest) {
 
   // Case 3: User is authenticated (authOK === "true") but trying to access auth page
   if (authOK === "true" && isAuthPage) {
-    url.pathname = `/${locale}/dashboard`; // Redirect to dashboard if already logged in
+    url.pathname = `/${locale}/choose-company`; // Redirect to choose-company if already logged in
     return NextResponse.redirect(url);
   }
 
   // Case 4: Attempt to refresh auth token if not authenticated
-  if (
-    !authOK &&
-    refreshToken &&
-    !isAuthPage &&
-    !isSchedulePath &&
-    !isLandingPath &&
-    !isLocaleOnly
-  ) {
+  if (!authOK && refreshToken && !isAuthPage) {
     try {
       const refreshRes = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/auth/refresh`,

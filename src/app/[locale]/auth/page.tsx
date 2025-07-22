@@ -49,7 +49,7 @@ export default function AuthPage() {
         router.push(`/${companyData[0].name}/dashboard`);
       } else {
         console.log("more than 1");
-        router.push("/choose");
+        router.push("/select-company");
       }
     } catch (error) {
       console.error("Login error:", error);
