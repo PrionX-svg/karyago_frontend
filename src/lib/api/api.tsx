@@ -29,6 +29,16 @@ export const api = {
             return Promise.reject(error)
         }
     },
+    async getCompaniesByUserUuid(userUuid: string){
+        try {
+            const setCompanies = useCompanyStore.getState().setCompany;
+            const response = await getAPI(`${API_URL.getCompaniesByUserUuid}${userUuid}`);
+            const formattedCompaniesData = responseFormatter.formatGetCompaniesByUserUuid(response)
+            setCompanies(formattedCompaniesData);
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
     async getBranchesByCompanyUuid(companyUuid: string) {
         try {
             const setBranches = useCompanyStore.getState().setCompanyBranch;

@@ -11,14 +11,13 @@ import postAPI from "./api/postAPI"
 import { Button } from "@/components/ui/button"
 
 type Props = {
-    value?: string
     folder: string
     onChange: (value: string) => void
 }
 
-export default function FileDropUploader({ value, onChange, folder }: Props) {
+export default function FileDropUploader({ onChange, folder }: Props) {
     const [dragActive, setDragActive] = useState(false)
-    const [preview, setPreview] = useState<string | null>(value ?? null)
+    const [preview, setPreview] = useState<string | null>(null)
     const [progress, setProgress] = useState<number | null>(null)
 
     const validateFile = (file: File): boolean => {
@@ -47,10 +46,11 @@ export default function FileDropUploader({ value, onChange, folder }: Props) {
                 setProgress(100)
                 setTimeout(() => setProgress(null), 1500)
 
-                const url = res.data?.url?.URL
+                const url = res.data?.url?.url
+                const fileName = res.data?.url?.file_name
                 if (url) {
                     setPreview(url)
-                    onChange(url)
+                    onChange(fileName)
                     toast.success("File uploaded successfully!")
                 } else {
                     throw new Error("No URL returned from upload response.")
@@ -69,12 +69,9 @@ export default function FileDropUploader({ value, onChange, folder }: Props) {
         if (!preview) return
 
         try {
-            // Extract filename from URL
             const urlParts = preview.split("/")
-            // Remove query params from filename
             const fileNameWithParams = urlParts[urlParts.length - 1]
             const fileName = `${folder}/${fileNameWithParams.split("?")[0]}`
-
             const res = await postAPI({ file_name: fileName }, "/upload/delete")
 
             if (res.status === 200) {
@@ -116,9 +113,6 @@ export default function FileDropUploader({ value, onChange, folder }: Props) {
             setDragActive(false)
         }
     }
-
-    console.log("Preview URL:", preview)
-    console.log("Value: ", value)
 
     return (
         <div

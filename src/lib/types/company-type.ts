@@ -1,16 +1,17 @@
-export type CompanyType = {
-    uuid: string;
-    name: string;
-    address: string;
-    email: string;
-    phone: string;
-    logo?: string;
-    user: {
+    export type CompanyType = {
         uuid: string;
-        firstName: string;
-        lastName: string;
+        name: string;
+        address: string;
+        email: string;
+        phone: string;
+        logo?: string;
+        user: {
+            uuid: string;
+            firstName: string;
+            lastName: string;
+            role?: string;
+        }
     }
-}
 
 export type CompanyBranchType = {
     uuid: string;

@@ -13,6 +13,8 @@ import postAPI from "@/lib/api/postAPI"
 import { toast } from "sonner"
 import type { LoginForm, RegisterForm } from "@/lib/interfaces/auth-interface"
 import { useRouter } from "next/navigation"
+import { useCompanyStore } from "@/stores/company-store"
+import { api } from "@/lib/api/api"
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login")
@@ -25,24 +27,35 @@ export default function AuthPage() {
 
   const handleLogin = async (data: LoginForm) => {
     try {
-      const result = await postAPI(data, "/auth/login")
-      if (result.status === 200) {
-        document.cookie = "authOK=true; path=/";
-        if(result.data.data.is_onboarding === true){
-          router.push('/onboarding')
-        } else {
-          router.push('/dashboard')
-        }
-        toast.success(ap('loginSuccess'))
-      } else {
-        toast.error(ap('loginFailed'), {
-          description: ap('invalidCredentials')
-        })
+      const result = await postAPI(data, "/auth/login");
+      if (result.status !== 200) {
+        toast.error(ap("loginFailed"), {
+          description: ap("invalidCredentials")
+        });
+        return;
       }
-    } catch {
-      toast.error(ap('somethingWentWrong'))
+      document.cookie = "authOK=true; path=/";
+      toast.success(ap("loginSuccess"));
+      const userData = result.data.data;
+      const userUuid = userData.uuid;
+      if (userData.is_onboarding) {
+        router.push("/onboarding");
+        return;
+      }
+      await api.getCompaniesByUserUuid(userUuid);
+      const companyData = useCompanyStore.getState().company;
+      if (companyData.length === 1) {
+        console.log("cuma 1");
+        router.push(`/${companyData[0].name}/dashboard`);
+      } else {
+        console.log("more than 1");
+        router.push("/select-company");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error(ap("somethingWentWrong"));
     }
-  }
+  };
 
   const handleRegister = async (data: RegisterForm) => {
     try {
@@ -121,15 +134,15 @@ export default function AuthPage() {
           <Card className="w-full max-w-md border-0 shadow-xl">
             {!registrationSuccess && (
               <CardHeader>
-              <div className="flex justify-center mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center animate-in zoom-in-50 duration-600 delay-800">
-                <Building2 className="w-8 h-8 text-white" />
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center animate-in zoom-in-50 duration-600 delay-800">
+                    <Building2 className="w-8 h-8 text-white" />
+                  </div>
                 </div>
-              </div>
-              <CardTitle className="text-2xl text-center text-gray-800">{AuthPage("title")}</CardTitle>
-              <CardDescription className="text-base text-center text-gray-600">
-                {AuthPage("description")}
-              </CardDescription>
+                <CardTitle className="text-2xl text-center text-gray-800">{AuthPage("title")}</CardTitle>
+                <CardDescription className="text-base text-center text-gray-600">
+                  {AuthPage("description")}
+                </CardDescription>
               </CardHeader>
             )}
             <CardContent>
