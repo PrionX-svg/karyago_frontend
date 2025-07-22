@@ -247,9 +247,8 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
                                     {ci("companyLogo")}
                                 </Label>
                                 <FileDropUploader
-                                    value={formData.logo}
                                     onChange={(val) => setFormData({ ...formData, logo: val })}
-                                    folder="company-logo"
+                                    folder="/company-logo"
                                 />
                             </motion.div>
 

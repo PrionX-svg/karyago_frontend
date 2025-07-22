@@ -25,6 +25,25 @@ const company = {
 
         return { fetchCompanyByUserUuid, isFetchingCompany }
     },
+    useGetCompaniesByUserUuid: () => {
+        const [isFetchingCompanies, setIsFetchingCompanies] = useState(false);
+        
+        const fetchCompaniesByUserUuid = useCallback(async (userUuid: string) => {
+            setIsFetchingCompanies(true);
+            if (!userUuid) {
+                return;
+            }
+            try {
+                return await api.getCompaniesByUserUuid(userUuid);
+            } catch (error) {
+                return Promise.reject(error);
+            } finally {
+                setIsFetchingCompanies(false);
+            }
+        }, [])
+
+        return { fetchCompaniesByUserUuid, isFetchingCompanies }
+    },
     useGetBranchesByCompanyUuid: (companyUuid: string) => {
         const [isFetchingBranches, setIsFetchingBranches] = useState(false);
 
