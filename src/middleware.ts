@@ -103,7 +103,7 @@ export default async function middleware(req: NextRequest) {
 
   // Case 3: User is authenticated (authOK === "true") but trying to access auth page
   if (authOK === "true" && isAuthPage) {
-    url.pathname = `/${locale}/choose-company`; // Redirect to choose-company if already logged in
+    url.pathname = `/${locale}/select-company`; // Redirect to choose-company if already logged in
     return NextResponse.redirect(url);
   }
 
@@ -125,7 +125,9 @@ export default async function middleware(req: NextRequest) {
         const data = await refreshRes.json();
         // Use the intl response and add auth cookies
         intlResponse.cookies.set("authOK", "true", { path: "/" });
-        intlResponse.cookies.set("access_token", data.accessToken, { path: "/" });
+        intlResponse.cookies.set("access_token", data.accessToken, {
+          path: "/",
+        });
 
         // Add CSP headers
         const nonce = nanoid(16);
@@ -140,7 +142,10 @@ export default async function middleware(req: NextRequest) {
           "base-uri 'self'",
           "form-action 'self'",
         ];
-        intlResponse.headers.set("Content-Security-Policy", cspHeader.join("; "));
+        intlResponse.headers.set(
+          "Content-Security-Policy",
+          cspHeader.join("; ")
+        );
         intlResponse.headers.set("x-nonce", nonce);
         return intlResponse;
       } else {
@@ -179,14 +184,14 @@ export const config = {
   // Match only internationalized pathnames
   matcher: [
     // Enable a redirect to a matching locale at the root
-    '/',
+    "/",
 
     // Set a cookie to remember the previous locale for
     // all requests that have a locale prefix
-    '/(en|de|id)/:path*',
+    "/(en|de|id)/:path*",
 
     // Enable redirects that add missing locales
     // (e.g. `/pathnames` -> `/en/pathnames`)
-    '/((?!_next|_vercel|.*\\..*).*)'
-  ]
+    "/((?!_next|_vercel|.*\\..*).*)",
+  ],
 };
