@@ -7,9 +7,10 @@ import userQueries from "@/lib/queries/user-queries"
 import { useCompanyStore } from "@/stores/company-store"
 import company from "@/lib/queries/company-queries"
 import CompanySkeleton from "./loading"
-import { Building2, ChevronRight, Sparkles, Users } from "lucide-react"
+import { Building2, ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { encrypt } from "@/lib/encrypt"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function ChooseCompanyPage() {
     const [selectedCompany, setSelectedCompany] = useState<string | null>(null)
@@ -40,110 +41,180 @@ export default function ChooseCompanyPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [companyData, userData.uuid])
 
-    if (isFetchingGetMe || isFetchingCompanies ) {
+    if (isFetchingGetMe || isFetchingCompanies) {
         return <CompanySkeleton />
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 relative overflow-hidden">
-            {/* Background decorations */}
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-200/30 to-amber-200/30 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-yellow-200/30 to-orange-200/30 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-amber-100/20 to-orange-100/20 rounded-full blur-3xl"></div>
-            </div>
-
-            <div className="relative z-10 flex items-center justify-center min-h-screen p-6">
-                <div className="w-full max-w-lg mx-auto">
+        <div
+            className="min-h-screen relative"
+            style={{
+                background: `
+                    url('/textures/diamond-eyes.png'),
+                    linear-gradient(
+                        135deg,
+                        rgba(255, 236, 217, 0.4) 0%,
+                        rgba(255, 224, 179, 0.35) 25%,
+                        rgba(255, 213, 153, 0.3) 50%,
+                        rgba(255, 204, 128, 0.25) 75%,
+                        rgba(255, 193, 102, 0.2) 100%
+                    )
+                    `,
+                backgroundRepeat: "repeat, no-repeat",
+                backgroundSize: "auto, cover",
+                backgroundBlendMode: "overlay",
+            }}
+        >
+            <div className="flex items-center justify-center min-h-screen p-6">
+                <motion.div
+                    className="w-full max-w-md mx-auto"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                >
                     {/* Header */}
-                    <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-2xl mb-4 shadow-lg">
-                            <Sparkles className="w-8 h-8 text-white" />
-                        </div>
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                            Welcome back, {userData.fullName.split(" ")[0]}! 👋
-                        </h1>
-                        <p className="text-gray-600">Choose your workspace to continue</p>
+                    <div className="text-center mb-10">
+                        <motion.div
+                            className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-6 shadow-lg"
+                            style={{
+                                backgroundColor: "rgba(255, 255, 255, 0.95)",
+                                border: "1px solid rgba(216, 67, 21, 0.15)",
+                            }}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                        >
+                            <Building2 className="w-6 h-6 text-orange-400" />
+                        </motion.div>
+
+                        <motion.h1
+                            className="text-2xl font-semibold mb-2 tracking-tight text-neutral-700 drop-shadow-sm"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5, delay: 0.3 }}
+                        >
+                            Select company
+                        </motion.h1>
+
+                        <motion.p
+                            className="text-sm text-neutral-600 drop-shadow-sm"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5, delay: 0.4 }}
+                        >
+                            Choose a company to continue
+                        </motion.p>
                     </div>
 
                     {/* Company Selection */}
-                    <div className="space-y-3">
-                        {companyData.length === 0 ? (
-                            <div className="text-center py-12 animate-pulse">
-                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Building2 className="w-8 h-8 text-gray-300" />
-                                </div>
-                                <div className="h-4 w-32 bg-gray-100 rounded mx-auto mb-2"></div>
-                                <div className="h-3 w-20 bg-gray-100 rounded mx-auto"></div>
-                            </div>
-                        ) : (
-                            companyData.map((comp) => (
-                                <button
-                                    key={comp.uuid}
-                                    className={`group w-full text-left p-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${selectedCompany === comp.uuid
-                                        ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-[1.02]"
-                                        : "bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-md border border-gray-200/50 hover:border-orange-200"
-                                        } ${selectedCompany !== null && selectedCompany !== comp.uuid ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-                                    onClick={() => handleCompanySelect(comp.name, comp.uuid)}
-                                    disabled={selectedCompany !== null && selectedCompany !== comp.uuid}
+                    <motion.div
+                        className="space-y-2"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
+                    >
+                        <AnimatePresence mode="wait">
+                            {companyData.length === 0 ? (
+                                <motion.div
+                                    className="text-center py-16"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
                                 >
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="relative">
-                                                <div
-                                                    className={`w-14 h-14 rounded-xl overflow-hidden ${selectedCompany === comp.uuid ? "ring-2 ring-white/50" : "ring-1 ring-gray-200"
-                                                        } transition-all duration-300`}
-                                                >
+                                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4 bg-white/90">
+                                        <Building2 className="w-6 h-6 text-orange-700" />
+                                    </div>
+                                    <p className="text-sm text-white/70 drop-shadow-sm">No companies available</p>
+                                </motion.div>
+                            ) : (
+                                companyData.map((comp, index) => (
+                                    <motion.button
+                                        key={comp.uuid}
+                                        className={`group w-full text-left p-4 rounded-lg border backdrop-blur-md transition-all duration-200 
+            ${selectedCompany === comp.uuid
+                                                ? "bg-neutral-900 border-orange-700 text-white shadow-lg"
+                                                : "bg-white/90 border-orange-200 hover:bg-orange-50 hover:shadow-md"
+                                            } 
+            ${selectedCompany !== null && selectedCompany !== comp.uuid
+                                                ? "opacity-40 cursor-not-allowed"
+                                                : "cursor-pointer"
+                                            }`}
+                                        onClick={() => handleCompanySelect(comp.name, comp.uuid)}
+                                        disabled={selectedCompany !== null && selectedCompany !== comp.uuid}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }}
+                                        whileHover={{ scale: selectedCompany === null ? 1.01 : 1 }}
+                                        whileTap={{ scale: 0.99 }}
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            {/* Logo */}
+                                            <div className="flex items-center space-x-3">
+                                                <div className="w-10 h-10 rounded-lg overflow-hidden bg-white shadow-sm border border-orange-200">
                                                     <Image
-                                                        src={comp.logo || "/placeholder.svg?height=56&width=56&query=company logo"}
+                                                        src={comp.logo || "/placeholder.svg?height=40&width=40&query=company logo"}
                                                         alt={`${comp.name} logo`}
-                                                        width={56}
-                                                        height={56}
+                                                        width={40}
+                                                        height={40}
                                                         className="w-full h-full object-cover"
                                                     />
                                                 </div>
-                                            </div>
-                                            <div className="flex-1">
-                                                <p
-                                                    className={`font-semibold text-base ${selectedCompany === comp.uuid ? "text-white" : "text-gray-900"
-                                                        } transition-colors duration-300`}
-                                                >
-                                                    {comp.name}
-                                                </p>
-                                                <p
-                                                    className={`text-sm mt-1 ${selectedCompany === comp.uuid ? "text-white/80" : "text-gray-500"
-                                                        } transition-colors duration-300`}
-                                                >
-                                                    {comp.user.role}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center">
-                                            {selectedCompany === comp.uuid ? (
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                                    <span className="text-white text-sm font-medium">Loading...</span>
+                                                <div className="flex-1 min-w-0">
+                                                    <p
+                                                        className={`font-medium text-sm truncate ${selectedCompany === comp.uuid ? "text-white" : "text-gray-900"
+                                                            }`}
+                                                    >
+                                                        {comp.name}
+                                                    </p>
+                                                    <p
+                                                        className={`text-xs mt-0.5 truncate ${selectedCompany === comp.uuid ? "text-white/70" : "text-gray-600"
+                                                            }`}
+                                                    >
+                                                        {comp.user.role}
+                                                    </p>
                                                 </div>
-                                            ) : (
-                                                <ChevronRight className="w-5 h-5 transition-all duration-300 text-gray-400 group-hover:text-orange-500 group-hover:translate-x-1" />
-                                            )}
+                                            </div>
+                                            {/* Icon */}
+                                            <div className="flex items-center ml-3">
+                                                <AnimatePresence mode="wait">
+                                                    {selectedCompany === comp.uuid ? (
+                                                        <motion.div
+                                                            className="w-4 h-4 border-2 border-orange-700 border-t-transparent rounded-full"
+                                                            animate={{ rotate: 360 }}
+                                                            transition={{
+                                                                duration: 1,
+                                                                repeat: Number.POSITIVE_INFINITY,
+                                                                ease: "linear",
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <ChevronRight className="w-4 h-4 text-orange-700 group-hover:text-orange-800 transition-colors" />
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
                                         </div>
-                                    </div>
-                                </button>
-                            ))
-                        )}
-                    </div>
+                                    </motion.button>
+                                ))
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
 
                     {/* Footer */}
                     {companyData.length > 0 && (
-                        <div className="text-center mt-8">
-                            <p className="text-gray-500 text-sm flex items-center justify-center gap-1">
-                                <Users className="w-4 h-4" />
-                                {companyData.length} workspace{companyData.length !== 1 ? "s" : ""} available
-                            </p>
-                        </div>
+                        <motion.div
+                            className="text-center mt-6"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{
+                                duration: 0.5,
+                                delay: 0.8 + companyData.length * 0.1,
+                            }}
+                        >
+                            <p className="text-xs text-neutral-700 drop-shadow-sm">{companyData.length} companies available</p>
+                        </motion.div>
                     )}
-                </div>
+                </motion.div>
             </div>
         </div>
     )
