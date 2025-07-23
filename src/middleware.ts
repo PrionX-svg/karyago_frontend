@@ -79,7 +79,7 @@ export default async function middleware(req: NextRequest) {
   // Handle locale-only paths first (before other authentication checks)
   if (isLocaleOnly) {
     if (authOK === "true") {
-      url.pathname = `/${locale}/choose-company`;
+      url.pathname = `/${locale}/select-company`;
       return NextResponse.redirect(url);
     } else {
       url.pathname = `/${locale}/auth`;
