@@ -30,7 +30,8 @@ const DLanguageSwitcher = () => {
   // Get display text based on screen size
   const getDisplayText = (locale: string) => ({
     mobile: locale.toUpperCase(),
-    desktop: locale === "en" ? "English" : locale === "de" ? "German" : "Indonesian",
+    desktop:
+      locale === "en" ? "English" : locale === "de" ? "German" : "Indonesian",
   });
 
   const currentDisplay = getDisplayText(currentLocale);

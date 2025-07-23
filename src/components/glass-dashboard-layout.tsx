@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import {
   Bell,
   Search,
@@ -31,29 +32,23 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils";
-import { useRouter, usePathname } from "next/navigation";
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { useParams, useRouter } from "next/navigation";
 
-interface CompanyLayoutProps {
-  children: React.ReactNode;
-  params: {
-    locale: string;
-    company: string;
-  };
+interface User {
+  id: string;
+  name: string;
+  role: string;
+  title: string;
+  avatar: string;
+  email: string;
 }
 
-// Mock user data - in real app this would come from authentication context
-const mockUser = {
-  id: "1",
-  name: "Trisha Kyrlova",
-  role: "ceo", // or "employee"
-  title: "Chief Executive Officer",
-  avatar: "/placeholder.svg?height=40&width=40&text=TK",
-  email: "trisha@company.com",
-};
+interface GlassDashboardLayoutProps {
+  children: React.ReactNode;
+  user: User;
+}
 
 const navigationItems = [
   {
@@ -94,45 +89,27 @@ const navigationItems = [
   },
 ];
 
-export default function CompanyLayout(props: CompanyLayoutProps) {
-  const children = props.children;
-  const params = props.params;
-  // If params is a promise, unwrap with React.use(), else use directly
-  let locale: string, company: string;
-  if (
-    params &&
-    typeof params === "object" &&
-    "then" in params &&
-    typeof (params as any).then === "function"
-  ) {
-    const unwrapped = React.use(
-      params as unknown as Promise<{ locale: string; company: string }>
-    );
-    locale = unwrapped.locale;
-    company = unwrapped.company;
-  } else {
-    locale = params.locale;
-    company = params.company;
-  }
+export function GlassDashboardLayout({
+  children,
+  user,
+}: GlassDashboardLayoutProps) {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const router = useRouter();
-  const pathname = usePathname();
-  const user = mockUser; // In real app, get from auth context
-
   const filteredNavigation = navigationItems.filter((item) =>
     item.roles.includes(user.role)
   );
 
   const handleNavigation = (url: string) => {
+    // Assuming locale and company are available in the URL or context
+    const locale = "en"; // This should come from your app's locale context
+    const company = "acme"; // This should come from your app's company context
     router.push(`/${locale}/${company}${url}`);
   };
 
-  const isActiveRoute = (url: string) => {
-    return pathname === `/${locale}/${company}${url}`;
-  };
+  const companyName = useParams().company || "";
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <TooltipProvider>
       <div className="flex h-screen overflow-hidden">
         {/* Sidebar */}
         <div
@@ -160,11 +137,11 @@ export default function CompanyLayout(props: CompanyLayoutProps) {
                     <>
                       <div className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
                         <span className="text-primary-foreground font-bold text-sm">
-                          {company[0].toUpperCase()}
+                          {companyName[0].toUpperCase()}
                         </span>
                       </div>
                       <span className="font-bold text-xl text-sidebar-foreground font-poppins">
-                        {company}
+                        {companyName}
                       </span>
                     </>
                   )}
@@ -191,29 +168,10 @@ export default function CompanyLayout(props: CompanyLayoutProps) {
                   {sidebarExpanded ? (
                     <button
                       onClick={() => handleNavigation(item.url)}
-                      className={cn(
-                        "cursor-pointer w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 group text-sidebar-foreground",
-                        isActiveRoute(item.url)
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                          : "hover:bg-sidebar-accent"
-                      )}
+                      className="cursor-pointer w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 group hover:bg-sidebar-accent text-sidebar-foreground"
                     >
-                      <item.icon
-                        className={cn(
-                          "w-5 h-5 transition-colors duration-200",
-                          isActiveRoute(item.url)
-                            ? "text-sidebar-accent-foreground"
-                            : "text-sidebar-foreground/70 group-hover:text-sidebar-foreground"
-                        )}
-                      />
-                      <span
-                        className={cn(
-                          "font-medium transition-colors duration-200",
-                          isActiveRoute(item.url)
-                            ? "text-sidebar-accent-foreground"
-                            : "group-hover:text-sidebar-foreground"
-                        )}
-                      >
+                      <item.icon className="w-5 h-5 text-sidebar-foreground/70 group-hover:text-sidebar-foreground transition-colors duration-200" />
+                      <span className="font-medium group-hover:text-sidebar-foreground transition-colors duration-200">
                         {item.title}
                       </span>
                     </button>
@@ -222,21 +180,9 @@ export default function CompanyLayout(props: CompanyLayoutProps) {
                       <TooltipTrigger asChild>
                         <button
                           onClick={() => handleNavigation(item.url)}
-                          className={cn(
-                            "w-full flex items-center justify-center px-2 py-3 rounded-2xl transition-all duration-200 group text-sidebar-foreground",
-                            isActiveRoute(item.url)
-                              ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                              : "hover:bg-sidebar-accent"
-                          )}
+                          className="w-full flex items-center justify-center px-2 py-3 rounded-2xl transition-all duration-200 group hover:bg-sidebar-accent text-sidebar-foreground"
                         >
-                          <item.icon
-                            className={cn(
-                              "w-5 h-5 transition-colors duration-200",
-                              isActiveRoute(item.url)
-                                ? "text-sidebar-accent-foreground"
-                                : "text-sidebar-foreground/70 group-hover:text-sidebar-foreground"
-                            )}
-                          />
+                          <item.icon className="w-5 h-5 text-sidebar-foreground/70 group-hover:text-sidebar-foreground transition-colors duration-200" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent side="right" className="ml-2">
@@ -285,31 +231,31 @@ export default function CompanyLayout(props: CompanyLayoutProps) {
             <div className="absolute bottom-4 left-4 right-4 space-y-2">
               {sidebarExpanded ? (
                 <>
-                  <button
-                    onClick={() => handleNavigation("/settings")}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 hover:bg-sidebar-accent text-sidebar-foreground"
+                  <a
+                    href="/settings"
+                    className="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 hover:bg-sidebar-accent text-sidebar-foreground"
                   >
                     <Settings className="w-5 h-5 text-sidebar-foreground/70" />
                     <span className="font-medium">Settings</span>
-                  </button>
-                  <button
-                    onClick={() => router.push("/logout")}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 hover:bg-destructive/10 text-destructive"
+                  </a>
+                  <a
+                    href="/logout"
+                    className="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 hover:bg-destructive/10 text-destructive"
                   >
                     <LogOut className="w-5 h-5" />
                     <span className="font-medium">Log out</span>
-                  </button>
+                  </a>
                 </>
               ) : (
                 <>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button
-                        onClick={() => handleNavigation("/settings")}
-                        className="w-full flex items-center justify-center px-2 py-3 rounded-2xl transition-all duration-200 hover:bg-sidebar-accent text-sidebar-foreground"
+                      <a
+                        href="/settings"
+                        className="flex items-center justify-center px-2 py-3 rounded-2xl transition-all duration-200 hover:bg-sidebar-accent text-sidebar-foreground"
                       >
                         <Settings className="w-5 h-5 text-sidebar-foreground/70" />
-                      </button>
+                      </a>
                     </TooltipTrigger>
                     <TooltipContent side="right" className="ml-2">
                       <p>Settings</p>
@@ -317,12 +263,12 @@ export default function CompanyLayout(props: CompanyLayoutProps) {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button
-                        onClick={() => router.push("/logout")}
-                        className="w-full flex items-center justify-center px-2 py-3 rounded-2xl transition-all duration-200 hover:bg-destructive/10 text-destructive"
+                      <a
+                        href="/logout"
+                        className="flex items-center justify-center px-2 py-3 rounded-2xl transition-all duration-200 hover:bg-destructive/10 text-destructive"
                       >
                         <LogOut className="w-5 h-5" />
-                      </button>
+                      </a>
                     </TooltipTrigger>
                     <TooltipContent side="right" className="ml-2">
                       <p>Log out</p>
@@ -335,26 +281,20 @@ export default function CompanyLayout(props: CompanyLayoutProps) {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col overflow-hidden">
           {/* Top Navbar */}
-          <header
-            className="fixed top-0 right-0 z-20 h-16 backdrop-blur-2xl bg-background/60 border-b border-border shadow-lg transition-all duration-500"
-            style={{
-              left: sidebarExpanded ? "288px" : "80px",
-              width: `calc(100% - ${sidebarExpanded ? 288 : 80}px)`,
-            }}
-          >
+          <header className="sticky top-0 z-20 h-16 backdrop-blur-2xl bg-background/60 border-b border-border shadow-lg">
             <div className="flex h-full items-center justify-between px-6">
               <div className="flex items-center gap-4">
                 {!sidebarExpanded && (
                   <div className="flex items-center gap-3 mr-4">
                     <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center">
                       <span className="text-primary-foreground font-bold text-xs">
-                        {company[0].toUpperCase()}
+                        {companyName[0].toUpperCase()}
                       </span>
                     </div>
                     <span className="font-bold text-lg text-foreground font-poppins">
-                      {company}
+                      {companyName}
                     </span>
                   </div>
                 )}
@@ -428,11 +368,11 @@ export default function CompanyLayout(props: CompanyLayoutProps) {
           </header>
 
           {/* Main Content Area */}
-          <main className="flex-1 overflow-auto p-12 pt-28">
-            <div className="max-w-full">{children}</div>
+          <main className="flex-1 overflow-auto p-6">
+            <div className="w-full px-12">{children}</div>
           </main>
         </div>
       </div>
-    </Suspense>
+    </TooltipProvider>
   );
 }
