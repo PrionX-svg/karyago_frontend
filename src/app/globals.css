@@ -1,115 +1,483 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@tailwind base;
 
 @custom-variant dark (&:is(.dark *));
+@tailwind components;
+@tailwind utilities;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", "Consolas", "Liberation Mono", monospace;
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 262 83% 58%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
+    /* HRIS Custom Variables */
+    --sidebar-background: 220 13% 7%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 262 83% 58%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 216 12% 12%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 216 12% 12%;
+    --sidebar-ring: 262 83% 58%;
+
+    /* Feature Colors */
+    --feature-task: 221 83% 53%;
+    --feature-time-off: 271 76% 53%;
+    --feature-payroll: 142 71% 45%;
+    --feature-integration: 199 89% 48%;
+
+    /* Status Colors */
+    --status-active: 142 71% 45%;
+    --status-pending: 43 96% 56%;
+    --status-inactive: 215 16% 47%;
+    --status-error: 0 84% 60%;
+
+    /* GitHub Contribution Colors */
+    --github-0: 210 40% 96%;
+    --github-1: 213 27% 84%;
+    --github-2: 221 83% 53%;
+    --github-3: 262 83% 58%;
+    --github-4: 271 76% 53%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 262 83% 58%;
+
+    /* HRIS Dark Mode Variables */
+    --sidebar-background: 220 13% 7%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 262 83% 58%;
+    --sidebar-primary-foreground: 222.2 84% 4.9%;
+    --sidebar-accent: 216 12% 12%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 216 12% 12%;
+    --sidebar-ring: 262 83% 58%;
+
+    /* GitHub Contribution Colors - Dark */
+    --github-0: 217.2 32.6% 17.5%;
+    --github-1: 215 20% 35%;
+    --github-2: 221 83% 53%;
+    --github-3: 262 83% 58%;
+    --github-4: 271 76% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/30;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-primary/20;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  /* Sidebar Styles */
+  .sidebar {
+    width: var(--sidebar-width, 280px);
+    transition: width 0.2s ease-in-out;
+  }
+
+  .sidebar-collapsed {
+    --sidebar-width: 64px;
+  }
+
+  .sidebar-nav-item {
+    @apply flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors;
+    @apply hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring;
+  }
+
+  .sidebar-nav-item.active {
+    @apply bg-sidebar-primary text-sidebar-primary-foreground;
+  }
+
+  .sidebar-section-title {
+    @apply px-3 py-2 text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wider;
+  }
+
+  .sidebar-transition {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  /* Feature Cards */
+  .feature-card {
+    @apply bg-card text-card-foreground rounded-lg border p-6 shadow-sm transition-all;
+    @apply hover:shadow-md hover:border-primary/20;
+  }
+
+  .feature-card-task {
+    @apply border-l-4 border-l-blue-500;
+  }
+
+  .feature-card-time-off {
+    @apply border-l-4 border-l-purple-500;
+  }
+
+  .feature-card-payroll {
+    @apply border-l-4 border-l-green-500;
+  }
+
+  /* Integration Cards */
+  .integration-card {
+    @apply bg-card text-card-foreground rounded-lg border p-6 shadow-sm;
+    @apply hover:shadow-md transition-all duration-200;
+  }
+
+  .integration-card-connected {
+    @apply border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950;
+  }
+
+  /* GitHub Contribution Grid */
+  .github-contribution-grid {
+    @apply grid gap-1;
+    grid-template-columns: repeat(53, minmax(0, 1fr));
+    grid-template-rows: repeat(7, minmax(0, 1fr));
+  }
+
+  .github-contribution-cell {
+    @apply w-3 h-3 rounded-sm transition-colors cursor-pointer;
+  }
+
+  .github-contribution-0 {
+    @apply bg-muted;
+  }
+
+  .github-contribution-1 {
+    background-color: hsl(var(--github-1));
+  }
+
+  .github-contribution-2 {
+    background-color: hsl(var(--github-2));
+  }
+
+  .github-contribution-3 {
+    background-color: hsl(var(--github-3));
+  }
+
+  .github-contribution-4 {
+    background-color: hsl(var(--github-4));
+  }
+
+  /* Status Badges */
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .status-active {
+    @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300;
+  }
+
+  .status-pending {
+    @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300;
+  }
+
+  .status-inactive {
+    @apply bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300;
+  }
+
+  .status-error {
+    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300;
+  }
+
+  /* Loading States */
+  .loading-skeleton {
+    @apply animate-pulse bg-muted rounded;
+  }
+
+  .loading-shimmer {
+    @apply relative overflow-hidden;
+  }
+
+  .loading-shimmer::after {
+    @apply absolute inset-0 -translate-x-full;
+    content: "";
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 1.5s infinite;
+  }
+
+  /* Form Styles */
+  .form-group {
+    @apply space-y-2;
+  }
+
+  .form-label {
+    @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+  }
+
+  .form-error {
+    @apply text-sm font-medium text-destructive;
+  }
+
+  /* Card Hover Effects */
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  /* Gradient Backgrounds */
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-foreground)) 100%);
+  }
+
+  .gradient-feature-task {
+    background: linear-gradient(135deg, hsl(var(--feature-task)) 0%, hsl(var(--feature-task) / 0.8) 100%);
+  }
+
+  .gradient-feature-time-off {
+    background: linear-gradient(135deg, hsl(var(--feature-time-off)) 0%, hsl(var(--feature-time-off) / 0.8) 100%);
+  }
+
+  .gradient-feature-payroll {
+    background: linear-gradient(135deg, hsl(var(--feature-payroll)) 0%, hsl(var(--feature-payroll) / 0.8) 100%);
+  }
+
+  /* Contribution Grid Enhancements */
+  .contribution-grid-container {
+    @apply relative overflow-hidden;
+  }
+
+  .contribution-square {
+    @apply w-3 h-3 rounded-sm transition-all duration-200 cursor-pointer;
+    @apply hover:scale-110 hover:ring-2 hover:ring-primary/50 hover:ring-offset-1;
+  }
+
+  .contribution-legend {
+    @apply flex items-center gap-1;
+  }
+
+  .contribution-stats {
+    @apply grid grid-cols-3 gap-4 pt-2 border-t border-border/50;
+  }
+
+  .contribution-stat {
+    @apply text-center;
+  }
+
+  .contribution-stat-value {
+    @apply text-lg font-semibold text-foreground;
+  }
+
+  .contribution-stat-label {
+    @apply text-xs text-muted-foreground;
+  }
+}
+
+@layer utilities {
+  /* Text Utilities */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent;
+  }
+
+  /* Layout Utilities */
+  .sidebar-layout {
+    @apply flex min-h-screen;
+  }
+
+  .main-content {
+    @apply flex-1 flex flex-col min-w-0;
+  }
+
+  .page-container {
+    @apply container mx-auto px-4 py-6;
+  }
+
+  .section-spacing {
+    @apply space-y-6;
+  }
+
+  /* Animation Utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+
+  /* Scrollbar Utilities */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Keyframe Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-break {
+    page-break-after: always;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  :root {
+    --border: 0 0% 0%;
+    --input: 0 0% 0%;
+  }
+
+  .dark {
+    --border: 0 0% 100%;
+    --input: 0 0% 100%;
+  }
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 @layer base {
@@ -118,11 +486,5 @@
   }
   body {
     @apply bg-background text-foreground;
-  }
-}
-
-@layer utilities {
-  .font-poppins {
-    font-family: var(--font-poppins), system-ui, sans-serif;
   }
 }
