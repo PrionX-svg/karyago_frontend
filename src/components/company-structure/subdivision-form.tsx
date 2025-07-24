@@ -3,146 +3,201 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
-import { DivisionType, SubDivisionType } from "@/lib/types/company-type"
+import { Target, Plus, Pencil, Loader2 } from "lucide-react"
+import { useCompanyStore } from "@/stores/company-store"
+import { api } from "@/lib/api/api"
+import { decrypt } from "@/lib/encrypt"
 
-interface SubDivisionFormProps {
-    isOpen: boolean
-    onClose: () => void
-    onSubmit: (subDivision: SubDivisionType | Omit<SubDivisionType, "uuid">) => void
-    initialData?: SubDivisionType | null
-    divisions: DivisionType[]
+interface SubDivisionDialogProps {
+    mode: "create" | "edit"
+    subDivision?: {
+        uuid: string
+        name: string
+        desc?: string
+        departmentGroupUuid?: string
+        divisions?: { name: string; uuid: string }
+    }
+    trigger?: React.ReactNode
+    onSuccess?: () => void
 }
 
-export default function SubDivisionForm({ isOpen, onClose, onSubmit, initialData, divisions }: SubDivisionFormProps) {
+export function SubDivisionDialog({ mode, subDivision, trigger, onSuccess }: SubDivisionDialogProps) {
+    const [open, setOpen] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         name: "",
         desc: "",
-        department_group_uuid: "",
+        departmentGroupUuid: "",
     })
 
+    const divisionsData = useCompanyStore((state) => state.division)
+    const storedUuid = localStorage.getItem("atem")
+
     useEffect(() => {
-        if (initialData) {
+        if (mode === "edit" && subDivision) {
             setFormData({
-                name: initialData.name,
-                desc: initialData.desc,
-                department_group_uuid: initialData.department_group_uuid,
+                name: subDivision.name || "",
+                desc: subDivision.desc || "",
+                departmentGroupUuid: subDivision.departmentGroupUuid || "",
             })
         } else {
             setFormData({
                 name: "",
                 desc: "",
-                department_group_uuid: "",
+                departmentGroupUuid: "",
             })
         }
-    }, [initialData, isOpen])
+    }, [mode, subDivision, open])
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        const fetchDivisions = async () => {
+            if (!storedUuid || divisionsData.length > 0) return
+            try {
+                const decryptedUuid = decrypt(storedUuid)
+                await api.getDivisionsByCompanyUuid(await decryptedUuid)
+            } catch (error) {
+                console.error("Failed to fetch divisions:", error)
+            }
+        }
+
+        if (open) {
+            fetchDivisions()
+        }
+    }, [open, storedUuid, divisionsData.length])
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (!storedUuid) return
 
-        if (initialData) {
-            onSubmit({ ...formData, uuid: initialData.uuid })
-        } else {
-            onSubmit(formData)
+        setLoading(true)
+        try {
+            const decryptedUuid = decrypt(storedUuid)
+            const companyUuid = await decryptedUuid
+
+            const payload = {
+                name: formData.name,
+                desc: formData.desc,
+                departmentGroupUuid: formData.departmentGroupUuid,
+            }
+
+            if (mode === "create") {
+                await api.createSubDivision(payload)
+            } else if (subDivision) {
+                await api.updateSubDivision(subDivision.uuid, payload)
+            }
+
+            // Refresh sub-divisions data
+            await api.getSubDivisionsByCompanyUuid(companyUuid)
+
+            setOpen(false)
+            onSuccess?.()
+        } catch (error) {
+            console.error(`Failed to ${mode} sub-division:`, error)
+        } finally {
+            setLoading(false)
         }
     }
 
+    const defaultTrigger = (
+        <Button
+            className={`gap-2 ${mode === "create" ? "bg-orange-500 hover:bg-orange-600" : "hover:bg-teal-100"} rounded-lg`}
+            variant={mode === "create" ? "default" : "ghost"}
+            size={mode === "create" ? "default" : "icon"}
+        >
+            {mode === "create" ? (
+                <>
+                    <Plus className="w-4 h-4" />
+                    Add Sub-Division
+                </>
+            ) : (
+                <Pencil className="w-4 h-4 text-gray-600" />
+            )}
+        </Button>
+    )
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[500px] bg-white/95 backdrop-blur-sm border-orange-200">
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
-                    <DialogTitle className="text-xl font-semibold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                        {initialData ? "Edit Sub-Division" : "Create New Sub-Division"}
+                    <DialogTitle className="flex items-center gap-2">
+                        <div className="p-2 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+                            <Target className="w-5 h-5 text-orange-600" />
+                        </div>
+                        {mode === "create" ? "Create New Sub-Division" : "Edit Sub-Division"}
                     </DialogTitle>
-                    <DialogDescription>
-                        {initialData
-                            ? "Update the sub-division information below."
-                            : "Fill in the details to create a new sub-division."}
-                    </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="department_group_uuid" className="text-sm font-medium">
-                                Parent Division *
-                            </Label>
-                            <Select
-                                value={formData.department_group_uuid}
-                                onValueChange={(value) => setFormData({ ...formData, department_group_uuid: value })}
-                                required
-                            >
-                                <SelectTrigger className="border-orange-200 focus:border-orange-500">
-                                    <SelectValue placeholder="Select a division" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {divisions.map((division) => (
-                                        <SelectItem key={division.uuid} value={division.uuid}>
-                                            {division.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="name" className="text-sm font-medium">
-                                Sub-Division Name *
-                            </Label>
-                            <Input
-                                id="name"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                placeholder="e.g., Recruitment"
-                                required
-                                className="border-orange-200 focus:border-orange-500"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="desc" className="text-sm font-medium">
-                                Description *
-                            </Label>
-                            <Textarea
-                                id="desc"
-                                value={formData.desc}
-                                onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
-                                placeholder="Describe the sub-division's responsibilities and scope..."
-                                required
-                                rows={3}
-                                className="border-orange-200 focus:border-orange-500"
-                            />
-                        </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="name">Sub-Division Name *</Label>
+                        <Input
+                            id="name"
+                            value={formData.name}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                            placeholder="Enter sub-division name"
+                            required
+                            className="rounded-lg"
+                        />
                     </div>
 
-                    <DialogFooter className="gap-2">
+                    <div className="space-y-2">
+                        <Label htmlFor="departmentGroup">Parent Division *</Label>
+                        <Select
+                            value={formData.departmentGroupUuid}
+                            onValueChange={(value) => setFormData((prev) => ({ ...prev, departmentGroupUuid: value }))}
+                            required
+                        >
+                            <SelectTrigger className="rounded-lg">
+                                <SelectValue placeholder="Select parent division" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {divisionsData.map((division) => (
+                                    <SelectItem key={division.uuid} value={division.uuid}>
+                                        {division.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="desc">Description</Label>
+                        <Textarea
+                            id="desc"
+                            value={formData.desc}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, desc: e.target.value }))}
+                            placeholder="Enter sub-division description"
+                            rows={3}
+                            className="rounded-lg resize-none"
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-4">
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={onClose}
-                            className="border-orange-200 hover:bg-orange-50 bg-transparent"
+                            onClick={() => setOpen(false)}
+                            disabled={loading}
+                            className="rounded-lg"
                         >
                             Cancel
                         </Button>
                         <Button
                             type="submit"
-                            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+                            disabled={loading || !formData.name.trim() || !formData.departmentGroupUuid}
+                            className="bg-orange-500 hover:bg-orange-600 rounded-lg"
                         >
-                            {initialData ? "Update Sub-Division" : "Create Sub-Division"}
+                            {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                            {mode === "create" ? "Create Sub-Division" : "Update Sub-Division"}
                         </Button>
-                    </DialogFooter>
+                    </div>
                 </form>
             </DialogContent>
         </Dialog>

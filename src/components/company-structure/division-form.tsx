@@ -3,148 +3,208 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
-import { Switch } from "@/components/ui/switch"
-import { DivisionType } from "@/lib/types/company-type"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Building2, Plus, Pencil, Loader2 } from "lucide-react"
+import { api } from "@/lib/api/api"
+import { decrypt } from "@/lib/encrypt"
 
-interface DivisionFormProps {
-    isOpen: boolean
-    onClose: () => void
-    onSubmit: (division: DivisionType | Omit<DivisionType, "uuid">) => void
-    initialData?: DivisionType | null
+interface DivisionDialogProps {
+    mode: "create" | "edit"
+    division?: {
+        uuid: string
+        name: string
+        desc?: string
+        responsibleUuid?: string
+        responsible?: { name: string; uuid: string }
+    }
+    trigger?: React.ReactNode
+    onSuccess?: () => void
 }
 
-export default function DivisionForm({ isOpen, onClose, onSubmit, initialData }: DivisionFormProps) {
+export function DivisionDialog({ mode, division, trigger, onSuccess }: DivisionDialogProps) {
+    const [open, setOpen] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         name: "",
         desc: "",
-        company_uuid: "comp-1", // Default company
-        responsible_uuid: null as string | null,
-        hasResponsible: false,
+        responsibleUuid: "",
     })
+    const [employees, setEmployees] = useState<Array<{ uuid: string; name: string }>>([])
+
+    const storedUuid = localStorage.getItem("atem")
 
     useEffect(() => {
-        if (initialData) {
+        if (mode === "edit" && division) {
             setFormData({
-                name: initialData.name,
-                desc: initialData.desc,
-                company_uuid: initialData.company_uuid,
-                responsible_uuid: initialData.responsible_uuid || "",
-                hasResponsible: !!initialData.responsible_uuid,
+                name: division.name || "",
+                desc: division.desc || "",
+                responsibleUuid: division.responsibleUuid || "",
             })
         } else {
             setFormData({
                 name: "",
                 desc: "",
-                company_uuid: "comp-1",
-                responsible_uuid: null,
-                hasResponsible: false,
+                responsibleUuid: "",
             })
         }
-    }, [initialData, isOpen])
+    }, [mode, division, open])
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-
-        const divisionData = {
-            name: formData.name,
-            desc: formData.desc,
-            company_uuid: formData.company_uuid,
-            responsible_uuid: formData.hasResponsible ? `user-${Date.now()}` : null,
+    useEffect(() => {
+        const fetchEmployees = async () => {
+            if (!storedUuid) return
+            try {
+                const decryptedUuid = decrypt(storedUuid)
+                // Assuming there's an API to get employees
+                // await api.getEmployeesByCompanyUuid(await decryptedUuid)
+                // For now, using mock data
+                setEmployees([
+                    { uuid: "emp-1", name: "John Doe" },
+                    { uuid: "emp-2", name: "Jane Smith" },
+                    { uuid: "emp-3", name: "Mike Johnson" },
+                ])
+            } catch (error) {
+                console.error("Failed to fetch employees:", error)
+            }
         }
 
-        if (initialData) {
-            onSubmit({ ...divisionData, uuid: initialData.uuid })
-        } else {
-            onSubmit(divisionData)
+        if (open) {
+            fetchEmployees()
+        }
+    }, [open, storedUuid])
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!storedUuid) return
+
+        setLoading(true)
+        try {
+            const decryptedUuid = decrypt(storedUuid)
+            const companyUuid = await decryptedUuid
+
+            const payload = {
+                name: formData.name,
+                companyUuid,
+                desc: formData.desc,
+                responsibleUuid: formData.responsibleUuid || undefined,
+            }
+
+            if (mode === "create") {
+                await api.createDivision(payload)
+            } else if (division) {
+                await api.updateDivision(division.uuid, payload)
+            }
+
+            // Refresh divisions data
+            await api.getDivisionsByCompanyUuid(companyUuid)
+
+            setOpen(false)
+            onSuccess?.()
+        } catch (error) {
+            console.error(`Failed to ${mode} division:`, error)
+        } finally {
+            setLoading(false)
         }
     }
 
+    const defaultTrigger = (
+        <Button
+            className={`gap-2 ${mode === "create" ? "bg-orange-500 hover:bg-orange-600" : "hover:bg-purple-100"} rounded-lg`}
+            variant={mode === "create" ? "default" : "ghost"}
+            size={mode === "create" ? "default" : "icon"}
+        >
+            {mode === "create" ? (
+                <>
+                    <Plus className="w-4 h-4" />
+                    Add Division
+                </>
+            ) : (
+                <Pencil className="w-4 h-4 text-gray-600" />
+            )}
+        </Button>
+    )
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[500px] bg-white/95 backdrop-blur-sm border-orange-200">
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
-                    <DialogTitle className="text-xl font-semibold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                        {initialData ? "Edit Division" : "Create New Division"}
+                    <DialogTitle className="flex items-center gap-2">
+                        <div className="p-2 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+                            <Building2 className="w-5 h-5 text-orange-600" />
+                        </div>
+                        {mode === "create" ? "Create New Division" : "Edit Division"}
                     </DialogTitle>
-                    <DialogDescription>
-                        {initialData ? "Update the division information below." : "Fill in the details to create a new division."}
-                    </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name" className="text-sm font-medium">
-                                Division Name *
-                            </Label>
-                            <Input
-                                id="name"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                placeholder="e.g., Human Resources"
-                                required
-                                className="border-orange-200 focus:border-orange-500"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="desc" className="text-sm font-medium">
-                                Description *
-                            </Label>
-                            <Textarea
-                                id="desc"
-                                value={formData.desc}
-                                onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
-                                placeholder="Describe the division's responsibilities and scope..."
-                                required
-                                rows={3}
-                                className="border-orange-200 focus:border-orange-500"
-                            />
-                        </div>
-
-                        <div className="flex items-center justify-between p-4 bg-orange-50/50 rounded-lg border border-orange-100">
-                            <div className="space-y-1">
-                                <Label htmlFor="hasResponsible" className="text-sm font-medium">
-                                    Assign Responsible Person
-                                </Label>
-                                <p className="text-xs text-muted-foreground">Assign someone to be responsible for this division</p>
-                            </div>
-                            <Switch
-                                id="hasResponsible"
-                                checked={formData.hasResponsible}
-                                onCheckedChange={(checked) => setFormData({ ...formData, hasResponsible: checked })}
-                            />
-                        </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="name">Division Name *</Label>
+                        <Input
+                            id="name"
+                            value={formData.name}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                            placeholder="Enter division name"
+                            required
+                            className="rounded-lg"
+                        />
                     </div>
 
-                    <DialogFooter className="gap-2">
+                    <div className="space-y-2">
+                        <Label htmlFor="desc">Description</Label>
+                        <Textarea
+                            id="desc"
+                            value={formData.desc}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, desc: e.target.value }))}
+                            placeholder="Enter division description"
+                            rows={3}
+                            className="rounded-lg resize-none"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="responsible">Responsible Person</Label>
+                        <Select
+                            value={formData.responsibleUuid}
+                            onValueChange={(value) => setFormData((prev) => ({ ...prev, responsibleUuid: value }))}
+                        >
+                            <SelectTrigger className="rounded-lg">
+                                <SelectValue placeholder="Select responsible person" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="none">No one assigned</SelectItem>
+                                {employees.map((employee) => (
+                                    <SelectItem key={employee.uuid} value={employee.uuid}>
+                                        {employee.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-4">
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={onClose}
-                            className="border-orange-200 hover:bg-orange-50 bg-transparent"
+                            onClick={() => setOpen(false)}
+                            disabled={loading}
+                            className="rounded-lg"
                         >
                             Cancel
                         </Button>
                         <Button
                             type="submit"
-                            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+                            disabled={loading || !formData.name.trim()}
+                            className="bg-orange-500 hover:bg-orange-600 rounded-lg"
                         >
-                            {initialData ? "Update Division" : "Create Division"}
+                            {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                            {mode === "create" ? "Create Division" : "Update Division"}
                         </Button>
-                    </DialogFooter>
+                    </div>
                 </form>
             </DialogContent>
         </Dialog>

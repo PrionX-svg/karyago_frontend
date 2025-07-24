@@ -39,7 +39,7 @@ export interface GetCompaniesByUserUuidResponse {
         uuid: string;
         logo: string;
         name: string;
-        address: string; 
+        address: string;
         email: string;
         phone: string;
         user: {
@@ -112,10 +112,13 @@ export interface CreateDivisionResponse {
 export interface getDivisionsByCompanyUuidResponse {
     data: Array<{
         uuid: string;
+        company_uuid: string;
+        responsible: {
+            uuid: string;
+            name: string;
+        } | null;
         name: string;
         desc: string;
-        company_uuid: string;
-        responsible_uuid: string | null;
     }>;
     page: number;
     limit: number;
@@ -143,9 +146,17 @@ export interface CreateSubDivisionResponse {
 export interface getSubDivisionsByCompanyUuidResponse {
     data: Array<{
         uuid: string;
-        department_group_uuid: string;
         name: string;
-        desc: string;
+        description: string;
+        department_group: {
+            uuid: string;
+            name: string;
+        }
+        employees: Array<{
+            uuid: string;
+            name: string;
+            email: string
+        }>
     }>;
     page: number;
     limit: number;

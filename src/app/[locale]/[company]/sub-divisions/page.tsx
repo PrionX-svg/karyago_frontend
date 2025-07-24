@@ -1,72 +1,82 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash, Layers, Menu, PlusCircle, Users2, Briefcase } from "lucide-react"
+import { Pencil, Trash, Layers, Menu, Users2, Briefcase, Target, Plus } from "lucide-react"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import { useCompanyStore } from "@/stores/company-store"
+import { decrypt } from "@/lib/encrypt"
+import { api } from "@/lib/api/api"
 
-type SubDivision = {
-    id: number
-    name: string
-    division: string
-    employees: number
-}
-
-const mockDivisions = ["Web Developer", "Finance", "Human Resources"]
-const mockSubDivisions: SubDivision[] = [
-    { id: 1, name: "Frontend Developer", division: "Web Developer", employees: 10 },
-    { id: 2, name: "Backend Developer", division: "Web Developer", employees: 12 },
-    { id: 3, name: "Recruitment", division: "Human Resources", employees: 5 },
-]
-
-export default function SubDivisionsDesign() {
+export default function SubDivisionsRoundedTable() {
     const [selectedDivision, setSelectedDivision] = useState<string | undefined>()
     const [viewType, setViewType] = useState<"card" | "table">("table")
+    const divisionsData = useCompanyStore((state) => state.division)
+    const isDivisionsEmpty = Array.isArray(divisionsData) && divisionsData.length === 0
+    const subDivisionsData = useCompanyStore((state) => state.subDivision)
+    const storedUuid = localStorage.getItem("atem")
 
     const handleAddSubDivision = () => console.log("Add sub-division")
-    const handleEditSubDivision = (id: number) => console.log("Edit sub-division", id)
-    const handleDeleteSubDivision = (id: number) => console.log("Delete sub-division", id)
+    const handleEditSubDivision = (uuid: string) => console.log("Edit sub-division", uuid)
+    const handleDeleteSubDivision = (uuid: string) => console.log("Delete sub-division", uuid)
 
-    const filteredSubDivisions = selectedDivision
-        ? mockSubDivisions.filter((s) => s.division === selectedDivision)
-        : mockSubDivisions
+    useEffect(() => {
+        if (isDivisionsEmpty) {
+            const fetchDivisions = async () => {
+                if (!storedUuid) return
+                try {
+                    const decryptedUuid = decrypt(storedUuid)
+                    await api.getDivisionsByCompanyUuid(await decryptedUuid)
+                } catch (error) {
+                    console.error("Failed to fetch divisions:", error)
+                }
+            }
+            fetchDivisions()
+        }
+    }, [isDivisionsEmpty, storedUuid])
+
+    useEffect(() => {
+        const fetchSubDivisions = async () => {
+            if (!storedUuid) return
+            try {
+                const decryptedUuid = decrypt(storedUuid)
+                await api.getSubDivisionsByCompanyUuid(await decryptedUuid)
+            } catch (error) {
+                console.error("Failed to fetch sub-divisions:", error)
+            }
+        }
+        fetchSubDivisions()
+    }, [storedUuid])
 
     return (
-        <div className="min-h-screen min-w-fit">
-            {/* HEADER SECTION - Clean Minimal */}
-            <div className="border-b border-gray-200 bg-white">
-                <div className="container">
-                    <div className="pb-6">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">                                
-                                <div>
-                                    <h1 className="text-2xl font-bold text-gray-900">Sub-Divisions</h1>
-                                    <p className="text-gray-600">Manage team structures and assignments</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-6">
-                                <div className="text-center">
-                                    <p className="text-2xl font-bold text-gray-900">{filteredSubDivisions.length}</p>
-                                    <p className="text-sm text-gray-500">Active Teams</p>
-                                </div>
-                                <div className="text-center">
-                                    <p className="text-2xl font-bold text-gray-900">
-                                        {filteredSubDivisions.reduce((acc, sub) => acc + sub.employees, 0)}
-                                    </p>
-                                    <p className="text-sm text-gray-500">Total Members</p>
-                                </div>
-                            </div>
+        <div className="min-h-screen">
+            {/* HEADER SECTION */}
+            <div className="pb-3">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200">
+                            <Users2 className="w-6 h-6 text-orange-600" />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900">Sub-Divisions</h1>
+                            <p className="text-gray-600 mt-1">Manage team structures and assignments</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-8">
+                        <div className="text-center">
+                            <p className="text-2xl font-bold text-gray-900">{subDivisionsData.length}</p>
+                            <p className="text-sm text-gray-500">Active Teams</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* BODY SECTION - Table Focused */}
-            <div className="container py-6">
-                {/* Toolbar - Merged Filter and Add */}
-                <div className="flex items-center justify-between mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="flex items-center gap-4">
+            {/* BODY SECTION */}
+            <div className="min-w-full pt-3">
+                {/* Toolbar */}
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                    <div className="flex flex-col sm:flex-row gap-3 flex-1">
                         <div className="flex items-center gap-2">
                             <Briefcase className="w-4 h-4 text-gray-600" />
                             <span className="text-sm font-medium text-gray-700">Filter by Division:</span>
@@ -75,14 +85,14 @@ export default function SubDivisionsDesign() {
                             value={selectedDivision}
                             onValueChange={(value) => setSelectedDivision(value === "all" ? undefined : value)}
                         >
-                            <SelectTrigger className="w-48 bg-white">
+                            <SelectTrigger className="w-full sm:w-48 bg-white rounded-lg">
                                 <SelectValue placeholder="All Divisions" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Divisions</SelectItem>
-                                {mockDivisions.map((division) => (
-                                    <SelectItem key={division} value={division}>
-                                        {division}
+                                {divisionsData.map((division) => (
+                                    <SelectItem key={division.uuid} value={division.name}>
+                                        {division.name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -90,28 +100,34 @@ export default function SubDivisionsDesign() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <div className="flex bg-white rounded-lg border border-gray-200 p-1">
-                            <Button
-                                variant={viewType === "card" ? "default" : "ghost"}
-                                size="sm"
-                                onClick={() => setViewType("card")}
-                                className="gap-2"
-                            >
-                                <Layers className="w-4 h-4" />
-                                Cards
-                            </Button>
+                        <div className="flex bg-gray-100 rounded-lg p-1">
                             <Button
                                 variant={viewType === "table" ? "default" : "ghost"}
                                 size="sm"
                                 onClick={() => setViewType("table")}
-                                className="gap-2"
+                                className={`gap-2 rounded-md ${viewType === "table"
+                                    ? "bg-orange-500 text-white hover:bg-orange-600"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                    }`}
                             >
-                                <Menu className="w-4 h-4" />
+                                <Menu className={`w-4 h-4 ${viewType === "table" ? "text-white" : "text-gray-500"}`} />
                                 Table
                             </Button>
+                            <Button
+                                variant={viewType === "card" ? "default" : "ghost"}
+                                size="sm"
+                                onClick={() => setViewType("card")}
+                                className={`gap-2 rounded-md ${viewType === "card"
+                                    ? "bg-orange-500 text-white hover:bg-orange-600"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                    }`}
+                            >
+                                <Layers className={`w-4 h-4 ${viewType === "card" ? "text-white" : "text-gray-500"}`} />
+                                Cards
+                            </Button>
                         </div>
-                        <Button onClick={handleAddSubDivision} className="gap-2 bg-gray-900 hover:bg-gray-800">
-                            <PlusCircle className="w-4 h-4" />
+                        <Button onClick={handleAddSubDivision} className="gap-2 bg-orange-500 hover:bg-orange-600 rounded-lg">
+                            <Plus className="w-4 h-4" />
                             Add Sub-Division
                         </Button>
                     </div>
@@ -119,57 +135,66 @@ export default function SubDivisionsDesign() {
 
                 {/* Content Area */}
                 {viewType === "table" ? (
-                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead>
-                                    <tr className="bg-gray-50 border-b border-gray-200">
-                                        <th className="text-left py-4 px-6 font-semibold text-gray-900">
+                                    <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                                        <th className="text-left py-4 px-6 font-bold text-gray-900 first:rounded-tl-xl">
                                             <div className="flex items-center gap-2">
-                                                <Users2 className="w-4 h-4" />
+                                                <Target className="w-4 h-4" />
                                                 Sub-Division Name
                                             </div>
                                         </th>
-                                        <th className="text-left py-4 px-6 font-semibold text-gray-900">
+                                        <th className="text-left py-4 px-6 font-bold text-gray-900">Description</th>
+                                        <th className="text-left py-4 px-6 font-bold text-gray-900">
                                             <div className="flex items-center gap-2">
                                                 <Briefcase className="w-4 h-4" />
                                                 Parent Division
                                             </div>
                                         </th>
-                                        <th className="text-center py-4 px-6 font-semibold text-gray-900">
-                                            <div className="flex items-center justify-center gap-2">
-                                                <Users2 className="w-4 h-4" />
-                                                Team Size
-                                            </div>
-                                        </th>
-                                        <th className="text-right py-4 px-6 font-semibold text-gray-900">Actions</th>
+                                        <th className="text-right py-4 px-6 font-bold text-gray-900 last:rounded-tr-xl">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredSubDivisions.map((sub, index) => (
+                                    {subDivisionsData.map((sub, index) => (
                                         <tr
-                                            key={sub.id}
-                                            className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"}`}
+                                            key={sub.uuid}
+                                            className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50/30"}`}
                                         >
                                             <td className="py-4 px-6">
                                                 <div className="font-medium text-gray-900">{sub.name}</div>
                                             </td>
                                             <td className="py-4 px-6">
-                                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">
-                                                    {sub.division}
-                                                </span>
+                                                {sub.desc ? (
+                                                    <div className="text-sm text-gray-700 max-w-xs truncate" title={sub.desc}>
+                                                        {sub.desc}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm italic text-neutral-400">Not Set</div>
+                                                )}
                                             </td>
-                                            <td className="py-4 px-6 text-center">
-                                                <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-900 text-white rounded-full font-bold">
-                                                    {sub.employees}
+                                            <td className="py-4 px-6">
+                                                <div className="text-sm text-gray-700">
+                                                    {sub.divisions?.name || "No Parent Division"}
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6">
                                                 <div className="flex justify-end gap-2">
-                                                    <Button variant="ghost" size="icon" onClick={() => handleEditSubDivision(sub.id)}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => handleEditSubDivision(sub.uuid)}
+                                                        className="hover:bg-teal-100 rounded-lg"
+                                                    >
                                                         <Pencil className="w-4 h-4 text-gray-600" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleDeleteSubDivision(sub.id)}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => handleDeleteSubDivision(sub.uuid)}
+                                                        className="hover:bg-red-100 rounded-lg"
+                                                    >
                                                         <Trash className="w-4 h-4 text-red-500" />
                                                     </Button>
                                                 </div>
@@ -182,39 +207,56 @@ export default function SubDivisionsDesign() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {filteredSubDivisions.map((sub) => (
+                        {subDivisionsData.map((sub) => (
                             <Card
-                                key={sub.id}
-                                className="bg-white border border-gray-200 hover:shadow-lg transition-all duration-200"
+                                key={sub.uuid}
+                                className="bg-white border border-gray-200 rounded-xl hover:shadow-xl hover:border-orange-200 transition-all duration-300 group overflow-hidden"
                             >
-                                <CardHeader className="pb-3">
-                                    <div className="flex justify-between items-start">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2 bg-gray-100 rounded-lg">
-                                                <Users2 className="w-4 h-4 text-gray-600" />
+                                <CardHeader className="pb-4 relative">
+                                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-50 to-transparent rounded-full opacity-60 -mr-12 -mt-12"></div>
+                                    <div className="flex justify-between items-start relative z-10">
+                                        <div className="flex items-start gap-4">
+                                            <div className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200 group-hover:from-orange-100 group-hover:to-orange-200 transition-colors">
+                                                <Target className="w-5 h-5 text-orange-600" />
                                             </div>
                                             <div>
-                                                <CardTitle className="text-lg font-semibold text-gray-900">{sub.name}</CardTitle>
-                                                <p className="text-sm text-gray-500">{sub.division}</p>
+                                                <CardTitle className="text-lg font-bold text-gray-900 group-hover:text-orange-900 transition-colors">
+                                                    {sub.name}
+                                                </CardTitle>
+                                                {sub.divisions?.name ? (
+                                                    <p className="text-sm text-neutral-500">{sub.divisions.name}</p>
+                                                ) : (
+                                                    <p className="text-sm italic text-neutral-400">No Parent Division</p>
+                                                )}
                                             </div>
                                         </div>
-                                        <div className="flex gap-1">
-                                            <Button variant="ghost" size="icon" onClick={() => handleEditSubDivision(sub.id)}>
+                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleEditSubDivision(sub.uuid)}
+                                                className="h-8 w-8 rounded-lg"
+                                            >
                                                 <Pencil className="w-4 h-4 text-gray-500" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" onClick={() => handleDeleteSubDivision(sub.id)}>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleDeleteSubDivision(sub.uuid)}
+                                                className="h-8 w-8 rounded-lg"
+                                            >
                                                 <Trash className="w-4 h-4 text-red-500" />
                                             </Button>
                                         </div>
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                        <span className="text-sm font-medium text-gray-600">Team Members</span>
-                                        <div className="flex items-center gap-2">
-                                            <Users2 className="w-4 h-4 text-gray-500" />
-                                            <span className="font-bold text-gray-900">{sub.employees}</span>
-                                        </div>
+                                    <div className="p-3 border border-gray-200 rounded-lg">
+                                        {sub.desc ? (
+                                            <p className="text-sm text-gray-900">{sub.desc}</p>
+                                        ) : (
+                                            <p className="text-sm italic text-neutral-400">Description not set</p>
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -222,12 +264,12 @@ export default function SubDivisionsDesign() {
                     </div>
                 )}
 
-                {filteredSubDivisions.length === 0 && (
-                    <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                {subDivisionsData.length === 0 && (
+                    <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-300">
                         <Users2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">No sub-divisions found</h3>
                         <p className="text-gray-600 mb-4">No sub-divisions match your current filter criteria.</p>
-                        <Button onClick={() => setSelectedDivision(undefined)} variant="outline">
+                        <Button onClick={() => setSelectedDivision(undefined)} variant="outline" className="rounded-lg">
                             Clear Filter
                         </Button>
                     </div>
