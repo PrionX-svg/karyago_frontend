@@ -34,6 +34,11 @@ import {
   ChevronDown,
   Search,
   LucideIcon,
+  ListChecks,
+  PlusSquare,
+  Spline,
+  GitBranch,
+  Github,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
@@ -194,30 +199,70 @@ function DesktopSidebar() {
   const renderNavItem = (item: NavItem) => {
     const active = isItemActive(item);
     if (item.children) {
+      // Collapsed: show only children as icons with tooltips, hide parent
+      if (isCollapsed) {
+        const iconMap: Record<string, LucideIcon> = {
+          "Task List": ListChecks,
+          "Create Task": PlusSquare,
+          Division: Spline,
+          "Sub-Division": GitBranch,
+          Slack: MessageSquare,
+          Github: Github,
+        };
+        return (
+          <div key={item.name} className="flex flex-col items-center mt-1">
+            {item.children.map((child) => {
+              const ChildIcon = iconMap[child.name] || item.icon;
+              return (
+                <Tooltip key={child.name}>
+                  <TooltipTrigger asChild>
+                    <a
+                      href={child.path}
+                      className={cn(
+                        "flex items-center justify-center w-8 h-8 my-1 rounded hover:bg-sidebar-accent",
+                        isChildActive(child) &&
+                          "bg-sidebar-primary text-sidebar-primary-foreground"
+                      )}
+                      tabIndex={0}
+                    >
+                      <span className="sr-only">{child.name}</span>
+                      <ChildIcon className="w-5 h-5" />
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="right"
+                    align="center"
+                    className="text-xs font-medium px-2 py-1"
+                  >
+                    {child.name}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })}
+          </div>
+        );
+      }
+      // Expanded: show parent and children as usual
       return (
         <div key={item.name}>
           <div
             className={cn(
               "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md cursor-pointer",
               "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-              active && "bg-sidebar-primary text-sidebar-primary-foreground",
-              isCollapsed && "justify-center"
+              active && "bg-sidebar-primary text-sidebar-primary-foreground"
             )}
             onClick={() => toggleExpanded(item.name)}
           >
             <item.icon className="w-4 h-4 flex-shrink-0" />
-            {!isCollapsed && <span>{item.name}</span>}
-            {!isCollapsed && (
-              <ChevronDown
-                className={cn(
-                  "w-4 h-4 ml-auto transition-transform",
-                  expandedItems.includes(item.name) && "rotate-180"
-                )}
-              />
-            )}
+            <span>{item.name}</span>
+            <ChevronDown
+              className={cn(
+                "w-4 h-4 ml-auto transition-transform",
+                expandedItems.includes(item.name) && "rotate-180"
+              )}
+            />
           </div>
-          {/* Expanded children in normal sidebar */}
-          {expandedItems.includes(item.name) && !isCollapsed && (
+          {expandedItems.includes(item.name) && (
             <div className="ml-8 mt-1 space-y-1">
               {item.children.map((child) => (
                 <Link
@@ -235,39 +280,36 @@ function DesktopSidebar() {
               ))}
             </div>
           )}
-          {/* Show children as dot indicators with tooltips in collapsed sidebar */}
-          {isCollapsed && (
-            <div className="flex flex-col items-center mt-1">
-              {item.children.map((child) => (
-                <Tooltip key={child.name}>
-                  <TooltipTrigger asChild>
-                    <a
-                      href={child.path}
-                      className={cn(
-                        "flex items-center justify-center w-8 h-8 my-1 rounded hover:bg-sidebar-accent",
-                        isChildActive(child) &&
-                          "bg-sidebar-primary text-sidebar-primary-foreground"
-                      )}
-                      tabIndex={0}
-                    >
-                      <span className="sr-only">{child.name}</span>
-                      <span className="w-2 h-2 bg-primary rounded-full" />
-                    </a>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="right"
-                    align="center"
-                    className="text-xs font-medium px-2 py-1"
-                  >
-                    {child.name}
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-          )}
         </div>
       );
     }
+    if (isCollapsed) {
+      return (
+        <Tooltip key={item.name}>
+          <TooltipTrigger asChild>
+            <Link
+              href={item.path!}
+              className={cn(
+                "flex items-center justify-center w-8 h-8 my-1 rounded hover:bg-sidebar-accent",
+                active && "bg-sidebar-primary text-sidebar-primary-foreground"
+              )}
+              tabIndex={0}
+            >
+              <span className="sr-only">{item.name}</span>
+              <item.icon className="w-5 h-5" />
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent
+            side="right"
+            align="center"
+            className="text-xs font-medium px-2 py-1"
+          >
+            {item.name}
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+    // Expanded sidebar: show label and icon
     return (
       <Link
         key={item.name}
@@ -275,13 +317,11 @@ function DesktopSidebar() {
         className={cn(
           "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
           "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-          active && "bg-sidebar-primary text-sidebar-primary-foreground",
-          isCollapsed && "justify-center"
+          active && "bg-sidebar-primary text-sidebar-primary-foreground"
         )}
-        title={isCollapsed ? item.name : undefined}
       >
         <item.icon className="w-4 h-4 flex-shrink-0" />
-        {!isCollapsed && <span>{item.name}</span>}
+        <span>{item.name}</span>
       </Link>
     );
   };
