@@ -30,7 +30,7 @@ export function IntegrationCard({
 
   return (
     <Card
-      className={`p-0 integration-card card-hover-lift animate-fade-in ${
+      className={`p-0 integration-card card-hover-lift animate-fade-in rounded-sm ${
         connected ? "integration-card-connected" : ""
       }`}
     >

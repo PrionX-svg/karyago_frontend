@@ -84,7 +84,8 @@ export function GitHubContribution() {
   };
 
   return (
-    <Card className="p-0 feature-card card-hover-lift animate-fade-in overflow-hidden">
+    <Card className="p-0 feature-card card-hover-lift animate-fade-in overflow-hidden rounded-sm">
+
       <CardHeader className="p-6">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold">

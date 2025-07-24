@@ -39,7 +39,7 @@ export function GettingStartedCard({
 
   return (
     <Card
-      className={cn("p-0 feature-card card-hover-lift", cardTypeMap[color])}
+      className={cn("p-0 feature-card card-hover-lift rounded-sm", cardTypeMap[color])}
     >
       <CardContent className="p-6 space-y-4">
         <div
