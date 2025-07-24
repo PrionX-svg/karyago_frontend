@@ -14,11 +14,15 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/mode-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ChevronDown } from "lucide-react";
+import { useGeneralStore } from "@/stores/genaral-store";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export function Header() {
   const isMobile = useIsMobile();
+  const isSidebarCollapsed = useGeneralStore((s) => s.isSidebarCollapsed);
+  const toggleSidebarCollapse = useGeneralStore((s) => s.toggleSidebarCollapse);
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
@@ -27,16 +31,31 @@ export function Header() {
         {isMobile && (
           <>
             <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
+            <div className="border-1 h-5 border-border/70" />
           </>
         )}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 hidden sm:flex">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-sm">
               ZY
             </span>
           </div>
           <span className="font-semibold text-lg">Zozyo®</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Toggle sidebar collapse"
+            onClick={toggleSidebarCollapse}
+            className="ml-2"
+          >
+            <ChevronDown
+              className={
+                isSidebarCollapsed
+                  ? "w-5 h-5 rotate-90 transition-transform"
+                  : "w-5 h-5 -rotate-90 transition-transform"
+              }
+            />
+          </Button>
         </div>
       </div>
 

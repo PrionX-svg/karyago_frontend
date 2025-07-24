@@ -31,10 +31,12 @@ import {
   LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "../ui/button";
+import { useGeneralStore } from "@/stores/genaral-store";
 
 /* ======================
    Type Definitions
@@ -42,6 +44,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 type NavChild = {
   name: string;
   path: string;
+  active?: boolean;
 };
 
 type NavItem = {
@@ -102,7 +105,11 @@ const baseNavigationItems: NavigationItems = {
   ],
   bottom: [
     { name: "Support Center", icon: HelpCircle, path: "/support" },
-    { name: "Getting Started", icon: Play, path: "/getting-started", active: true },
+    {
+      name: "Getting Started",
+      icon: Play,
+      path: "/getting-started",
+    },
   ],
 };
 
@@ -121,10 +128,12 @@ function prefixNavigationItems(
   const mapItem = (item: NavItem): NavItem => ({
     ...item,
     path: addPrefix(item.path),
-    children: item.children?.map((child): NavChild => ({
-      ...child,
-      path: addPrefix(child.path)!,
-    })),
+    children: item.children?.map(
+      (child): NavChild => ({
+        ...child,
+        path: addPrefix(child.path)!,
+      })
+    ),
   });
 
   return {
@@ -140,11 +149,13 @@ function prefixNavigationItems(
 ====================== */
 function DesktopSidebar() {
   const { locale, company } = useParams<{ locale: string; company: string }>();
-  const navigationItems = prefixNavigationItems(baseNavigationItems, `/${locale}/${company}`);
+  const navigationItems = prefixNavigationItems(
+    baseNavigationItems,
+    `/${locale}/${company}`
+  );
 
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
+  const isCollapsed = useGeneralStore((s) => s.isSidebarCollapsed);
   const toggleExpanded = (itemName: string) => {
     setExpandedItems((prev) =>
       prev.includes(itemName)
@@ -153,20 +164,43 @@ function DesktopSidebar() {
     );
   };
 
-  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
+  // Get current path for active highlighting (SSR-safe)
+  const pathname = usePathname();
+
+  const isItemActive = (item: NavItem) => {
+    if (item.active) return true;
+    if (item.path && pathname === item.path) return true;
+    if (
+      item.children &&
+      item.children.some(
+        (child) => child.active || (child.path && pathname === child.path)
+      )
+    )
+      return true;
+    return false;
+  };
+
+  const isChildActive = (child: NavChild) => {
+    if (child.active) return true;
+    if (child.path && pathname === child.path) return true;
+    return false;
+  };
 
   const renderNavItem = (item: NavItem) => {
+    const active = isItemActive(item);
     if (item.children) {
       return (
         <div key={item.name}>
           <div
             className={cn(
               "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md cursor-pointer",
-              "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+              active && "bg-sidebar-primary text-sidebar-primary-foreground",
+              isCollapsed && "justify-center"
             )}
             onClick={() => toggleExpanded(item.name)}
           >
-            <item.icon className="w-4 h-4" />
+            <item.icon className="w-4 h-4 flex-shrink-0" />
             {!isCollapsed && <span>{item.name}</span>}
             {!isCollapsed && (
               <ChevronDown
@@ -183,7 +217,12 @@ function DesktopSidebar() {
                 <Link
                   key={child.name}
                   href={child.path}
-                  className="block px-3 py-1 text-sm text-sidebar-foreground/80 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent rounded-md transition-colors"
+                  className={cn(
+                    "block px-3 py-1 text-sm rounded-md transition-colors",
+                    isChildActive(child)
+                      ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                      : "text-sidebar-foreground/80 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent"
+                  )}
                 >
                   {child.name}
                 </Link>
@@ -193,7 +232,7 @@ function DesktopSidebar() {
         </div>
       );
     }
-
+    // ...existing code...
     return (
       <Link
         key={item.name}
@@ -201,7 +240,7 @@ function DesktopSidebar() {
         className={cn(
           "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
           "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-          item.active && "bg-sidebar-primary text-sidebar-primary-foreground",
+          active && "bg-sidebar-primary text-sidebar-primary-foreground",
           isCollapsed && "justify-center"
         )}
         title={isCollapsed ? item.name : undefined}
@@ -221,7 +260,9 @@ function DesktopSidebar() {
     >
       {/* Header */}
       <div className="p-4 border-b border-sidebar-border flex-shrink-0">
-        <div className={cn("transition-all duration-300", isCollapsed && "hidden")}>
+        <div
+          className={cn("transition-all duration-300", isCollapsed && "hidden")}
+        >
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-sidebar-foreground/60" />
             <input
@@ -230,17 +271,7 @@ function DesktopSidebar() {
             />
           </div>
         </div>
-        <button
-          onClick={toggleCollapse}
-          className="mt-3 w-full flex items-center justify-center p-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground transition-colors"
-        >
-          <ChevronDown
-            className={cn(
-              "w-4 h-4 transition-transform",
-              isCollapsed ? "rotate-90" : "-rotate-90"
-            )}
-          />
-        </button>
+        {/* Collapse toggle moved to header */}
       </div>
 
       {/* Scrollable Content */}
@@ -297,7 +328,10 @@ function DesktopSidebar() {
 ====================== */
 function MobileSidebar() {
   const { locale, company } = useParams<{ locale: string; company: string }>();
-  const navigationItems = prefixNavigationItems(baseNavigationItems, `/${locale}/${company}`);
+  const navigationItems = prefixNavigationItems(
+    baseNavigationItems,
+    `/${locale}/${company}`
+  );
 
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
@@ -356,9 +390,22 @@ function MobileSidebar() {
   };
 
   return (
-    <Sidebar collapsible="offcanvas" className="border-r border-sidebar-border bg-sidebar">
+    <Sidebar
+      collapsible="offcanvas"
+      className="border-r border-sidebar-border bg-sidebar"
+    >
       <SidebarHeader className="p-4 border-b border-sidebar-border">
-        <div className="relative">
+        <div className="flex items-center gap-2">
+          <div>
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-sm">
+                ZY
+              </span>
+            </div>
+          </div>
+          <span className="font-semibold text-lg">Zozyo®</span>
+        </div>
+        <div className="relative mt-2">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-sidebar-foreground/60" />
           <SidebarInput
             placeholder="Search"
@@ -370,31 +417,45 @@ function MobileSidebar() {
       <SidebarContent className="flex-1 overflow-y-auto">
         {/* Feature Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="sidebar-section-title">FEATURE</SidebarGroupLabel>
+          <SidebarGroupLabel className="sidebar-section-title">
+            FEATURE
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>{navigationItems.feature.map(renderMobileNavItem)}</SidebarMenu>
+            <SidebarMenu>
+              {navigationItems.feature.map(renderMobileNavItem)}
+            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         {/* Company Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="sidebar-section-title">COMPANY</SidebarGroupLabel>
+          <SidebarGroupLabel className="sidebar-section-title">
+            COMPANY
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>{navigationItems.company.map(renderMobileNavItem)}</SidebarMenu>
+            <SidebarMenu>
+              {navigationItems.company.map(renderMobileNavItem)}
+            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         {/* Apps Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="sidebar-section-title">APPS</SidebarGroupLabel>
+          <SidebarGroupLabel className="sidebar-section-title">
+            APPS
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>{navigationItems.apps.map(renderMobileNavItem)}</SidebarMenu>
+            <SidebarMenu>
+              {navigationItems.apps.map(renderMobileNavItem)}
+            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="p-4 border-t border-sidebar-border">
-        <SidebarMenu>{navigationItems.bottom.map(renderMobileNavItem)}</SidebarMenu>
+        <SidebarMenu>
+          {navigationItems.bottom.map(renderMobileNavItem)}
+        </SidebarMenu>
       </SidebarFooter>
 
       <SidebarRail />
