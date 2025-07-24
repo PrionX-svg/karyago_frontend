@@ -61,7 +61,7 @@ export default async function RootLayout({
   const nonce = headersList.get("x-nonce") || "";
 
   return (
-    <html lang={locale} className={poppins.variable}>
+    <html lang={locale} className={poppins.variable} suppressHydrationWarning>
       <head>
         {/* Store nonce in meta for client access */}
         <meta name="csp-nonce" content={nonce} />

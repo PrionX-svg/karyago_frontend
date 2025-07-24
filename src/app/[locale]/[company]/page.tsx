@@ -1,6 +1,7 @@
 import { GettingStartedCard } from "@/components/dashboard/getting-started-card";
 import { IntegrationCard } from "@/components/dashboard/integration-card";
 import { GitHubContribution } from "@/components/dashboard/github-contribution";
+import { ClockWidget } from "@/components/dashboard/clock-widget";
 
 export default function DashboardPage() {
   return (
@@ -12,6 +13,29 @@ export default function DashboardPage() {
         <p className="text-muted-foreground">
           Take few minutes to discover about new feature!
         </p>
+      </div>
+
+      {/* Clock Widget */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1">
+          <ClockWidget />
+        </div>
+        <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <GettingStartedCard
+              title="Easy Manage Task"
+              description="With this new feature, it is very easy for users to manage tasks and easily collaborate with all departmental lines in your company"
+              icon="task"
+              color="blue"
+            />
+            <GettingStartedCard
+              title="Easy Request Time-off"
+              description="Simplify your vacation leave with just one click, and you can customize it however you like, let's plan your vacation right now"
+              icon="clock"
+              color="purple"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
