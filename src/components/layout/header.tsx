@@ -18,6 +18,7 @@ import { ChevronDown } from "lucide-react";
 import { useGeneralStore } from "@/stores/genaral-store";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 export function Header() {
   const isMobile = useIsMobile();
@@ -60,6 +61,7 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-4">
+        <LanguageSwitcher />
         <ModeToggle />
 
         <Button variant="ghost" size="icon" className="relative">
@@ -70,10 +72,6 @@ export function Header() {
           >
             1
           </Badge>
-        </Button>
-
-        <Button variant="ghost" size="icon">
-          <Settings className="w-5 h-5" />
         </Button>
 
         <DropdownMenu>
