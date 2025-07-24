@@ -15,6 +15,11 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Home,
   User,
   Clock,
@@ -211,6 +216,7 @@ function DesktopSidebar() {
               />
             )}
           </div>
+          {/* Expanded children in normal sidebar */}
           {expandedItems.includes(item.name) && !isCollapsed && (
             <div className="ml-8 mt-1 space-y-1">
               {item.children.map((child) => (
@@ -229,10 +235,39 @@ function DesktopSidebar() {
               ))}
             </div>
           )}
+          {/* Show children as dot indicators with tooltips in collapsed sidebar */}
+          {isCollapsed && (
+            <div className="flex flex-col items-center mt-1">
+              {item.children.map((child) => (
+                <Tooltip key={child.name}>
+                  <TooltipTrigger asChild>
+                    <a
+                      href={child.path}
+                      className={cn(
+                        "flex items-center justify-center w-8 h-8 my-1 rounded hover:bg-sidebar-accent",
+                        isChildActive(child) &&
+                          "bg-sidebar-primary text-sidebar-primary-foreground"
+                      )}
+                      tabIndex={0}
+                    >
+                      <span className="sr-only">{child.name}</span>
+                      <span className="w-2 h-2 bg-primary rounded-full" />
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="right"
+                    align="center"
+                    className="text-xs font-medium px-2 py-1"
+                  >
+                    {child.name}
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </div>
+          )}
         </div>
       );
     }
-    // ...existing code...
     return (
       <Link
         key={item.name}
@@ -259,7 +294,12 @@ function DesktopSidebar() {
       )}
     >
       {/* Header */}
-      <div className="p-4 border-b border-sidebar-border flex-shrink-0">
+      <div
+        className={cn(
+          "p-4 border-b border-sidebar-border flex-shrink-0",
+          isCollapsed && "hidden"
+        )}
+      >
         <div
           className={cn("transition-all duration-300", isCollapsed && "hidden")}
         >
@@ -275,7 +315,10 @@ function DesktopSidebar() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div
+        className="flex-1 overflow-y-auto custom-scrollbar-hide"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
         {/* Feature Section */}
         <div className="p-4">
           {!isCollapsed && (
