@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash, LayoutGrid, List, Search, Filter, Building2, Crown } from "lucide-react"
+import { Pencil, Trash, LayoutGrid, List, Search, Building2, Crown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useCompanyStore } from "@/stores/company-store"
 import { decrypt } from "@/lib/encrypt"
@@ -51,6 +51,15 @@ export default function DivisionsPage() {
         fetchDivisions()
     }, [storedUuid])
 
+    const filteredDivisions = divisionsData.filter((division) => {
+        const searchLower = searchTerm.toLowerCase()
+        return (
+            division.name.toLowerCase().includes(searchLower) ||
+            division.desc?.toLowerCase().includes(searchLower) ||
+            division.responsible?.name?.toLowerCase().includes(searchLower)
+        )
+    })
+
     return (
         <div className="min-h-screen">
             {/* HEADER SECTION */}
@@ -91,10 +100,6 @@ export default function DivisionsPage() {
                                 className="pl-10 border-gray-300 rounded-lg"
                             />
                         </div>
-                        <Button variant="outline" className="gap-2 w-full sm:w-auto bg-transparent rounded-lg">
-                            <Filter className="w-4 h-4" />
-                            Filter
-                        </Button>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -129,7 +134,7 @@ export default function DivisionsPage() {
                 </div>
 
                 {/* Content Area */}
-                {divisionsData.length === 0 ? (
+                {filteredDivisions.length === 0 ? (
                     <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-300">
                         <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">No divisions found</h3>
@@ -140,7 +145,7 @@ export default function DivisionsPage() {
                     </div>
                 ) : viewType === "card" ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {divisionsData.map((division) => (
+                        {filteredDivisions.map((division) => (
                             <Card
                                 key={division.uuid}
                                 className="bg-white border border-gray-200 rounded-xl hover:shadow-xl hover:border-orange-200 transition-all duration-300 group overflow-hidden"
@@ -207,7 +212,7 @@ export default function DivisionsPage() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {divisionsData.map((division, index) => (
+                                    {filteredDivisions.map((division, index) => (
                                         <tr
                                             key={division.uuid}
                                             className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50/30"}`}
