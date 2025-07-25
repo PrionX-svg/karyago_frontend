@@ -24,7 +24,7 @@ export default function ChooseCompanyPage() {
         setSelectedCompany(companyName)
         const encrypted = await encrypt(companyUuid)
         localStorage.setItem("atem", encrypted)
-        router.push(`/${companyName}/dashboard`)
+        router.push(`/${companyName}`)
     }
 
     useEffect(() => {

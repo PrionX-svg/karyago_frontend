@@ -74,16 +74,27 @@ export const responseFormatter = {
             name: division?.name,
             desc: division?.desc,
             company_uuid: division?.company_uuid,
-            responsible_uuid: division?.responsible_uuid
+            responsible: {
+                uuid: division?.responsible?.uuid ?? "",
+                name: division?.responsible?.name ?? ""
+            }
         }));
     },
     formatGetSubDivisionsByCompanyUuid(response: getSubDivisionsByCompanyUuidResponse): SubDivisionType[] {
         if (!response.data) return [];
         return response.data?.map(subDivision => ({
             uuid: subDivision?.uuid,
-            department_group_uuid: subDivision?.department_group_uuid,
             name: subDivision?.name,
-            desc: subDivision?.desc,
+            desc: subDivision?.description,
+            divisions: {
+                uuid: subDivision?.department_group?.uuid ?? "",
+                name: subDivision?.department_group?.name ?? ""
+            },
+            employees: subDivision?.employees?.map(employee => ({
+                uuid: employee?.uuid ?? "",
+                name: employee?.name ?? "",
+                email: employee?.email ?? ""
+            })) || []
         }));
     },
     formatCreateEmployeeHistoryResponse(response: CreateEmployeeHistoryResponse): EmployeeHistoryType {
