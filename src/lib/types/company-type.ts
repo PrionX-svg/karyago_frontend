@@ -1,17 +1,17 @@
-    export type CompanyType = {
+export type CompanyType = {
+    uuid: string;
+    name: string;
+    address: string;
+    email: string;
+    phone: string;
+    logo?: string;
+    user: {
         uuid: string;
-        name: string;
-        address: string;
-        email: string;
-        phone: string;
-        logo?: string;
-        user: {
-            uuid: string;
-            firstName: string;
-            lastName: string;
-            role?: string;
-        }
+        firstName: string;
+        lastName: string;
+        role?: string;
     }
+}
 
 export type CompanyBranchType = {
     uuid: string;
@@ -27,12 +27,23 @@ export type DivisionType = {
     company_uuid: string;
     name: string;
     desc: string;
-    responsible_uuid?: string | null;
+    responsible?: {
+        uuid: string;
+        name: string;
+    }
 }
 
 export type SubDivisionType = {
     uuid: string;
-    department_group_uuid: string;
     name: string;
     desc: string;
+    divisions: {
+        uuid: string;
+        name: string;
+    };
+    employees: {
+        uuid: string;
+        name: string;
+        email: string;
+    }[];
 }

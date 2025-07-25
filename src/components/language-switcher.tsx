@@ -1,21 +1,22 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useLocale } from 'next-intl';
-import { useRouter, usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from "react";
+import { useLocale } from "next-intl";
+import { useRouter, usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { locales } from '@/i18n/config';
-import { ChevronDown, Globe } from 'lucide-react';
+} from "@/components/ui/dropdown-menu";
+import { locales } from "@/i18n/config";
+import { ChevronDown, Globe } from "lucide-react";
 
 const localeLabels = {
-  en: 'English',
-  de: 'Deutsch'
+  en: "English",
+  de: "Deutsch",
+  id: "Bahasa",
 } as const;
 
 export function LanguageSwitcher() {
@@ -26,9 +27,9 @@ export function LanguageSwitcher() {
 
   // Extract locale from pathname to ensure sync with URL
   useEffect(() => {
-    const segments = pathname.split('/').filter(Boolean);
+    const segments = pathname.split("/").filter(Boolean);
     const pathLocale = segments[0];
-    
+
     if (locales.includes(pathLocale as (typeof locales)[number])) {
       setCurrentLocale(pathLocale);
     } else {
@@ -39,27 +40,29 @@ export function LanguageSwitcher() {
   const handleLanguageChange = (newLocale: string) => {
     // Don't do anything if we're already on the selected locale
     if (currentLocale === newLocale) return;
-    
+
     // Get the current pathname without the locale prefix
-    const segments = pathname.split('/').filter(Boolean);
-    
+    const segments = pathname.split("/").filter(Boolean);
+
     // Check if the first segment is a locale
-    const isLocaleInPath = locales.includes(segments[0] as (typeof locales)[number]);
-    
+    const isLocaleInPath = locales.includes(
+      segments[0] as (typeof locales)[number]
+    );
+
     // Construct the new path
     let newPath;
     if (isLocaleInPath) {
       // Replace the locale in the path
       segments[0] = newLocale;
-      newPath = '/' + segments.join('/');
+      newPath = "/" + segments.join("/");
     } else {
       // Add the locale to the path
       newPath = `/${newLocale}${pathname}`;
     }
-    
+
     // Update the current locale state immediately for UI feedback
     setCurrentLocale(newLocale);
-    
+
     // Use router.push for seamless navigation without page reload
     router.push(newPath);
   };
@@ -72,9 +75,7 @@ export function LanguageSwitcher() {
           <span className="hidden sm:inline">
             {localeLabels[currentLocale as keyof typeof localeLabels]}
           </span>
-          <span className="sm:hidden uppercase">
-            {currentLocale}
-          </span>
+          <span className="sm:hidden uppercase">{currentLocale}</span>
           <ChevronDown className="h-4 w-4 ml-2" />
         </Button>
       </DropdownMenuTrigger>
@@ -84,9 +85,7 @@ export function LanguageSwitcher() {
             key={lang}
             onClick={() => handleLanguageChange(lang)}
             className={`cursor-pointer ${
-              currentLocale === lang 
-                ? 'bg-accent text-accent-foreground' 
-                : ''
+              currentLocale === lang ? "bg-accent text-accent-foreground" : ""
             }`}
           >
             <span className="flex items-center justify-between w-full">
