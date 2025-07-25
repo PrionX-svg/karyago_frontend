@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Building2, Users } from "lucide-react"
-import DLanguageSwitcher from "@/components/dashboard-language-switcher"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import LoginFormComponent from "@/components/auth/login-form"
 import RegisterFormComponent from "@/components/auth/register-form"
 import { useTranslations } from "next-intl"
@@ -84,7 +84,7 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 animate-in fade-in-0 duration-1000 ease-out">
       <div className="absolute top-4 right-4 z-10 animate-in slide-in-from-top-2 duration-700 delay-300">
-        <DLanguageSwitcher />
+        <LanguageSwitcher />
       </div>
       <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-8 items-center">
         {/* Left Side - Branding */}
