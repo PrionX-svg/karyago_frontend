@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Building2, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import DLanguageSwitcher from "@/components/dashboard-language-switcher"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import EmailStep from "@/components/auth/forgot-password/email-step"
 import OtpStep from "@/components/auth/forgot-password/otp-step"
 import PasswordStep from "@/components/auth/forgot-password/password-step"
@@ -151,7 +151,7 @@ export default function ForgotPasswordPage() {
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 animate-in fade-in-0 duration-1000 ease-out">
             <div className="absolute top-4 right-4 z-10 animate-in slide-in-from-top-2 duration-700 delay-300">
-                <DLanguageSwitcher />
+                <LanguageSwitcher />
             </div>
 
             <div className="absolute top-4 left-4 z-10 animate-in slide-in-from-top-2 duration-700 delay-300">
