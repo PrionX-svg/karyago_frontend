@@ -3,23 +3,43 @@
 import { useEffect, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash, Layers, Menu, Users2, Briefcase, Target, Plus } from "lucide-react"
+import { Pencil, Trash, Layers, Menu, Users2, Briefcase, Target } from "lucide-react"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { useCompanyStore } from "@/stores/company-store"
 import { decrypt } from "@/lib/encrypt"
 import { api } from "@/lib/api/api"
+import { SubDivisionDialog } from "@/components/company-structure/subdivision-form"
+import DeleteConfirmDialog from "@/components/company-structure/delete-confirm-dialog"
+import { toast } from "sonner"
 
 export default function SubDivisionsRoundedTable() {
     const [selectedDivision, setSelectedDivision] = useState<string | undefined>()
     const [viewType, setViewType] = useState<"card" | "table">("table")
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [selectedSubDivision, setSubSelectedDivision] = useState<string | null>(null);
     const divisionsData = useCompanyStore((state) => state.division)
     const isDivisionsEmpty = Array.isArray(divisionsData) && divisionsData.length === 0
     const subDivisionsData = useCompanyStore((state) => state.subDivision)
     const storedUuid = localStorage.getItem("atem")
 
-    const handleAddSubDivision = () => console.log("Add sub-division")
-    const handleEditSubDivision = (uuid: string) => console.log("Edit sub-division", uuid)
-    const handleDeleteSubDivision = (uuid: string) => console.log("Delete sub-division", uuid)
+    const handleDeleteClick = (uuid: string) => {
+        setSubSelectedDivision(uuid);
+        setIsDeleteOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!selectedSubDivision) return;
+        try {
+            await api.deleteSubDivision(selectedSubDivision)
+                .then(() => toast.success("Sub-Division deleted successfully"))
+                .catch(() => toast.error("Failed to delete Sub-Division"))
+        } catch (error) {
+            console.error("Failed to delete Sub-Division", error);
+        } finally {
+            setIsDeleteOpen(false);
+            setSubSelectedDivision(null);
+        }
+    };
 
     useEffect(() => {
         if (isDivisionsEmpty) {
@@ -126,10 +146,7 @@ export default function SubDivisionsRoundedTable() {
                                 Cards
                             </Button>
                         </div>
-                        <Button onClick={handleAddSubDivision} className="gap-2 bg-orange-500 hover:bg-orange-600 rounded-lg">
-                            <Plus className="w-4 h-4" />
-                            Add Sub-Division
-                        </Button>
+                        <SubDivisionDialog mode="create" />
                     </div>
                 </div>
 
@@ -181,18 +198,23 @@ export default function SubDivisionsRoundedTable() {
                                             </td>
                                             <td className="py-4 px-6">
                                                 <div className="flex justify-end gap-2">
+                                                    <SubDivisionDialog
+                                                        mode="edit"
+                                                        subDivision={sub}
+                                                        trigger={
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8 rounded-lg"
+                                                            >
+                                                                <Pencil className="w-4 h-4 text-gray-500" />
+                                                            </Button>
+                                                        }
+                                                    />
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        onClick={() => handleEditSubDivision(sub.uuid)}
-                                                        className="hover:bg-teal-100 rounded-lg"
-                                                    >
-                                                        <Pencil className="w-4 h-4 text-gray-600" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => handleDeleteSubDivision(sub.uuid)}
+                                                        onClick={() => handleDeleteClick(sub.uuid)}
                                                         className="hover:bg-red-100 rounded-lg"
                                                     >
                                                         <Trash className="w-4 h-4 text-red-500" />
@@ -231,18 +253,23 @@ export default function SubDivisionsRoundedTable() {
                                             </div>
                                         </div>
                                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <SubDivisionDialog
+                                                mode="edit"
+                                                subDivision={sub}
+                                                trigger={
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8 rounded-lg"
+                                                    >
+                                                        <Pencil className="w-4 h-4 text-gray-500" />
+                                                    </Button>
+                                                }
+                                            />
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                onClick={() => handleEditSubDivision(sub.uuid)}
-                                                className="h-8 w-8 rounded-lg"
-                                            >
-                                                <Pencil className="w-4 h-4 text-gray-500" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleDeleteSubDivision(sub.uuid)}
+                                                onClick={() => handleDeleteClick(sub.uuid)}
                                                 className="h-8 w-8 rounded-lg"
                                             >
                                                 <Trash className="w-4 h-4 text-red-500" />
@@ -275,6 +302,13 @@ export default function SubDivisionsRoundedTable() {
                     </div>
                 )}
             </div>
+            <DeleteConfirmDialog
+                isOpen={isDeleteOpen}
+                onClose={() => setIsDeleteOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Delete Sub-Division"
+                description="Are you sure you want to delete this sub-division? This action cannot be undone."
+            />
         </div>
     )
 }

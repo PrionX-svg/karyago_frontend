@@ -1,4 +1,4 @@
-import { CreateDivisionResponse, GetBranchesByCompanyUuidResponse, GetCompaniesByUserUuidResponse, GetCompanyByUserUuidResponse, getDivisionsByCompanyUuidResponse, getSubDivisionsByCompanyUuidResponse, UpdateDivisionResponse } from "../interfaces/company-interface";
+import { CreateDivisionResponse, CreateSubDivisionResponse, GetBranchesByCompanyUuidResponse, GetCompaniesByUserUuidResponse, GetCompanyByUserUuidResponse, getDivisionsByCompanyUuidResponse, getSubDivisionsByCompanyUuidResponse, UpdateDivisionResponse, UpdateSubDivisionResponse } from "../interfaces/company-interface";
 import { GetMeResponse } from "../interfaces/user-interface";
 import { CompanyBranchType, CompanyType, DivisionType, SubDivisionType } from "../types/company-type";
 import { UserType } from "../types/user-type";
@@ -120,6 +120,38 @@ export const responseFormatter = {
                 email: employee?.email ?? ""
             })) || []
         }));
+    },
+    formatCreateSubDivisionResponse(response: CreateSubDivisionResponse): SubDivisionType {
+        return {
+            uuid: response?.data?.uuid ?? "",
+            name: response?.data?.name ?? "",
+            desc: response?.data?.description ?? "",
+            divisions: {
+                uuid: response?.data?.department_group?.uuid ?? "",
+                name: response?.data?.department_group?.name ?? ""
+            },
+            employees: response?.data?.employees?.map(employee => ({
+                uuid: employee?.uuid ?? "",
+                name: employee?.name ?? "",
+                email: employee?.email ?? ""
+            })) || []
+        };
+    },
+    formatUpdateSubDivisionResponse(response: UpdateSubDivisionResponse): SubDivisionType {
+        return {
+            uuid: response?.data?.uuid ?? "",
+            name: response?.data?.name ?? "",
+            desc: response?.data?.description ?? "",
+            divisions: {
+                uuid: response?.data?.department_group?.uuid ?? "",
+                name: response?.data?.department_group?.name ?? ""
+            },
+            employees: response?.data?.employees?.map(employee => ({
+                uuid: employee?.uuid ?? "",
+                name: employee?.name ?? "",
+                email: employee?.email ?? ""
+            })) || []
+        };
     },
     formatCreateEmployeeHistoryResponse(response: CreateEmployeeHistoryResponse): EmployeeHistoryType {
         return {

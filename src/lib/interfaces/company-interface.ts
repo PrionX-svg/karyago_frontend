@@ -153,9 +153,36 @@ export interface SubDivisionPayload {
 export interface CreateSubDivisionResponse {
     data: {
         uuid: string;
-        department_group_uuid: string;
         name: string;
         description: string;
+        department_group: {
+            uuid: string;
+            name: string;
+        };
+        employees: Array<{
+            uuid: string;
+            name: string;
+            email: string;
+        }>;
+    };
+    message: string;
+    status: string;
+}
+
+export interface UpdateSubDivisionResponse {
+    data: {
+        uuid: string;
+        name: string;
+        description: string;
+        department_group: {
+            uuid: string;
+            name: string;
+        };
+        employees: Array<{
+            uuid: string;
+            name: string;
+            email: string;
+        }>;
     };
     message: string;
     status: string;

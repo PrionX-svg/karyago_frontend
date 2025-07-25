@@ -7,7 +7,7 @@ import { useEmployeeStore } from "@/stores/employee-store";
 import { CreateEmployeeHistoryPayload, CreateEmployeePayload, UpdateEmployeePayload } from "../interfaces/employee-interface";
 import postAPI from "./postAPI";
 import { useRoleStore } from "@/stores/role-store";
-import { DivisionPayload } from "../interfaces/company-interface";
+import { DivisionPayload, SubDivisionPayload } from "../interfaces/company-interface";
 import patchAPI from "./patchAPI";
 import deleteAPI from "./deleteAPI";
 
@@ -114,6 +114,50 @@ export const api = {
             const response = await getAPI(`${API_URL.getSubDivisionsByCompanyUuid}${query}`);
             const formattedSubDivisions = responseFormatter.formatGetSubDivisionsByCompanyUuid(response)
             setSubDivisions(formattedSubDivisions);
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
+    async createSubDivision(payload: SubDivisionPayload){
+        try {
+            const addSubDivision = useCompanyStore.getState().addSubDivision;
+            const response = await postAPI(payload, `${API_URL.createSubDivisionByCompanyUuid}`);
+            if (response.status === 201) {
+                const formattedSubDivision = responseFormatter.formatCreateSubDivisionResponse(response.data);
+                addSubDivision(formattedSubDivision);
+                return formattedSubDivision;
+            } else {
+                throw new Error("Failed to create sub-division");
+            }
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
+    async updateSubDivision(subDivisionUuid: string, payload: SubDivisionPayload) {
+        try {
+            const updateSubDivision = useCompanyStore.getState().updateSubDivision;
+            const response = await patchAPI(payload, `${API_URL.updateSubDivisionByUuid}${subDivisionUuid}`);
+            if (response.status === 200) {
+                const formattedSubDivision = responseFormatter.formatUpdateSubDivisionResponse(response.data);
+                updateSubDivision(subDivisionUuid, formattedSubDivision);
+                return formattedSubDivision;
+            } else {
+                throw new Error("Failed to update sub-division");
+            }
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
+    async deleteSubDivision(subDivisionUuid: string) {
+        try {
+            const removeSubDivision = useCompanyStore.getState().removeSubDivision;
+            const response = await deleteAPI({}, `${API_URL.deleteSubDivisionByUuid}${subDivisionUuid}`);
+            if (response.status === 200) {
+                removeSubDivision(subDivisionUuid);
+                return true;
+            } else {
+                throw new Error("Failed to delete sub-division");
+            }
         } catch (error) {
             return Promise.reject(error)
         }
