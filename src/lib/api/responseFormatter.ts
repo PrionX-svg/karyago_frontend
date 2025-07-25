@@ -1,4 +1,4 @@
-import { GetBranchesByCompanyUuidResponse, GetCompaniesByUserUuidResponse, GetCompanyByUserUuidResponse, getDivisionsByCompanyUuidResponse, getSubDivisionsByCompanyUuidResponse } from "../interfaces/company-interface";
+import { CreateDivisionResponse, GetBranchesByCompanyUuidResponse, GetCompaniesByUserUuidResponse, GetCompanyByUserUuidResponse, getDivisionsByCompanyUuidResponse, getSubDivisionsByCompanyUuidResponse, UpdateDivisionResponse } from "../interfaces/company-interface";
 import { GetMeResponse } from "../interfaces/user-interface";
 import { CompanyBranchType, CompanyType, DivisionType, SubDivisionType } from "../types/company-type";
 import { UserType } from "../types/user-type";
@@ -79,6 +79,30 @@ export const responseFormatter = {
                 name: division?.responsible?.name ?? ""
             }
         }));
+    },
+    formatCreateDivisionResponse(response: CreateDivisionResponse): DivisionType {
+        return {
+            uuid: response?.data?.uuid ?? "",
+            name: response?.data?.name ?? "",
+            desc: response?.data?.desc ?? "",
+            company_uuid: response?.data?.company_uuid ?? "",
+            responsible: {
+                uuid: response?.data?.responsible?.uuid ?? "",
+                name: response?.data?.responsible?.name ?? ""
+            }
+        }
+    },
+    formatUpdateDivisionResponse(response: UpdateDivisionResponse): DivisionType {
+        return {
+            uuid: response?.data?.uuid ?? "",
+            name: response?.data?.name ?? "",
+            desc: response?.data?.desc ?? "",
+            company_uuid: response?.data?.company_uuid ?? "",
+            responsible: {
+                uuid: response?.data?.responsible?.uuid ?? "",
+                name: response?.data?.responsible?.name ?? ""
+            }
+        };
     },
     formatGetSubDivisionsByCompanyUuid(response: getSubDivisionsByCompanyUuidResponse): SubDivisionType[] {
         if (!response.data) return [];

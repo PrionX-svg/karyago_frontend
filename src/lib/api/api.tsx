@@ -7,6 +7,9 @@ import { useEmployeeStore } from "@/stores/employee-store";
 import { CreateEmployeeHistoryPayload, CreateEmployeePayload, UpdateEmployeePayload } from "../interfaces/employee-interface";
 import postAPI from "./postAPI";
 import { useRoleStore } from "@/stores/role-store";
+import { DivisionPayload } from "../interfaces/company-interface";
+import patchAPI from "./patchAPI";
+import deleteAPI from "./deleteAPI";
 
 export const api = {
     async getMe() {
@@ -56,6 +59,50 @@ export const api = {
             const response = await getAPI(`${API_URL.getDivisionsByCompanyUuid}${query}`);
             const formattedDivisions = responseFormatter.formatGetDivisionsByCompanyUuid(response)
             setDivisions(formattedDivisions);
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
+    async createDivision(payload: DivisionPayload){
+        try{
+            const addDivision = useCompanyStore.getState().addDivision;
+            const response = await postAPI(payload, `${API_URL.createDivisionByCompanyUuid}`);
+            if (response.status === 201) {
+                const formattedDivision = responseFormatter.formatCreateDivisionResponse(response.data);
+                addDivision(formattedDivision);
+                return formattedDivision;
+            } else {
+                throw new Error("Failed to create division");
+            }
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
+    async updateDivision(divisionUuid: string, payload: DivisionPayload) {
+        try {
+            const updateDivision = useCompanyStore.getState().updateDivision;
+            const response = await patchAPI(payload, `${API_URL.updateDivisionByUuid}${divisionUuid}`);
+            if (response.status === 200) {
+                const formattedDivision = responseFormatter.formatUpdateDivisionResponse(response.data);
+                updateDivision(divisionUuid, formattedDivision);
+                return formattedDivision;
+            } else {
+                throw new Error("Failed to update division");
+            }
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
+    async deleteDivision(divisionUuid: string) {
+        try {
+            const removeDivision = useCompanyStore.getState().removeDivision;
+            const response = await deleteAPI({} ,`${API_URL.deleteDivisionByUuid}${divisionUuid}`);
+            if (response.status === 200) {
+                removeDivision(divisionUuid);
+                return true;
+            } else {
+                throw new Error("Failed to delete division");
+            }
         } catch (error) {
             return Promise.reject(error)
         }

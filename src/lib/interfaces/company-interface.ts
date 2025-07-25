@@ -103,7 +103,25 @@ export interface CreateDivisionResponse {
         name: string;
         desc: string;
         company_uuid: string;
-        responsible_uuid: string | null;
+        responsible: {
+            uuid: string;
+            name: string;
+        }
+    };
+    message: string;
+    status: string;
+}
+
+export interface UpdateDivisionResponse {
+    data: {
+        uuid: string;
+        name: string;
+        desc: string;
+        company_uuid: string;
+        responsible: {
+            uuid: string;
+            name: string;
+        }
     };
     message: string;
     status: string;

@@ -3,25 +3,44 @@
 import { useEffect, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash, LayoutGrid, List, Plus, Search, Filter, Building2, Crown } from "lucide-react"
+import { Pencil, Trash, LayoutGrid, List, Search, Filter, Building2, Crown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useCompanyStore } from "@/stores/company-store"
 import { decrypt } from "@/lib/encrypt"
 import { api } from "@/lib/api/api"
+import { DivisionDialog } from "@/components/company-structure/division-form"
+import DeleteConfirmDialog from "@/components/company-structure/delete-confirm-dialog"
+import { toast } from "sonner"
 
 export default function DivisionsPage() {
     const [viewType, setViewType] = useState<"card" | "table">("table")
     const [searchTerm, setSearchTerm] = useState("")
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
     const divisionsData = useCompanyStore((state) => state.division)
     const storedUuid = localStorage.getItem("atem")
 
-    const handleAddDivision = () => console.log("Add division")
-    const handleEditDivision = (uuid: string) => console.log("Edit division", uuid)
-    const handleDeleteDivision = (uuid: string) => console.log("Delete division", uuid)
+    const handleDeleteClick = (uuid: string) => {
+        setSelectedDivision(uuid);
+        setIsDeleteOpen(true);
+    };
 
+    const handleConfirmDelete = async () => {
+        if (!selectedDivision) return;
+        try {
+            await api.deleteDivision(selectedDivision)
+                .then(() => toast.success("Division deleted successfully"))
+                .catch((error) => toast.error(`Failed to delete division: ${error.message}`))
+        } catch (error) {
+            console.error("Failed to delete division", error);
+        } finally {
+            setIsDeleteOpen(false);
+            setSelectedDivision(null);
+        }
+    };
     useEffect(() => {
         const fetchDivisions = async () => {
-            if (!storedUuid) return
+            if (!storedUuid) return;
             try {
                 const decryptedUuid = decrypt(storedUuid)
                 await api.getDivisionsByCompanyUuid(await decryptedUuid)
@@ -105,10 +124,7 @@ export default function DivisionsPage() {
                                 Cards
                             </Button>
                         </div>
-                        <Button onClick={handleAddDivision} className="gap-2 bg-orange-500 hover:bg-orange-500 rounded-lg">
-                            <Plus className="w-4 h-4" />
-                            Add Division
-                        </Button>
+                        <DivisionDialog mode="create" />
                     </div>
                 </div>
 
@@ -143,24 +159,14 @@ export default function DivisionsPage() {
                                                 <p className="text-sm text-gray-500 mt-1">Division Department</p>
                                             </div>
                                         </div>
-                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleEditDivision(division.uuid)}
-                                                className="h-8 w-8 rounded-lg"
-                                            >
-                                                <Pencil className="w-4 h-4 text-gray-500" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleDeleteDivision(division.uuid)}
-                                                className="h-8 w-8 rounded-lg"
-                                            >
-                                                <Trash className="w-4 h-4 text-red-500" />
-                                            </Button>
-                                        </div>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => handleDeleteClick(division.uuid)}
+                                            className="h-8 w-8 rounded-lg"
+                                        >
+                                            <Trash className="w-4 h-4 text-red-500" />
+                                        </Button>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
@@ -218,19 +224,24 @@ export default function DivisionsPage() {
                                             </td>
                                             <td className="py-4 px-6">
                                                 <div className="flex justify-end gap-2">
+                                                    <DivisionDialog
+                                                        mode="edit"
+                                                        division={division}
+                                                        trigger={
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8 rounded-lg"
+                                                            >
+                                                                <Pencil className="w-4 h-4 text-gray-500" />
+                                                            </Button>
+                                                        }
+                                                    />
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        onClick={() => handleEditDivision(division.uuid)}
-                                                        className="hover:bg-purple-100 rounded-lg"
-                                                    >
-                                                        <Pencil className="w-4 h-4 text-gray-600" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => handleDeleteDivision(division.uuid)}
-                                                        className="hover:bg-red-100 rounded-lg"
+                                                        onClick={() => handleDeleteClick(division.uuid)}
+                                                        className="h-8 w-8 rounded-lg"
                                                     >
                                                         <Trash className="w-4 h-4 text-red-500" />
                                                     </Button>
@@ -243,6 +254,13 @@ export default function DivisionsPage() {
                         </div>
                     </div>
                 )}
+                <DeleteConfirmDialog
+                    isOpen={isDeleteOpen}
+                    onClose={() => setIsDeleteOpen(false)}
+                    onConfirm={handleConfirmDelete}
+                    title="Delete Division"
+                    description="Are you sure you want to delete this division? This action cannot be undone."
+                />
             </div>
         </div>
     )
