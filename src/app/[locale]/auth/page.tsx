@@ -91,6 +91,7 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center p-4 animate-in fade-in-0 duration-1000 ease-out bg-slate-50 dark:bg-gradient-to-b from-stone-800 to-stone-950">
       <div className="absolute top-4 right-4 z-10 animate-in slide-in-from-top-2 duration-700 delay-300">
         <LanguageSwitcher />
+        <LanguageSwitcher />
       </div>
       <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-8 items-center">
         {/* Left Side - Branding */}
