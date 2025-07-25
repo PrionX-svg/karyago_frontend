@@ -16,14 +16,21 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ChevronDown } from "lucide-react";
 import { useGeneralStore } from "@/stores/genaral-store";
-import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import user from "@/lib/queries/user-queries";
+import { useUserStore } from "@/stores/user-store";
+import { Skeleton } from "../ui/skeleton";
 
 export function Header() {
+  const userInfo = useUserStore.getState().user;
   const isMobile = useIsMobile();
   const isSidebarCollapsed = useGeneralStore((s) => s.isSidebarCollapsed);
   const toggleSidebarCollapse = useGeneralStore((s) => s.toggleSidebarCollapse);
+
+  const { isFetchingGetMe } = user.useGetMe();
+
+  console.log(userInfo);
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
@@ -82,8 +89,21 @@ export function Header() {
                 <AvatarFallback>EG</AvatarFallback>
               </Avatar>
               <div className="text-left hidden sm:block">
-                <div className="text-sm font-medium">Erik Garnacho</div>
-                <div className="text-xs text-muted-foreground">Employee</div>
+                {isFetchingGetMe ? (
+                  <>
+                    <Skeleton className="w-28 h-5" />
+                    <Skeleton className="w-20 h-4" />
+                  </>
+                ) : (
+                  <>
+                    <div className="text-sm font-medium">
+                      {userInfo?.fullName}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {userInfo?.role.name}
+                    </div>
+                  </>
+                )}
               </div>
             </Button>
           </DropdownMenuTrigger>
