@@ -16,14 +16,47 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ChevronDown } from "lucide-react";
 import { useGeneralStore } from "@/stores/genaral-store";
-import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import user from "@/lib/queries/user-queries";
+import { useUserStore } from "@/stores/user-store";
+import { Skeleton } from "../ui/skeleton";
+
+import { useEffect, useState } from "react";
+import { decrypt } from "@/lib/encrypt";
+import company from "@/lib/queries/company-queries";
+import { useCompanyStore } from "@/stores/company-store";
 
 export function Header() {
+  const currentCompany = useCompanyStore((state) => state.currentCompany);
+  const [decryptedUuid, setDecryptedUuid] = useState<string | null>(null);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  const userInfo = useUserStore.getState().user;
   const isMobile = useIsMobile();
   const isSidebarCollapsed = useGeneralStore((s) => s.isSidebarCollapsed);
   const toggleSidebarCollapse = useGeneralStore((s) => s.toggleSidebarCollapse);
+
+  const { isFetchingGetMe } = user.useGetMe();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setHasMounted(true);
+      const uuid = localStorage.getItem("atem");
+
+      if (uuid) {
+        const decrypted = await decrypt(uuid);
+        setDecryptedUuid(decrypted);
+      }
+    };
+    fetchData();
+  }, []);
+
+  company.useGetCompanyByUuid(decryptedUuid ?? "");
+
+  if (!hasMounted) {
+    return null;
+  }
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
@@ -38,10 +71,10 @@ export function Header() {
         <div className="flex items-center gap-2 hidden sm:flex">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-sm">
-              ZY
+              {currentCompany?.name?.charAt(1).toUpperCase() ?? ""}
             </span>
           </div>
-          <span className="font-semibold text-lg">Zozyo®</span>
+          <span className="font-semibold text-lg">{currentCompany?.name}</span>
           <Button
             variant="ghost"
             size="icon"
@@ -82,8 +115,21 @@ export function Header() {
                 <AvatarFallback>EG</AvatarFallback>
               </Avatar>
               <div className="text-left hidden sm:block">
-                <div className="text-sm font-medium">Erik Garnacho</div>
-                <div className="text-xs text-muted-foreground">Employee</div>
+                {isFetchingGetMe ? (
+                  <>
+                    <Skeleton className="w-28 h-5" />
+                    <Skeleton className="w-20 h-4" />
+                  </>
+                ) : (
+                  <>
+                    <div className="text-sm font-medium">
+                      {userInfo?.fullName}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {userInfo?.role.name}
+                    </div>
+                  </>
+                )}
               </div>
             </Button>
           </DropdownMenuTrigger>

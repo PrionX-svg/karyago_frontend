@@ -1,3 +1,5 @@
+"use client";
+
 import { GettingStartedCard } from "@/components/dashboard/getting-started-card";
 import { IntegrationCard } from "@/components/dashboard/integration-card";
 import { GitHubContribution } from "@/components/dashboard/github-contribution";
@@ -26,13 +28,11 @@ export default function DashboardPage() {
               title="Easy Manage Task"
               description="With this new feature, it is very easy for users to manage tasks and easily collaborate with all departmental lines in your company"
               icon="task"
-              color="blue"
             />
             <GettingStartedCard
               title="Easy Request Time-off"
               description="Simplify your vacation leave with just one click, and you can customize it however you like, let's plan your vacation right now"
               icon="clock"
-              color="purple"
             />
           </div>
         </div>
@@ -43,19 +43,16 @@ export default function DashboardPage() {
           title="Easy Manage Task"
           description="With this new feature, it is very easy for users to manage tasks and easily collaborate with all departmental lines in your company"
           icon="task"
-          color="blue"
         />
         <GettingStartedCard
           title="Easy Request Time-off"
           description="Simplify your vacation leave with just one click, and you can customize it however you like, let's plan your vacation right now"
           icon="clock"
-          color="purple"
         />
         <GettingStartedCard
           title="Payroll History"
           description="Your payroll report now has a fresher look and makes it easier for users to see all your achievements in your company"
           icon="document"
-          color="green"
         />
       </div>
 

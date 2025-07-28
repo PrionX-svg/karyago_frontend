@@ -268,9 +268,9 @@ function DesktopSidebar() {
                   key={child.name}
                   href={child.path}
                   className={cn(
-                    "block px-3 py-1 text-sm rounded-md transition-colors",
+                    "block px-3 py-2 text-sm rounded-md transition-colors",
                     isChildActive(child)
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                      ? "bg-stone-300 dark:bg-stone-800 text-sidebar-foreground/80"
                       : "text-sidebar-foreground/80 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent"
                   )}
                 >
