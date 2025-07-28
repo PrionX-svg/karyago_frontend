@@ -25,6 +25,8 @@ import { decrypt } from "@/lib/encrypt";
 import { api } from "@/lib/api/api";
 
 export default function SubDivisionsRoundedTable() {
+  const [decryptedUuid, setDecryptedUuid] = useState<string | null>(null);
+  const [hasMounted, setHasMounted] = useState(false);
   const [selectedDivision, setSelectedDivision] = useState<
     string | undefined
   >();
@@ -33,7 +35,6 @@ export default function SubDivisionsRoundedTable() {
   const isDivisionsEmpty =
     Array.isArray(divisionsData) && divisionsData.length === 0;
   const subDivisionsData = useCompanyStore((state) => state.subDivision);
-  const storedUuid = localStorage.getItem("atem");
 
   const handleAddSubDivision = () => console.log("Add sub-division");
   const handleEditSubDivision = (uuid: string) =>
@@ -42,32 +43,41 @@ export default function SubDivisionsRoundedTable() {
     console.log("Delete sub-division", uuid);
 
   useEffect(() => {
-    if (isDivisionsEmpty) {
-      const fetchDivisions = async () => {
-        if (!storedUuid) return;
-        try {
-          const decryptedUuid = decrypt(storedUuid);
-          await api.getDivisionsByCompanyUuid(await decryptedUuid);
-        } catch (error) {
-          console.error("Failed to fetch divisions:", error);
-        }
-      };
-      fetchDivisions();
-    }
-  }, [isDivisionsEmpty, storedUuid]);
+    const fetchData = async () => {
+      setHasMounted(true);
+      const uuid = localStorage.getItem("atem");
+
+      if (uuid) {
+        const decrypted = await decrypt(uuid);
+        setDecryptedUuid(decrypted);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchDivisions = async () => {
+      if (!decryptedUuid) return;
+      try {
+        await api.getDivisionsByCompanyUuid(decryptedUuid);
+      } catch (error) {
+        console.error("Failed to fetch divisions:", error);
+      }
+    };
+    fetchDivisions();
+  }, [decryptedUuid]);
 
   useEffect(() => {
     const fetchSubDivisions = async () => {
-      if (!storedUuid) return;
+      if (!decryptedUuid) return;
       try {
-        const decryptedUuid = decrypt(storedUuid);
-        await api.getSubDivisionsByCompanyUuid(await decryptedUuid);
+        await api.getSubDivisionsByCompanyUuid(decryptedUuid);
       } catch (error) {
         console.error("Failed to fetch sub-divisions:", error);
       }
     };
     fetchSubDivisions();
-  }, [storedUuid]);
+  }, [decryptedUuid]);
 
   return (
     <div className="min-h-screen">
