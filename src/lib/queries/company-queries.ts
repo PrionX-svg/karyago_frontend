@@ -113,7 +113,25 @@ const company = {
 
     return { fetchDivisions, isFetchingDivisions };
   },
-  useGetSubDivisions: (companyUuid: string) => {
+  useDeleteDivision: (divisionUuid: string) => {
+        const [isDeletingDivision, setIsDeletingDivision] = useState(false);
+
+        const deleteDivision = useCallback(async () => {
+            setIsDeletingDivision(true);
+            if (!divisionUuid) {
+                return;
+            }
+            try {
+                return await api.deleteDivision(divisionUuid);
+            } catch (error) {
+                return Promise.reject(error);
+            } finally {
+                setIsDeletingDivision(false);
+            }
+        }, [divisionUuid])
+
+        return { deleteDivision, isDeletingDivision }
+    },useGetSubDivisions: (companyUuid: string) => {
     const [isFetchingSubDivisions, setIsFetchingSubDivisions] = useState(false);
 
     const fetchSubDivisions = useCallback(async () => {

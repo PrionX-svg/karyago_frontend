@@ -21,7 +21,8 @@ type CompanyStore = {
   addDivision: (division: DivisionType) => void;
   setSubDivision: (subDivision: SubDivisionType[]) => void;
   addSubDivision: (subDivision: SubDivisionType) => void;
-  removeCompany: (uuid: string) => void;
+  updateDivision: (divisionUuid: string, updatedDivision: Partial<DivisionType>) => void;
+    updateSubDivision: (subDivisionUuid: string, updatedSubDivision: Partial<SubDivisionType>) => void;removeCompany: (uuid: string) => void;
   removeCompanyBranch: (uuid: string) => void;
   removeDivision: (uuid: string) => void;
   removeSubDivision: (uuid: string) => void;
@@ -58,7 +59,22 @@ export const useCompanyStore = create<CompanyStore>((set) => ({
   setSubDivision: (subDivision) => set({ subDivision }),
   addSubDivision: (subDivision) =>
     set((state) => ({ subDivision: [...state.subDivision, subDivision] })),
-  removeCompany: (uuid) =>
+  updateDivision: (divisionUuid, updatedDivision) =>
+        set((state) => ({
+            division: state.division.map((division) =>
+                division.uuid === divisionUuid
+                    ? { ...division, ...updatedDivision }
+                    : division
+            ),
+        })),
+    updateSubDivision: (subDivisionUuid, updatedSubDivision) =>
+        set((state) => ({
+            subDivision: state.subDivision.map((subDivision) =>
+                subDivision.uuid === subDivisionUuid
+                    ? { ...subDivision, ...updatedSubDivision }
+                    : subDivision
+            ),
+        })),removeCompany: (uuid) =>
     set((state) => ({
       company: state.company.filter((company) => company.uuid !== uuid),
     })),

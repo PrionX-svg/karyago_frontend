@@ -1,326 +1,345 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import {useEffect, useState} from "react";
+import {Card, CardHeader, CardTitle, CardContent} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
 import {
-  Pencil,
-  Trash,
-  LayoutGrid,
-  List,
-  Plus,
-  Search,
-  Filter,
-  Building2,
-  Crown,
+	Pencil,
+	Trash,
+	LayoutGrid,
+	List,
+	Search,
+	Building2,
+	Crown,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { useCompanyStore } from "@/stores/company-store";
-import { decrypt } from "@/lib/encrypt";
-import { api } from "@/lib/api/api";
+import {Input} from "@/components/ui/input";
+import {useCompanyStore} from "@/stores/company-store"
+import {decrypt} from "@/lib/encrypt"
+import {api} from "@/lib/api/api"
+import {DivisionDialog} from "@/components/company-structure/division-form"
+import DeleteConfirmDialog from "@/components/company-structure/delete-confirm-dialog"
+import {toast} from "sonner"
 
 export default function DivisionsPage() {
-  const [decryptedUuid, setDecryptedUuid] = useState<string | null>(null);
-  const [hasMounted, setHasMounted] = useState(false);
-  const [viewType, setViewType] = useState<"card" | "table">("table");
-  const [searchTerm, setSearchTerm] = useState("");
-  const divisionsData = useCompanyStore((state) => state.division);
+	const [decryptedUuid, setDecryptedUuid] = useState<string | null>(null);
+	const [hasMounted, setHasMounted] = useState(false);
+	const [viewType, setViewType] = useState<"card" | "table">("table");
+	const [searchTerm, setSearchTerm] = useState("");
+	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+	const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
+	const divisionsData = useCompanyStore((state) => state.division);
 
-  const handleAddDivision = () => console.log("Add division");
-  const handleEditDivision = (uuid: string) =>
-    console.log("Edit division", uuid);
-  const handleDeleteDivision = (uuid: string) =>
-    console.log("Delete division", uuid);
+	const handleDeleteClick = (uuid: string) => {
+		setSelectedDivision(uuid);
+		setIsDeleteOpen(true);
+	};
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setHasMounted(true);
-      const uuid = localStorage.getItem("atem");
+	useEffect(() => {
+		const fetchData = async () => {
+			setHasMounted(true);
+			const uuid = localStorage.getItem("atem");
 
-      if (uuid) {
-        const decrypted = await decrypt(uuid);
-        setDecryptedUuid(decrypted);
-      }
-    };
-    fetchData();
-  }, []);
+			if (uuid) {
+				const decrypted = await decrypt(uuid);
+				setDecryptedUuid(decrypted);
+			}
+		};
+		fetchData();
+	}, []);
 
-  useEffect(() => {
-    const fetchDivisions = async () => {
-      if (!decryptedUuid) return;
-      try {
-        await api.getDivisionsByCompanyUuid(decryptedUuid);
-      } catch (error) {
-        console.error("Error fetching divisions:", error);
-      }
-    };
-    fetchDivisions();
-  }, [decryptedUuid]);
+	useEffect(() => {
+		const fetchDivisions = async () => {
+			if (!decryptedUuid) return;
+			try {
+				await api.getDivisionsByCompanyUuid(decryptedUuid);
+			} catch (error) {
+				console.error("Error fetching divisions:", error);
+			}
+		};
+		fetchDivisions();
+	}, [decryptedUuid]);
 
-  if (!hasMounted) {
-    return null;
-  }
+	if (!hasMounted) {
+		return null;
+	}
 
-  return (
-    <div className="min-h-screen">
-      {/* HEADER SECTION */}
-      <div className="bg-background">
-        <div className="pb-3">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-card rounded-xl border border-purple-200 dark:border-stone-700">
-                <Building2 className="w-6 h-6 text-orange-600 dark:text-orange-500" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">
-                  Divisions
-                </h1>
-                <p className="mt-1 text-gray-600 dark:text-muted-foreground">
-                  Organize and manage your company divisions
-                </p>
-              </div>
-            </div>
+	const handleConfirmDelete = async () => {
+		if (!selectedDivision) return;
+		try {
+			await api.deleteDivision(selectedDivision)
+				.then(() => toast.success("Division deleted successfully"))
+				.catch((error) => toast.error(`Failed to delete division: ${error.message}`))
+		} catch (error) {
+			console.error("Failed to delete division", error);
+		} finally {
+			setIsDeleteOpen(false);
+			setSelectedDivision(null);
+		}
+	};
 
-            <div className="flex items-center gap-8">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900 dark:text-foreground">
-                  {divisionsData.length}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-muted-foreground">
-                  Total Divisions
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+	const filteredDivisions = divisionsData.filter((division) => {
+		const searchLower = searchTerm.toLowerCase()
+		return (
+			division.name.toLowerCase().includes(searchLower) ||
+			division.desc?.toLowerCase().includes(searchLower) ||
+			division.responsible?.name?.toLowerCase().includes(searchLower)
+		)
+	});
 
-      {/* BODY SECTION */}
-      <div className="pt-3">
-        {/* Toolbar */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 p-4 bg-card rounded-xl border border-gray-200 dark:border-stone-700 shadow-sm">
-          <div className="flex flex-col sm:flex-row gap-3 flex-1">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search divisions, descriptions, or responsible person..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 border-gray-300 rounded-lg dark:border-stone-700 dark:bg-stone-800 dark:text-foreground"
-              />
-            </div>
-            <Button
-              variant="outline"
-              className="gap-2 w-full sm:w-auto bg-transparent rounded-lg"
-            >
-              <Filter className="w-4 h-4" />
-              Filter
-            </Button>
-          </div>
+	return (
+		<div className="min-h-screen">
+			{/* HEADER SECTION */}
+			<div className="bg-background">
+				<div className="pb-3">
+					<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+						<div className="flex items-center gap-4">
+							<div className="p-3 bg-card rounded-xl border border-purple-200 dark:border-stone-700">
+								<Building2 className="w-6 h-6 text-orange-600 dark:text-orange-500"/>
+							</div>
+							<div>
+								<h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">
+									Divisions
+								</h1>
+								<p className="mt-1 text-gray-600 dark:text-muted-foreground">
+									Organize and manage your company divisions
+								</p>
+							</div>
+						</div>
+						<div className="flex items-center gap-8">
+							<div className="text-center">
+								<p className="text-2xl font-bold text-gray-900 dark:text-foreground">
+									{divisionsData.length}
+								</p>
+								<p className="text-sm text-gray-500 dark:text-muted-foreground">
+									Total Divisions
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex bg-gray-100 dark:bg-stone-800 rounded-lg p-1">
-              <Button
-                variant={viewType === "table" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewType("table")}
-                className={`gap-2 rounded-md ${
-                  viewType === "table"
-                    ? "bg-orange-500 text-white hover:bg-orange-600"
-                    : "bg-gray-100 dark:bg-stone-800 text-gray-200 hover:bg-gray-200"
-                }`}
-              >
-                <List
-                  className={`w-4 h-4 ${
-                    viewType === "table" ? "text-white" : "text-gray-500"
-                  }`}
-                />
-                Table
-              </Button>
-              <Button
-                variant={viewType === "card" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewType("card")}
-                className={`gap-2 rounded-md ${
-                  viewType === "card"
-                    ? "bg-orange-500 text-white hover:bg-orange-600"
-                    : "bg-gray-100 dark:bg-stone-800 text-gray-200 hover:bg-gray-200"
-                }`}
-              >
-                <LayoutGrid
-                  className={`w-4 h-4 ${
-                    viewType === "card" ? "text-white" : "text-gray-500"
-                  }`}
-                />
-                Cards
-              </Button>
-            </div>
-            <Button
-              onClick={handleAddDivision}
-              className="gap-2 bg-orange-500 hover:bg-orange-500 rounded-lg"
-            >
-              <Plus className="w-4 h-4" />
-              Add Division
-            </Button>
-          </div>
-        </div>
+			{/* BODY SECTION */}
+			<div className="pt-3">
+				{/* Toolbar */}
+				<div
+					className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 p-4 bg-card rounded-xl border border-gray-200 dark:border-stone-700 shadow-sm">
+					<div className="flex flex-col sm:flex-row gap-3 flex-1">
+						<div className="relative flex-1 max-w-md">
+							<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"/>
+							<Input
+								placeholder="Search divisions, descriptions, or responsible person..."
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+								className="pl-10 border-gray-300 rounded-lg dark:border-stone-700 dark:bg-stone-800 dark:text-foreground"
+							/>
+						</div>
+					</div>
 
-        {/* Content Area */}
-        {divisionsData.length === 0 ? (
-          <div className="text-center py-12 bg-card rounded-xl border-2 border-dashed border-gray-300 dark:border-stone-700">
-            <Building2 className="w-12 h-12 text-gray-400 dark:text-stone-700 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground">
-              No divisions found
-            </h3>
-            <p className="mb-4 text-gray-600 text-muted-foreground">
-              No divisions match your search criteria.
-            </p>
-            <Button
-              onClick={() => setSearchTerm("")}
-              variant="outline"
-              className="rounded-lg"
-            >
-              Clear Search
-            </Button>
-          </div>
-        ) : viewType === "card" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {divisionsData.map((division) => (
-              <Card
-                key={division.uuid}
-                className="bg-white border border-gray-200 rounded-xl hover:shadow-xl hover:border-orange-200 transition-all duration-300 group overflow-hidden"
-              >
-                <CardHeader className="pb-4 relative">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-50 to-transparent rounded-full opacity-60 -mr-12 -mt-12"></div>
-                  <div className="flex justify-between items-start relative z-10">
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200 group-hover:from-orange-100 group-hover:to-orange-200 transition-colors">
-                        <Building2 className="w-5 h-5 text-orange-600" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-lg font-bold text-gray-900 group-hover:text-orange-900 transition-colors">
-                          {division.name}
-                        </CardTitle>
-                        <p className="text-sm text-gray-500 mt-1">
-                          Division Department
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEditDivision(division.uuid)}
-                        className="h-8 w-8 rounded-lg"
-                      >
-                        <Pencil className="w-4 h-4 text-gray-500" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteDivision(division.uuid)}
-                        className="h-8 w-8 rounded-lg"
-                      >
-                        <Trash className="w-4 h-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
-                    <div className="flex items-center gap-2">
-                      <Crown className="w-4 h-4 text-amber-500" />
-                      <span className="text-sm font-medium text-neutral-400">
+					<div className="flex items-center gap-3">
+						<div className="flex bg-gray-100 dark:bg-stone-800 rounded-lg p-1">
+							<Button
+								variant={viewType === "table" ? "default" : "ghost"}
+								size="sm"
+								onClick={() => setViewType("table")}
+								className={`gap-2 rounded-md ${
+									viewType === "table"
+										? "bg-orange-500 text-white hover:bg-orange-600"
+										: "bg-gray-100 dark:bg-stone-800 text-gray-200 hover:bg-gray-200"
+								}`}
+							>
+								<List
+									className={`w-4 h-4 ${
+										viewType === "table" ? "text-white" : "text-gray-500"
+									}`}
+								/>
+								Table
+							</Button>
+							<Button
+								variant={viewType === "card" ? "default" : "ghost"}
+								size="sm"
+								onClick={() => setViewType("card")}
+								className={`gap-2 rounded-md ${
+									viewType === "card"
+										? "bg-orange-500 text-white hover:bg-orange-600"
+										: "bg-gray-100 dark:bg-stone-800 text-gray-200 hover:bg-gray-200"
+								}`}
+							>
+								<LayoutGrid
+									className={`w-4 h-4 ${
+										viewType === "card" ? "text-white" : "text-gray-500"
+									}`}
+								/>
+								Cards
+							</Button>
+						</div>
+						<DivisionDialog mode="create"/>
+					</div>
+				</div>
+
+				{/* Content Area */}
+				{filteredDivisions.length === 0 ? (
+					<div
+						className="text-center py-12 bg-card rounded-xl border-2 border-dashed border-gray-300 dark:border-stone-700">
+						<Building2 className="w-12 h-12 text-gray-400 dark:text-stone-700 mx-auto mb-4"/>
+						<h3 className="text-lg font-semibold text-gray-900 dark:text-foreground">
+							No divisions found
+						</h3>
+						<p className="mb-4 text-gray-600 dark:text-muted-foreground">
+							No divisions match your search criteria.
+						</p>
+						<Button
+							onClick={() => setSearchTerm("")}
+							variant="outline"
+							className="rounded-lg"
+						>
+							Clear Search
+						</Button>
+					</div>
+				) : viewType === "card" ? (
+					<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+						{filteredDivisions.map((division) => (
+							<Card
+								key={division.uuid}
+								className="bg-white border border-gray-200 rounded-xl hover:shadow-xl hover:border-orange-200 transition-all duration-300 group overflow-hidden"
+							>
+								<CardHeader className="pb-4 relative">
+									<div
+										className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-50 to-transparent rounded-full opacity-60 -mr-12 -mt-12"></div>
+									<div className="flex justify-between items-start relative z-10">
+										<div className="flex items-start gap-4">
+											<div
+												className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200 group-hover:from-orange-100 group-hover:to-orange-200 transition-colors">
+												<Building2 className="w-5 h-5 text-orange-600"/>
+											</div>
+											<div>
+												<CardTitle
+													className="text-lg font-bold text-gray-900 group-hover:text-orange-900 transition-colors">
+													{division.name}
+												</CardTitle>
+												<p className="text-sm text-gray-500 mt-1">
+													Division Department
+												</p>
+											</div>
+										</div>
+
+										<Button
+											variant="ghost"
+											size="icon"
+											onClick={() => handleDeleteClick(division.uuid)}
+											className="h-8 w-8 rounded-lg"
+										>
+											<Trash className="w-4 h-4 text-red-500"/>
+										</Button>
+
+									</div>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<div
+										className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+										<div className="flex items-center gap-2">
+											<Crown className="w-4 h-4 text-amber-500"/>
+											<span className="text-sm font-medium text-neutral-400">
                         Responsible
                       </span>
-                    </div>
-                    {division.responsible?.name ? (
-                      <div className="text-gray-900">
-                        {division.responsible.name}
-                      </div>
-                    ) : (
-                      <div className="text-neutral-400 italic">Unassigned</div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-                    <th className="text-left py-4 px-6 font-bold text-gray-900 first:rounded-tl-xl">
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4" />
-                        Division Name
-                      </div>
-                    </th>
-                    <th className="text-left py-4 px-6 font-bold text-gray-900">
-                      <div className="flex items-center gap-2">
-                        <Crown className="w-4 h-4" />
-                        Responsible
-                      </div>
-                    </th>
-                    <th className="text-right py-4 px-6 font-bold text-gray-900 last:rounded-tr-xl">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {divisionsData.map((division, index) => (
-                    <tr
-                      key={division.uuid}
-                      className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
-                      }`}
-                    >
-                      <td className="py-4 px-6">
-                        <div className="font-medium text-gray-900">
-                          {division.name}
-                        </div>
-                      </td>
-                      <td className="py-4 px-6">
-                        {division.responsible?.name ? (
-                          <div className="text-gray-900">
-                            {division.responsible.name}
-                          </div>
-                        ) : (
-                          <div className="text-neutral-400 italic">
-                            Unassigned
-                          </div>
-                        )}
-                      </td>
-                      <td className="py-4 px-6">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEditDivision(division.uuid)}
-                            className="hover:bg-purple-100 rounded-lg"
-                          >
-                            <Pencil className="w-4 h-4 text-gray-600" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteDivision(division.uuid)}
-                            className="hover:bg-red-100 rounded-lg"
-                          >
-                            <Trash className="w-4 h-4 text-red-500" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+										</div>
+										{division.responsible?.name ? (
+											<div className="text-gray-900">
+												{division.responsible.name}
+											</div>
+										) : (
+											<div className="text-neutral-400 italic">Unassigned</div>
+										)}
+									</div>
+								</CardContent>
+							</Card>
+						))}
+					</div>
+				) : (
+					<div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+						<div className="overflow-x-auto">
+							<table className="w-full">
+								<thead>
+								<tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+									<th className="text-left py-4 px-6 font-bold text-gray-900 first:rounded-tl-xl">
+										<div className="flex items-center gap-2">
+											<Building2 className="w-4 h-4"/>
+											Division Name
+										</div>
+									</th>
+									<th className="text-left py-4 px-6 font-bold text-gray-900">
+										<div className="flex items-center gap-2">
+											<Crown className="w-4 h-4"/>
+											Responsible
+										</div>
+									</th>
+									<th className="text-right py-4 px-6 font-bold text-gray-900 last:rounded-tr-xl">
+										Actions
+									</th>
+								</tr>
+								</thead>
+								<tbody>
+								{filteredDivisions.map((division, index) => (
+									<tr
+										key={division.uuid}
+										className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+											index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
+										}`}
+									>
+										<td className="py-4 px-6">
+											<div className="font-medium text-gray-900">
+												{division.name}
+											</div>
+										</td>
+										<td className="py-4 px-6">
+											{division.responsible?.name ? (
+												<div className="text-gray-900">
+													{division.responsible.name}
+												</div>
+											) : (
+												<div className="text-neutral-400 italic">
+													Unassigned
+												</div>
+											)}
+										</td>
+										<td className="py-4 px-6">
+											<div className="flex justify-end gap-2"><DivisionDialog
+												mode="edit"
+												division={division}
+												trigger={
+													<Button
+														variant="ghost"
+														size="icon"
+
+														className="h-8 w-8 rounded-lg"
+													>
+														<Pencil className="w-4 h-4 text-gray-500"/>
+													</Button>}
+											/>
+												<Button
+													variant="ghost"
+													size="icon"
+													onClick={() => handleDeleteClick(division.uuid)}
+													className="h-8 w-8 rounded-lg"
+												>
+													<Trash className="w-4 h-4 text-red-500"/>
+												</Button>
+											</div>
+										</td>
+									</tr>
+								))}
+								</tbody>
+							</table>
+						</div>
+					</div>)}
+				<DeleteConfirmDialog
+					isOpen={isDeleteOpen}
+					onClose={() => setIsDeleteOpen(false)}
+					onConfirm={handleConfirmDelete}
+					title="Delete Division"
+					description="Are you sure you want to delete this division? This action cannot be undone."
+				/>
+			</div>
+		</div>
+	);
 }

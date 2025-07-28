@@ -21,6 +21,7 @@ import type { LoginForm, RegisterForm } from "@/lib/interfaces/auth-interface";
 import { useRouter } from "next/navigation";
 import { useCompanyStore } from "@/stores/company-store";
 import { api } from "@/lib/api/api";
+import {encrypt} from "@/lib/encrypt";
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login");
@@ -34,34 +35,44 @@ export default function AuthPage() {
   const handleLogin = async (data: LoginForm) => {
     try {
       const result = await postAPI(data, "/auth/login");
+
       if (result.status !== 200) {
         toast.error(ap("loginFailed"), {
           description: ap("invalidCredentials"),
         });
         return;
       }
+
       document.cookie = "authOK=true; path=/";
       toast.success(ap("loginSuccess"));
+
       const userData = result.data.data;
+
+      if (userData.is_onboarding) return router.push("/onboarding");
+
       const userUuid = userData.uuid;
-      if (userData.is_onboarding) {
-        router.push("/onboarding");
-        return;
-      }
       await api.getCompaniesByUserUuid(userUuid);
-      const companyData = useCompanyStore.getState().company;
-      if (companyData.length === 1) {
-        console.log("cuma 1");
-        router.push(`/${companyData[0].name}`);
-      } else {
-        console.log("more than 1");
-        router.push("/select-company");
+
+      const { company } = useCompanyStore.getState();
+
+      if (!company?.length) {
+        return toast.error(ap("noCompanyFound"));
       }
+
+      localStorage.setItem("atem", await encrypt(company[0].uuid));
+
+      if (company.length === 1) {
+        const formattedName = company[0].name.replace(/\s+/g, "");
+        return router.push(`/${formattedName}/`);
+      }
+
+      router.push("/select-company");
     } catch (error) {
       console.error("Login error:", error);
       toast.error(ap("somethingWentWrong"));
     }
   };
+
 
   const handleRegister = async (data: RegisterForm) => {
     try {
