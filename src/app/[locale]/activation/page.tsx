@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import DLanguageSwitcher from "@/components/dashboard-language-switcher"
+import {LanguageSwitcher} from "@/components/language-switcher"
 import LoadingStep from "@/components/auth/activation/loading-step"
 import SuccessStep from "@/components/auth/activation/success-step"
 import ErrorStep from "@/components/auth/activation/error-step"
@@ -90,7 +90,7 @@ export default function ActivationPage() {
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 animate-in fade-in-0 duration-1000 ease-out">
             <div className="absolute top-4 right-4 z-10 animate-in slide-in-from-top-2 duration-700 delay-300">
-                <DLanguageSwitcher />
+                <LanguageSwitcher />
             </div>
 
             <div className="absolute top-4 left-4 z-10 animate-in slide-in-from-top-2 duration-700 delay-300">
