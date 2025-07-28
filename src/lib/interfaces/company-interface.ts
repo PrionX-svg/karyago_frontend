@@ -103,7 +103,25 @@ export interface CreateDivisionResponse {
         name: string;
         desc: string;
         company_uuid: string;
-        responsible_uuid: string | null;
+        responsible: {
+            uuid: string;
+            name: string;
+        }
+    };
+    message: string;
+    status: string;
+}
+
+export interface UpdateDivisionResponse {
+    data: {
+        uuid: string;
+        name: string;
+        desc: string;
+        company_uuid: string;
+        responsible: {
+            uuid: string;
+            name: string;
+        }
     };
     message: string;
     status: string;
@@ -135,9 +153,36 @@ export interface SubDivisionPayload {
 export interface CreateSubDivisionResponse {
     data: {
         uuid: string;
-        department_group_uuid: string;
         name: string;
         description: string;
+        department_group: {
+            uuid: string;
+            name: string;
+        };
+        employees: Array<{
+            uuid: string;
+            name: string;
+            email: string;
+        }>;
+    };
+    message: string;
+    status: string;
+}
+
+export interface UpdateSubDivisionResponse {
+    data: {
+        uuid: string;
+        name: string;
+        description: string;
+        department_group: {
+            uuid: string;
+            name: string;
+        };
+        employees: Array<{
+            uuid: string;
+            name: string;
+            email: string;
+        }>;
     };
     message: string;
     status: string;

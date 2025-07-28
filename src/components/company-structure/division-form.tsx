@@ -12,21 +12,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Building2, Plus, Pencil, Loader2 } from "lucide-react"
 import { api } from "@/lib/api/api"
 import { decrypt } from "@/lib/encrypt"
+import { useEmployeeStore } from "@/stores/employee-store"
+import { toast } from "sonner"
 
 interface DivisionDialogProps {
     mode: "create" | "edit"
     division?: {
         uuid: string
+        company_uuid: string
         name: string
-        desc?: string
-        responsibleUuid?: string
+        desc: string
         responsible?: { name: string; uuid: string }
     }
     trigger?: React.ReactNode
-    onSuccess?: () => void
 }
 
-export function DivisionDialog({ mode, division, trigger, onSuccess }: DivisionDialogProps) {
+export function DivisionDialog({ mode, division, trigger }: DivisionDialogProps) {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
@@ -34,8 +35,7 @@ export function DivisionDialog({ mode, division, trigger, onSuccess }: DivisionD
         desc: "",
         responsibleUuid: "",
     })
-    const [employees, setEmployees] = useState<Array<{ uuid: string; name: string }>>([])
-
+    const employees = useEmployeeStore((state) => state.employees)
     const storedUuid = localStorage.getItem("atem")
 
     useEffect(() => {
@@ -43,7 +43,7 @@ export function DivisionDialog({ mode, division, trigger, onSuccess }: DivisionD
             setFormData({
                 name: division.name || "",
                 desc: division.desc || "",
-                responsibleUuid: division.responsibleUuid || "",
+                responsibleUuid: division.responsible?.uuid || "",
             })
         } else {
             setFormData({
@@ -59,14 +59,7 @@ export function DivisionDialog({ mode, division, trigger, onSuccess }: DivisionD
             if (!storedUuid) return
             try {
                 const decryptedUuid = decrypt(storedUuid)
-                // Assuming there's an API to get employees
-                // await api.getEmployeesByCompanyUuid(await decryptedUuid)
-                // For now, using mock data
-                setEmployees([
-                    { uuid: "emp-1", name: "John Doe" },
-                    { uuid: "emp-2", name: "Jane Smith" },
-                    { uuid: "emp-3", name: "Mike Johnson" },
-                ])
+                await api.getEmployeeByCompanyUuid(await decryptedUuid)
             } catch (error) {
                 console.error("Failed to fetch employees:", error)
             }
@@ -87,23 +80,35 @@ export function DivisionDialog({ mode, division, trigger, onSuccess }: DivisionD
             const companyUuid = await decryptedUuid
 
             const payload = {
+                company_uuid: companyUuid,
+                responsible_uuid: formData.responsibleUuid || undefined,
                 name: formData.name,
-                companyUuid,
                 desc: formData.desc,
-                responsibleUuid: formData.responsibleUuid || undefined,
             }
 
             if (mode === "create") {
                 await api.createDivision(payload)
+                    .then(() => {
+                        console.log("Division created successfully");
+                        toast.success("Division created")
+                    })
+                    .catch((err) => {
+                        console.error("Failed to create division:", err);
+                        toast.error("Failed to create division")
+                    });
             } else if (division) {
                 await api.updateDivision(division.uuid, payload)
+                    .then(() => {
+                        console.log("Division updated successfully");
+                        toast.success("Division updated")
+                    })
+                    .catch((err) => {
+                        console.error("Failed to update division:", err);
+                        toast.error("Failed to update division")
+                    });
             }
 
-            // Refresh divisions data
-            await api.getDivisionsByCompanyUuid(companyUuid)
-
             setOpen(false)
-            onSuccess?.()
         } catch (error) {
             console.error(`Failed to ${mode} division:`, error)
         } finally {
@@ -142,16 +147,38 @@ export function DivisionDialog({ mode, division, trigger, onSuccess }: DivisionD
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="name">Division Name *</Label>
-                        <Input
-                            id="name"
-                            value={formData.name}
-                            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                            placeholder="Enter division name"
-                            required
-                            className="rounded-lg"
-                        />
+                    <div className="flex flex-col sm:flex-row space gap-4">
+                        <div className="space-y-2 w-full">
+                            <Label htmlFor="name">Division Name *</Label>
+                            <Input
+                                id="name"
+                                value={formData.name}
+                                onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                                placeholder="Enter division name"
+                                required
+                                className="rounded-lg"
+                            />
+                        </div>
+
+                        <div className="space-y-2 w-full">
+                            <Label htmlFor="responsible">Responsible Person</Label>
+                            <Select
+                                value={formData.responsibleUuid}
+                                onValueChange={(value) => setFormData((prev) => ({ ...prev, responsibleUuid: value }))}
+                            >
+                                <SelectTrigger className="rounded-lg">
+                                    <SelectValue placeholder="Select responsible person" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">No one assigned</SelectItem>
+                                    {employees.map((employee) => (
+                                        <SelectItem key={employee.employee_uuid} value={employee.employee_uuid}>
+                                            {employee.name.fullname}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -164,26 +191,6 @@ export function DivisionDialog({ mode, division, trigger, onSuccess }: DivisionD
                             rows={3}
                             className="rounded-lg resize-none"
                         />
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="responsible">Responsible Person</Label>
-                        <Select
-                            value={formData.responsibleUuid}
-                            onValueChange={(value) => setFormData((prev) => ({ ...prev, responsibleUuid: value }))}
-                        >
-                            <SelectTrigger className="rounded-lg">
-                                <SelectValue placeholder="Select responsible person" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="none">No one assigned</SelectItem>
-                                {employees.map((employee) => (
-                                    <SelectItem key={employee.uuid} value={employee.uuid}>
-                                        {employee.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
                     </div>
 
                     <div className="flex justify-end gap-3 pt-4">
