@@ -123,6 +123,7 @@ export default async function middleware(req: NextRequest) {
 
       if (refreshRes.ok) {
         const data = await refreshRes.json();
+        console.log("token: ", data);
         // Use the intl response and add auth cookies
         intlResponse.cookies.set("authOK", "true", { path: "/" });
         intlResponse.cookies.set("access_token", data.accessToken, {
