@@ -14,6 +14,7 @@ export const API_URL = {
     updateSubDivisionByUuid: "/departments/update/",
     deleteSubDivisionByUuid: "/departments/delete/",
     createEmployeeByCompanyUuid: "/users/create",
+    deleteUserByUuid: "/users/delete/",
     importEmployee: "/users/import",
     createEmployeeHistory: "/employment-histories/create",
     getEmployeeByCompanyUuid: "/users/get-all/dt",

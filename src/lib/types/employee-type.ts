@@ -11,6 +11,10 @@ export type EmployeeType = {
         firstname: string;
         lastname: string;
     }
+    termination?:{
+        reason: string | null;
+        date: string | null;
+    };
     phone: string;
     email: string;
     dob: string | null;

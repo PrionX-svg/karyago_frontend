@@ -199,7 +199,10 @@
         "total": "Total: {count} karyawan{plural}",
         "confirmCompleteTitle": "Selesaikan Onboarding?",
         "confirmCompleteDesc": "Apakah Anda yakin ingin menyelesaikan proses onboarding?",
-        "confirmCompleteButton": "Ya, Selesaikan Onboarding"
+        "confirmCompleteButton": "Ya, Selesaikan Onboarding",
+        "updateEmployee": "Perbarui Karyawan",
+        "updatingEmployee": "Sedang memperbarui karyawan...",
+        "title": "Tambah Karyawan Baru"
     },
     "brand": {
         "brandingTitle": "Portal HRIS",

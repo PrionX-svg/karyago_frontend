@@ -199,7 +199,10 @@
     "total": "Insgesamt: {count} Mitarbeiter{plural}",
     "confirmCompleteTitle": "Onboarding abschließen?",
     "confirmCompleteDesc": "Möchten Sie den Onboarding-Prozess wirklich abschließen?",
-    "confirmCompleteButton": "Ja, Onboarding abschließen"
+    "confirmCompleteButton": "Ja, Onboarding abschließen",
+    "updateEmployee": "Mitarbeiter aktualisieren",
+    "updatingEmployee": "Mitarbeiter wird aktualisiert...",
+    "title": "Neuen Mitarbeiter hinzufügen"
   },
   "brand": {
     "brandingTitle": "HRIS Portal",

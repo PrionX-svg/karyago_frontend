@@ -236,6 +236,10 @@ export const responseFormatter = {
                 firstname: employee?.first_name ?? "",
                 lastname: employee?.last_name ?? ""
             },
+            termination: employee?.termination ? {
+                reason: employee?.termination?.reason ?? null,
+                date: employee?.termination?.date ?? null
+            } : undefined,
             phone: employee?.phone,
             email: employee?.email,
             dob: employee?.dob,

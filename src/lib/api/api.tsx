@@ -175,6 +175,22 @@ export const api = {
             return Promise.reject(error)
         }
     },
+    async deleteUser(userUuid: string, companyUuid?: string, reason?: string) {
+        const removeEmployee = useEmployeeStore.getState().removeEmployee;
+        try {
+            const url = reason
+                ? `${API_URL.deleteUserByUuid}${userUuid}?company_uuid=${companyUuid}&reason=${reason}`
+                : `${API_URL.deleteUserByUuid}${userUuid}?company_uuid=${companyUuid}`;
+            const response = await deleteAPI({}, url);
+            if (response.status === 200) {
+                removeEmployee(userUuid);
+            } else {
+                throw new Error("Failed to terminate user");
+            }
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
     async createEmployeeHistory(employeeHistoryData: CreateEmployeeHistoryPayload) {
         const addEmployeeHistory = useEmployeeStore.getState().addEmployeeHistory;
         try {
@@ -216,10 +232,12 @@ export const api = {
     async updateEmployeeByUuid(employeeUuid: string, employeeData: UpdateEmployeePayload) {
         try {
             const updateEmployee = useEmployeeStore.getState().updateEmployee;
-            const response = await postAPI(employeeData, `${API_URL.updateEmployeeByUuid}${employeeUuid}`);
+            const response = await patchAPI(employeeData, `${API_URL.updateEmployeeByUuid}${employeeUuid}`);
             if (response.status === 200) {
                 const formattedEmployee = responseFormatter.formatUpdateEmployeeResponse(response.data);
                 updateEmployee(formattedEmployee);
+            } else {
+                throw new Error("Failed to update employee");
             }
         } catch (error) {
             return Promise.reject(error)

@@ -21,6 +21,10 @@ export interface GetEmployeeByCompanyUuidResponse {
         company: {
             uuid: string;
         };
+        termination?: {
+            reason: string | null,
+            date: string | null
+        },
     }[];
     filtered: number;
     limit: number;
@@ -97,7 +101,7 @@ export interface CreateEmployeeHistoryResponse {
         position: string;
         is_present: boolean;
         start_date: string;
-        end_date?: string | null; 
+        end_date?: string | null;
     };
     message?: string;
 }
