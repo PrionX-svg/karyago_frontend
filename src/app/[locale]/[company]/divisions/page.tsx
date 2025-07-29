@@ -11,6 +11,7 @@ import { api } from "@/lib/api/api"
 import { DivisionDialog } from "@/components/company-structure/division-form"
 import DeleteConfirmDialog from "@/components/company-structure/delete-confirm-dialog"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 
 export default function DivisionsPage() {
     const [viewType, setViewType] = useState<"card" | "table">("table")
@@ -60,6 +61,8 @@ export default function DivisionsPage() {
         )
     })
 
+    const di = useTranslations("divisions")
+
     return (
         <div className="min-h-screen">
             {/* HEADER SECTION */}
@@ -71,15 +74,15 @@ export default function DivisionsPage() {
                                 <Building2 className="w-6 h-6 text-orange-600" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-900">Divisions</h1>
-                                <p className="text-gray-600 mt-1">Organize and manage your company divisions</p>
+                                <h1 className="text-2xl font-bold text-gray-900">{di("title")}</h1>
+                                <p className="text-gray-600 mt-1">{di("description")}</p>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-8">
                             <div className="text-center">
                                 <p className="text-2xl font-bold text-gray-900">{divisionsData.length}</p>
-                                <p className="text-sm text-gray-500">Total Divisions</p>
+                                <p className="text-sm text-gray-500">{di("totalDivisions")}</p>
                             </div>
                         </div>
                     </div>
@@ -94,7 +97,7 @@ export default function DivisionsPage() {
                         <div className="relative flex-1 max-w-md">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                             <Input
-                                placeholder="Search divisions, descriptions, or responsible person..."
+                                placeholder={di("searchPlaceholder")}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-10 border-gray-300 rounded-lg"
@@ -114,7 +117,7 @@ export default function DivisionsPage() {
                                     }`}
                             >
                                 <List className={`w-4 h-4 ${viewType === "table" ? "text-white" : "text-gray-500"}`} />
-                                Table
+                                {di("viewTable")}
                             </Button>
                             <Button
                                 variant={viewType === "card" ? "default" : "ghost"}
@@ -126,7 +129,7 @@ export default function DivisionsPage() {
                                     }`}
                             >
                                 <LayoutGrid className={`w-4 h-4 ${viewType === "card" ? "text-white" : "text-gray-500"}`} />
-                                Cards
+                                {di("viewCards")}
                             </Button>
                         </div>
                         <DivisionDialog mode="create" />
@@ -137,19 +140,16 @@ export default function DivisionsPage() {
                 {filteredDivisions.length === 0 ? (
                     <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-300">
                         <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No divisions found</h3>
-                        <p className="text-gray-600 mb-4">No divisions match your search criteria.</p>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{di("noDivisionsFoundTitle")}</h3>
+                        <p className="text-gray-600 mb-4">{di("noDivisionsFoundDesc")}</p>
                         <Button onClick={() => setSearchTerm("")} variant="outline" className="rounded-lg">
-                            Clear Search
+                            {di("clearSearch")}
                         </Button>
                     </div>
                 ) : viewType === "card" ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         {filteredDivisions.map((division) => (
-                            <Card
-                                key={division.uuid}
-                                className="bg-white border border-gray-200 rounded-xl hover:shadow-xl hover:border-orange-200 transition-all duration-300 group overflow-hidden"
-                            >
+                            <Card key={division.uuid} className="bg-white border border-gray-200 rounded-xl hover:shadow-xl hover:border-orange-200 transition-all duration-300 group overflow-hidden">
                                 <CardHeader className="pb-4 relative">
                                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-50 to-transparent rounded-full opacity-60 -mr-12 -mt-12"></div>
                                     <div className="flex justify-between items-start relative z-10">
@@ -161,7 +161,7 @@ export default function DivisionsPage() {
                                                 <CardTitle className="text-lg font-bold text-gray-900 group-hover:text-orange-900 transition-colors">
                                                     {division.name}
                                                 </CardTitle>
-                                                <p className="text-sm text-gray-500 mt-1">Division Department</p>
+                                                <p className="text-sm text-gray-500 mt-1">{di("divisionDepartment")}</p>
                                             </div>
                                         </div>
                                         <Button
@@ -178,12 +178,12 @@ export default function DivisionsPage() {
                                     <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
                                         <div className="flex items-center gap-2">
                                             <Crown className="w-4 h-4 text-amber-500" />
-                                            <span className="text-sm font-medium text-neutral-400">Responsible</span>
+                                            <span className="text-sm font-medium text-neutral-400">{di("responsible")}</span>
                                         </div>
                                         {division.responsible?.name ? (
                                             <div className="text-gray-900">{division.responsible.name}</div>
                                         ) : (
-                                            <div className="text-neutral-400 italic">Unassigned</div>
+                                            <div className="text-neutral-400 italic">{di("unassigned")}</div>
                                         )}
                                     </div>
                                 </CardContent>
@@ -199,24 +199,21 @@ export default function DivisionsPage() {
                                         <th className="text-left py-4 px-6 font-bold text-gray-900 first:rounded-tl-xl">
                                             <div className="flex items-center gap-2">
                                                 <Building2 className="w-4 h-4" />
-                                                Division Name
+                                                {di("divisionName")}
                                             </div>
                                         </th>
                                         <th className="text-left py-4 px-6 font-bold text-gray-900">
                                             <div className="flex items-center gap-2">
                                                 <Crown className="w-4 h-4" />
-                                                Responsible
+                                                {di("responsible")}
                                             </div>
                                         </th>
-                                        <th className="text-right py-4 px-6 font-bold text-gray-900 last:rounded-tr-xl">Actions</th>
+                                        <th className="text-right py-4 px-6 font-bold text-gray-900 last:rounded-tr-xl">{di("actions")}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredDivisions.map((division, index) => (
-                                        <tr
-                                            key={division.uuid}
-                                            className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50/30"}`}
-                                        >
+                                        <tr key={division.uuid} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50/30"}`}>
                                             <td className="py-4 px-6">
                                                 <div className="font-medium text-gray-900">{division.name}</div>
                                             </td>
@@ -224,7 +221,7 @@ export default function DivisionsPage() {
                                                 {division.responsible?.name ? (
                                                     <div className="text-gray-900">{division.responsible.name}</div>
                                                 ) : (
-                                                    <div className="text-neutral-400 italic">Unassigned</div>
+                                                    <div className="text-neutral-400 italic">{di("unassigned")}</div>
                                                 )}
                                             </td>
                                             <td className="py-4 px-6">
@@ -233,11 +230,7 @@ export default function DivisionsPage() {
                                                         mode="edit"
                                                         division={division}
                                                         trigger={
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="h-8 w-8 rounded-lg"
-                                                            >
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
                                                                 <Pencil className="w-4 h-4 text-gray-500" />
                                                             </Button>
                                                         }
@@ -263,8 +256,8 @@ export default function DivisionsPage() {
                     isOpen={isDeleteOpen}
                     onClose={() => setIsDeleteOpen(false)}
                     onConfirm={handleConfirmDelete}
-                    title="Delete Division"
-                    description="Are you sure you want to delete this division? This action cannot be undone."
+                    title={di("deleteTitle")}
+                    description={di("deleteDescription")}
                 />
             </div>
         </div>

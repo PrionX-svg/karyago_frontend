@@ -11,6 +11,7 @@ import { api } from "@/lib/api/api"
 import { SubDivisionDialog } from "@/components/company-structure/subdivision-form"
 import DeleteConfirmDialog from "@/components/company-structure/delete-confirm-dialog"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 
 export default function SubDivisionsRoundedTable() {
     const [selectedDivision, setSelectedDivision] = useState<string | undefined>()
@@ -83,10 +84,11 @@ export default function SubDivisionsRoundedTable() {
         return matchesDivision && matchesSearch;
     });
 
+    const sd = useTranslations("subDivisions")
 
     return (
         <div className="min-h-screen">
-            {/* HEADER SECTION */}
+            {/* HEADER */}
             <div className="pb-3">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                     <div className="flex items-center gap-4">
@@ -94,20 +96,20 @@ export default function SubDivisionsRoundedTable() {
                             <Users2 className="w-6 h-6 text-orange-600" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Sub-Divisions</h1>
-                            <p className="text-gray-600 mt-1">Manage team structures and assignments</p>
+                            <h1 className="text-2xl font-bold text-gray-900">{sd("title")}</h1>
+                            <p className="text-gray-600 mt-1">{sd("description")}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-8">
                         <div className="text-center">
                             <p className="text-2xl font-bold text-gray-900">{subDivisionsData.length}</p>
-                            <p className="text-sm text-gray-500">Active Teams</p>
+                            <p className="text-sm text-gray-500">{sd("activeTeams")}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* BODY SECTION */}
+            {/* BODY */}
             <div className="min-w-full pt-3">
                 {/* Toolbar */}
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
@@ -115,7 +117,7 @@ export default function SubDivisionsRoundedTable() {
                         <div className="relative max-w-sm flex-1">
                             <input
                                 type="text"
-                                placeholder="Search sub-divisions..."
+                                placeholder={sd("searchPlaceholder")}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
@@ -126,10 +128,10 @@ export default function SubDivisionsRoundedTable() {
                             onValueChange={(value) => setSelectedDivision(value === "all" ? undefined : value)}
                         >
                             <SelectTrigger className="w-full sm:w-48 bg-white rounded-lg">
-                                <SelectValue placeholder="All Divisions" />
+                                <SelectValue placeholder={sd("allDivisions")} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Divisions</SelectItem>
+                                <SelectItem value="all">{sd("allDivisions")}</SelectItem>
                                 {divisionsData.map((division) => (
                                     <SelectItem key={division.uuid} value={division.name}>
                                         {division.name}
@@ -145,32 +147,26 @@ export default function SubDivisionsRoundedTable() {
                                 variant={viewType === "table" ? "default" : "ghost"}
                                 size="sm"
                                 onClick={() => setViewType("table")}
-                                className={`gap-2 rounded-md ${viewType === "table"
-                                    ? "bg-orange-500 text-white hover:bg-orange-600"
-                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                    }`}
+                                className={`gap-2 rounded-md ${viewType === "table" ? "bg-orange-500 text-white hover:bg-orange-600" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                             >
                                 <Menu className={`w-4 h-4 ${viewType === "table" ? "text-white" : "text-gray-500"}`} />
-                                Table
+                                {sd("viewTable")}
                             </Button>
                             <Button
                                 variant={viewType === "card" ? "default" : "ghost"}
                                 size="sm"
                                 onClick={() => setViewType("card")}
-                                className={`gap-2 rounded-md ${viewType === "card"
-                                    ? "bg-orange-500 text-white hover:bg-orange-600"
-                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                    }`}
+                                className={`gap-2 rounded-md ${viewType === "card" ? "bg-orange-500 text-white hover:bg-orange-600" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                             >
                                 <Layers className={`w-4 h-4 ${viewType === "card" ? "text-white" : "text-gray-500"}`} />
-                                Cards
+                                {sd("viewCards")}
                             </Button>
                         </div>
                         <SubDivisionDialog mode="create" />
                     </div>
                 </div>
 
-                {/* Content Area */}
+                {/* Content */}
                 {filteredSubDivisions.length > 0 ? (
                     viewType === "table" ? (
                         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
@@ -181,17 +177,17 @@ export default function SubDivisionsRoundedTable() {
                                             <th className="text-left py-4 px-6 font-bold text-gray-900 first:rounded-tl-xl">
                                                 <div className="flex items-center gap-2">
                                                     <Target className="w-4 h-4" />
-                                                    Sub-Division Name
+                                                    {sd("name")}
                                                 </div>
                                             </th>
-                                            <th className="text-left py-4 px-6 font-bold text-gray-900">Description</th>
+                                            <th className="text-left py-4 px-6 font-bold text-gray-900">{sd("descriptionColumn")}</th>
                                             <th className="text-left py-4 px-6 font-bold text-gray-900">
                                                 <div className="flex items-center gap-2">
                                                     <Briefcase className="w-4 h-4" />
-                                                    Parent Division
+                                                    {sd("parentDivision")}
                                                 </div>
                                             </th>
-                                            <th className="text-right py-4 px-6 font-bold text-gray-900 last:rounded-tr-xl">Actions</th>
+                                            <th className="text-right py-4 px-6 font-bold text-gray-900 last:rounded-tr-xl">{sd("actions")}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -209,12 +205,12 @@ export default function SubDivisionsRoundedTable() {
                                                             {sub.desc}
                                                         </div>
                                                     ) : (
-                                                        <div className="text-sm italic text-neutral-400">Not Set</div>
+                                                        <div className="text-sm italic text-neutral-400">{sd("notSet")}</div>
                                                     )}
                                                 </td>
                                                 <td className="py-4 px-6">
                                                     <div className="text-sm text-gray-700">
-                                                        {sub.divisions?.name || "No Parent Division"}
+                                                        {sub.divisions?.name || sd("noParentDivision")}
                                                     </div>
                                                 </td>
                                                 <td className="py-4 px-6">
@@ -223,11 +219,7 @@ export default function SubDivisionsRoundedTable() {
                                                             mode="edit"
                                                             subDivision={sub}
                                                             trigger={
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="icon"
-                                                                    className="h-8 w-8 rounded-lg"
-                                                                >
+                                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
                                                                     <Pencil className="w-4 h-4 text-gray-500" />
                                                                 </Button>
                                                             }
@@ -251,10 +243,7 @@ export default function SubDivisionsRoundedTable() {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                             {filteredSubDivisions.map((sub) => (
-                                <Card
-                                    key={sub.uuid}
-                                    className="bg-white border border-gray-200 rounded-xl hover:shadow-xl hover:border-orange-200 transition-all duration-300 group overflow-hidden"
-                                >
+                                <Card key={sub.uuid} className="bg-white border border-gray-200 rounded-xl hover:shadow-xl hover:border-orange-200 transition-all duration-300 group overflow-hidden">
                                     <CardHeader className="pb-4 relative">
                                         <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-50 to-transparent rounded-full opacity-60 -mr-12 -mt-12"></div>
                                         <div className="flex justify-between items-start relative z-10">
@@ -269,7 +258,7 @@ export default function SubDivisionsRoundedTable() {
                                                     {sub.divisions?.name ? (
                                                         <p className="text-sm text-neutral-500">{sub.divisions.name}</p>
                                                     ) : (
-                                                        <p className="text-sm italic text-neutral-400">No Parent Division</p>
+                                                        <p className="text-sm italic text-neutral-400">{sd("noParentDivision")}</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -278,11 +267,7 @@ export default function SubDivisionsRoundedTable() {
                                                     mode="edit"
                                                     subDivision={sub}
                                                     trigger={
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8 rounded-lg"
-                                                        >
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
                                                             <Pencil className="w-4 h-4 text-gray-500" />
                                                         </Button>
                                                     }
@@ -303,7 +288,7 @@ export default function SubDivisionsRoundedTable() {
                                             {sub.desc ? (
                                                 <p className="text-sm text-gray-900">{sub.desc}</p>
                                             ) : (
-                                                <p className="text-sm italic text-neutral-400">Description not set</p>
+                                                <p className="text-sm italic text-neutral-400">{sd("descriptionNotSet")}</p>
                                             )}
                                         </div>
                                     </CardContent>
@@ -314,10 +299,10 @@ export default function SubDivisionsRoundedTable() {
                 ) : (
                     <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-300">
                         <Users2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No sub-divisions found</h3>
-                        <p className="text-gray-600 mb-4">No sub-divisions match your current filter criteria.</p>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{sd("noSubDivisionsFoundTitle")}</h3>
+                        <p className="text-gray-600 mb-4">{sd("noSubDivisionsFoundDesc")}</p>
                         <Button onClick={() => setSelectedDivision(undefined)} variant="outline" className="rounded-lg">
-                            Clear Filter
+                            {sd("clearFilter")}
                         </Button>
                     </div>
                 )}
@@ -326,8 +311,8 @@ export default function SubDivisionsRoundedTable() {
                 isOpen={isDeleteOpen}
                 onClose={() => setIsDeleteOpen(false)}
                 onConfirm={handleConfirmDelete}
-                title="Delete Sub-Division"
-                description="Are you sure you want to delete this sub-division? This action cannot be undone."
+                title={sd("deleteTitle")}
+                description={sd("deleteDescription")}
             />
         </div>
     )

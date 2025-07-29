@@ -12,6 +12,7 @@ import TerminateEmployeeDialog from "@/components/employees/terminate-employee"
 import { EmployeeType } from "@/lib/types/employee-type"
 import { toast } from "sonner"
 import { RehireEmployeeDialog } from "@/components/employees/rehireDialog"
+import { useTranslations } from "next-intl"
 
 export default function EmployeePage() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -68,6 +69,8 @@ export default function EmployeePage() {
         fetchDivisions()
     }, [storedUuid])
 
+    const em = useTranslations("employees")
+
     return (
         <div className="min-h-screen">
             {/* HEADER SECTION */}
@@ -79,15 +82,15 @@ export default function EmployeePage() {
                                 <Users className="w-6 h-6 text-orange-600" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-900">Employees</h1>
-                                <p className="text-gray-600 mt-1">Organize and manage your employees</p>
+                                <h1 className="text-2xl font-bold text-gray-900">{em('title')}</h1>
+                                <p className="text-gray-600 mt-1">{em('description')}</p>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-8">
                             <div className="text-center">
                                 <p className="text-2xl font-bold text-gray-900">{employeesData.length}</p>
-                                <p className="text-sm text-gray-500">Total Employees</p>
+                                <p className="text-sm text-gray-500">{em('totalEmployees')}</p>
                             </div>
                         </div>
                     </div>
@@ -102,7 +105,7 @@ export default function EmployeePage() {
                         <div className="relative flex-1 max-w-md">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                             <Input
-                                placeholder="Search divisions, descriptions, or responsible person..."
+                                placeholder={em('searchPlaceholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-10 border-gray-300 rounded-lg"
@@ -115,7 +118,7 @@ export default function EmployeePage() {
                             onClick={() => setShowTerminated((prev) => !prev)}
                             variant="outline"
                         >
-                            {showTerminated ? "Hide Terminated Employees" : "Show Terminated Employees"}
+                            {showTerminated ? em('hideTerminated') : em('showTerminated')}
                         </Button>
                         <div className="flex bg-gray-100 rounded-lg p-1">
                             <Button
@@ -128,7 +131,7 @@ export default function EmployeePage() {
                                     }`}
                             >
                                 <List className={`w-4 h-4 ${viewType === "table" ? "text-white" : "text-gray-500"}`} />
-                                Table
+                                {em('viewTable')}
                             </Button>
                             <Button
                                 variant={viewType === "card" ? "default" : "ghost"}
@@ -140,7 +143,7 @@ export default function EmployeePage() {
                                     }`}
                             >
                                 <LayoutGrid className={`w-4 h-4 ${viewType === "card" ? "text-white" : "text-gray-500"}`} />
-                                Cards
+                                {em('viewCards')}
                             </Button>
                         </div>
                         <EmployeesDialog mode="create" />
@@ -151,10 +154,10 @@ export default function EmployeePage() {
                 {filteredEmployees.length === 0 ? (
                     <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-300">
                         <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No employees found</h3>
-                        <p className="text-gray-600 mb-4">No employees match your search criteria.</p>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{em('noEmployeesFoundTitle')}</h3>
+                        <p className="text-gray-600 mb-4">{em('noEmployeesFoundDesc')}</p>
                         <Button onClick={() => setSearchTerm("")} variant="outline" className="rounded-lg">
-                            Clear Search
+                            {em('clearSearch')}
                         </Button>
                     </div>
                 ) : viewType === "card" ? (
@@ -188,7 +191,7 @@ export default function EmployeePage() {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Briefcase className="w-4 h-4 text-green-500" />
-                                            <span className="text-sm text-gray-900">{employee.is_freelance ? "Freelance" : "Employee"}</span>
+                                            <span className="text-sm text-gray-900">{employee.is_freelance ? em('freelance') : em('employee')}</span>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -204,28 +207,28 @@ export default function EmployeePage() {
                                         <th className="text-left py-4 px-6 font-bold text-gray-900 first:rounded-tl-xl">
                                             <div className="flex items-center gap-2">
                                                 <Users className="w-4 h-4" />
-                                                Employee Name
+                                                {em('employeeName')}
                                             </div>
                                         </th>
                                         <th className="text-left py-4 px-6 font-bold text-gray-900">
                                             <div className="flex items-center gap-2">
                                                 <Mail className="w-4 h-4" />
-                                                Employee Email
+                                                {em('employeeEmail')}
                                             </div>
                                         </th>
                                         <th className="text-left py-4 px-6 font-bold text-gray-900">
                                             <div className="flex items-center gap-2">
                                                 <Phone className="w-4 h-4" />
-                                                Employee Phone
+                                                {em('employeePhone')}
                                             </div>
                                         </th>
                                         <th className="text-left py-4 px-6 font-bold text-gray-900">
                                             <div className="flex items-center gap-2">
                                                 <Briefcase className="w-4 h-4" />
-                                                Freelance Status
+                                                {em('freelanceStatus')}
                                             </div>
                                         </th>
-                                        <th className="text-right py-4 px-6 font-bold text-gray-900 last:rounded-tr-xl">Actions</th>
+                                        <th className="text-right py-4 px-6 font-bold text-gray-900 last:rounded-tr-xl">{em('actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -244,7 +247,7 @@ export default function EmployeePage() {
                                                 <div className="text-gray-900">{employee.phone}</div>
                                             </td>
                                             <td className="py-4 px-6">
-                                                <div className="text-gray-900">{employee.is_freelance ? "Freelance" : "Employee"}</div>
+                                                <div className="text-gray-900">{employee.is_freelance ? em('freelance') : em('employee')}</div>
                                             </td>
                                             <td className="py-4 px-6">
                                                 <div className="flex justify-end gap-2">
@@ -279,7 +282,7 @@ export default function EmployeePage() {
                         <div className="flex items-center my-6">
                             <hr className="flex-grow border-t border-gray-300" />
                             <span className="mx-4 text-gray-500 font-semibold text-sm uppercase tracking-wider">
-                                Terminated Employees
+                                {em('terminatedSectionTitle')}
                             </span>
                             <hr className="flex-grow border-t border-gray-300" />
                         </div>
@@ -289,11 +292,11 @@ export default function EmployeePage() {
                                     <table className="w-full">
                                         <thead>
                                             <tr className="bg-gray-100 border-b border-gray-300">
-                                                <th className="text-left py-3 px-5 font-bold text-gray-800">Name</th>
-                                                <th className="text-left py-3 px-5 font-bold text-gray-800">Email</th>
-                                                <th className="text-left py-3 px-5 font-bold text-gray-800">Termination Date</th>
-                                                <th className="text-left py-3 px-5 font-bold text-gray-800">Reason</th>
-                                                <th className="text-left py-3 px-5 font-bold text-gray-800">Actions</th>
+                                                <th className="text-left py-3 px-5 font-bold text-gray-800">{em('employeeName')}</th>
+                                                <th className="text-left py-3 px-5 font-bold text-gray-800">{em('employeeEmail')}</th>
+                                                <th className="text-left py-3 px-5 font-bold text-gray-800">{em('terminationDate')}</th>
+                                                <th className="text-left py-3 px-5 font-bold text-gray-800">{em('reason')}</th>
+                                                <th className="text-left py-3 px-5 font-bold text-gray-800">{em('actions')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -344,7 +347,7 @@ export default function EmployeePage() {
                                         <CardContent className="space-y-4">
                                             <div className="flex items-center justify-between p-2 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-sm text-gray-600">Terminated</span>
+                                                    <span className="text-sm text-gray-600">{em('terminated')}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-sm text-gray-600">
@@ -354,7 +357,7 @@ export default function EmployeePage() {
                                             </div>
                                             <div className="p-2 bg-gray-100 rounded-lg border border-gray-200">
                                                 <span className="text-sm text-gray-600 italic">
-                                                    Reason: {employee.termination?.reason}
+                                                    {em('reason')}: {employee.termination?.reason}
                                                 </span>
                                             </div>
                                             <div className="flex justify-end">
