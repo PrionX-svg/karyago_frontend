@@ -93,7 +93,7 @@ const baseNavigationItems: NavigationItems = {
       name: "Employees",
       icon: Users,
       children: [
-        { name: "Employees", path: "/employees" },
+        { name: "Manage Employees", path: "/employees" },
         { name: "Assign Employees", path: "/assign-employees" },
       ]
     },
