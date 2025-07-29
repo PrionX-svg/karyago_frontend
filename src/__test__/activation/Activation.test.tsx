@@ -1,18 +1,16 @@
 import React, { use } from "react";
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent, act, within } from "@testing-library/react";
 import ActivationPage from "@/app/[locale]/activation/page";
 import postAPI from "@/lib/api/postAPI";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
+import { mock } from "node:test";
 
-
-// Mock translation
 jest.mock("next-intl", () => ({
   useTranslations: (ns: string) => (key: string, vals?: Record<string, any>) =>
     vals ? `${ns}.${key} (${JSON.stringify(vals)})` : `${ns}.${key}`,
 }));
 
-// Mock navigation hooks
 jest.mock("next/navigation", () => ({
   __esModule: true,
   useSearchParams: jest.fn(),
@@ -20,13 +18,11 @@ jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
-// Mock link
 jest.mock("next/link", () => ({
   __esModule: true,
   default: ({ children, href }: any) => <a href={href}>{children}</a>,
 }));
 
-// Mock postAPI
 jest.mock("@/lib/api/postAPI", () => jest.fn());
 jest.mock("sonner", () => ({
   toast: { error: jest.fn() },
