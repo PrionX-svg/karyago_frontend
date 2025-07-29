@@ -11,6 +11,7 @@ import { api } from "@/lib/api/api"
 import TerminateEmployeeDialog from "@/components/employees/terminate-employee"
 import { EmployeeType } from "@/lib/types/employee-type"
 import { toast } from "sonner"
+import { RehireEmployeeDialog } from "@/components/employees/rehireDialog"
 
 export default function EmployeePage() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -31,7 +32,7 @@ export default function EmployeePage() {
         if (!selectedEmployee || !storedUuid) return
         try {
             const decryptedCompanyUuid = await decrypt(storedUuid)
-            await api.deleteUser(selectedEmployee.user_uuid, decryptedCompanyUuid, reason)
+            await api.terminateUser(selectedEmployee.user_uuid, decryptedCompanyUuid, reason)
                 .then(() => toast.success("Employee terminated successfully"))
                 .catch((error) => toast.error(`Failed to terminate employee: ${error.message}`))
         } catch (error) {
@@ -43,7 +44,6 @@ export default function EmployeePage() {
     }
 
     const filteredEmployees = employeesData.filter((employee) => {
-        // Exclude employees with a termination object
         if (employee.termination) return false;
         const searchLower = searchTerm.toLowerCase();
         return (
@@ -293,6 +293,7 @@ export default function EmployeePage() {
                                                 <th className="text-left py-3 px-5 font-bold text-gray-800">Email</th>
                                                 <th className="text-left py-3 px-5 font-bold text-gray-800">Termination Date</th>
                                                 <th className="text-left py-3 px-5 font-bold text-gray-800">Reason</th>
+                                                <th className="text-left py-3 px-5 font-bold text-gray-800">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -305,6 +306,11 @@ export default function EmployeePage() {
                                                     </td>
                                                     <td className="py-3 px-5 text-gray-600 italic">
                                                         {employee.termination?.reason}
+                                                    </td>
+                                                    <td className="py-3 px-5">
+                                                        <RehireEmployeeDialog
+                                                            employeeData={employee}
+                                                        />
                                                     </td>
                                                 </tr>
                                             ))}
@@ -350,6 +356,11 @@ export default function EmployeePage() {
                                                 <span className="text-sm text-gray-600 italic">
                                                     Reason: {employee.termination?.reason}
                                                 </span>
+                                            </div>
+                                            <div className="flex justify-end">
+                                                <RehireEmployeeDialog
+                                                    employeeData={employee}
+                                                />
                                             </div>
                                         </CardContent>
                                     </Card>

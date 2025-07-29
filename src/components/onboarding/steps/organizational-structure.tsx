@@ -147,11 +147,18 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
     }
 
     const getSubDivisionsByDivision = (divisionId: string) => {
-        return subDivisions.filter((sub) => sub.department_group_uuid === divisionId)
+        return subDivisions.filter((sub) => sub.divisions.uuid === divisionId)
     }
 
     const handleNext = async () => {
-        onNext(divisions, subDivisions)
+        onNext(
+            divisions,
+            subDivisions.map((sub) => ({
+                department_group_uuid: sub.divisions?.uuid || sub.divisions.uuid || "",
+                name: sub.name,
+                desc: sub.desc,
+            }))
+        )
     }
 
     useEffect(() => {
@@ -654,7 +661,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                                                         <div className="flex-1">
                                                                             <div className="flex items-center gap-2 mb-1">
                                                                                 <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                                                                                    {getDivisionName(subDivision.department_group_uuid)}
+                                                                                    {getDivisionName(subDivision.divisions.uuid)}
                                                                                 </span>
                                                                                 <ChevronRight className="w-3 h-3 text-gray-400" />
                                                                             </div>

@@ -32,7 +32,7 @@ export const api = {
             return Promise.reject(error)
         }
     },
-    async getCompaniesByUserUuid(userUuid: string){
+    async getCompaniesByUserUuid(userUuid: string) {
         try {
             const setCompanies = useCompanyStore.getState().setCompany;
             const response = await getAPI(`${API_URL.getCompaniesByUserUuid}${userUuid}`);
@@ -63,8 +63,8 @@ export const api = {
             return Promise.reject(error)
         }
     },
-    async createDivision(payload: DivisionPayload){
-        try{
+    async createDivision(payload: DivisionPayload) {
+        try {
             const addDivision = useCompanyStore.getState().addDivision;
             const response = await postAPI(payload, `${API_URL.createDivisionByCompanyUuid}`);
             if (response.status === 201) {
@@ -96,7 +96,7 @@ export const api = {
     async deleteDivision(divisionUuid: string) {
         try {
             const removeDivision = useCompanyStore.getState().removeDivision;
-            const response = await deleteAPI({} ,`${API_URL.deleteDivisionByUuid}${divisionUuid}`);
+            const response = await deleteAPI({}, `${API_URL.deleteDivisionByUuid}${divisionUuid}`);
             if (response.status === 200) {
                 removeDivision(divisionUuid);
                 return true;
@@ -118,7 +118,7 @@ export const api = {
             return Promise.reject(error)
         }
     },
-    async createSubDivision(payload: SubDivisionPayload){
+    async createSubDivision(payload: SubDivisionPayload) {
         try {
             const addSubDivision = useCompanyStore.getState().addSubDivision;
             const response = await postAPI(payload, `${API_URL.createSubDivisionByCompanyUuid}`);
@@ -175,17 +175,38 @@ export const api = {
             return Promise.reject(error)
         }
     },
-    async deleteUser(userUuid: string, companyUuid?: string, reason?: string) {
-        const removeEmployee = useEmployeeStore.getState().removeEmployee;
+    async terminateUser(userUuid: string, companyUuid: string, reason: string) {
+        const { removeEmployee, addTerminatedEmployee, employees } = useEmployeeStore.getState();
         try {
             const url = reason
-                ? `${API_URL.deleteUserByUuid}${userUuid}?company_uuid=${companyUuid}&reason=${reason}`
-                : `${API_URL.deleteUserByUuid}${userUuid}?company_uuid=${companyUuid}`;
+                ? `${API_URL.terminateUser}${userUuid}?company_uuid=${companyUuid}&reason=${reason}`
+                : `${API_URL.terminateUser}${userUuid}?company_uuid=${companyUuid}`;
             const response = await deleteAPI({}, url);
             if (response.status === 200) {
+                const employee = employees.find(e => e.user_uuid === userUuid);
+                if (employee) {
+                    addTerminatedEmployee({
+                        ...employee,
+                        termination: { date: new Date().toISOString(), reason },
+                    });
+                }
                 removeEmployee(userUuid);
             } else {
-                throw new Error("Failed to terminate user");
+                throw new Error(response.data.message || "Failed to delete user");
+            }
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
+    async rehireUser(userUuid: string, companyUuid: string) {
+        const updateEmployee = useEmployeeStore.getState().updateEmployee;
+        try {
+            const url = `${API_URL.rehireUserByUuid}${userUuid}?company_uuid=${companyUuid}`;
+            const response = await patchAPI({}, url);
+            if (response.status === 200) {
+                updateEmployee({ user_uuid: userUuid, termination: undefined });
+            } else {
+                throw new Error(response.data.message || "Failed to rehire user");
             }
         } catch (error) {
             return Promise.reject(error)
@@ -206,7 +227,7 @@ export const api = {
     async importEmployee(formData: FormData) {
         const setEmployee = useEmployeeStore.getState().setEmployees
         const setEmployeeHistory = useEmployeeStore.getState().setEmployeeHistory
-        try{
+        try {
             const response = await postAPI(formData, `${API_URL.importEmployee}`)
             if (response.status === 200) {
                 const employeesData = responseFormatter.formatImportEmployeeData(response.data)
