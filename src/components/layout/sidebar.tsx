@@ -39,6 +39,7 @@ import {
   Spline,
   GitBranch,
   Github,
+  Building,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
@@ -97,6 +98,7 @@ const baseNavigationItems: NavigationItems = {
         { name: "Sub-Division", path: "/sub-divisions" },
       ],
     },
+    { name: "Branch", icon: Building, path: "/branch" },
     { name: "Calendar", icon: Calendar, path: "/calendar" },
     { name: "Files", icon: Folder, path: "/files" },
     { name: "Report", icon: BarChart3, path: "/reports" },

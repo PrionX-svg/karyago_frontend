@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { api } from "../api/api";
+import { BranchPayload } from "../interfaces/company-interface";
 
 const company = {
   useGetCompanyByUserUuid: (userUuid: string) => {
@@ -90,6 +91,63 @@ const company = {
 
     return { fetchBranchesByCompanyUuid, isFetchingBranches };
   },
+  useCreateBranch: (branchPayload: BranchPayload) => {
+    const [isCreatingBranch, setIsCreatingBranch] = useState(false);
+
+    const createBranch = useCallback(async () => {
+      setIsCreatingBranch(true);
+      if (!branchPayload) {
+        return;
+      }
+      try {
+        return await api.createBranch(branchPayload);
+      } catch (error) {
+        return Promise.reject(error);
+      } finally {
+        setIsCreatingBranch(false);
+      }
+    }, [branchPayload]);
+    return { createBranch, isCreatingBranch };
+  },
+  useUpdateBranch: (branchUuid: string) => {
+    const [isUpdatingBranch, setIsUpdatingBranch] = useState(false);
+
+    const updateBranch = useCallback(
+      async (branchPayload: BranchPayload) => {
+        setIsUpdatingBranch(true);
+        if (!branchUuid || !branchPayload) {
+          return;
+        }
+        try {
+          return await api.updateBranch(branchUuid, branchPayload);
+        } catch (error) {
+          return Promise.reject(error);
+        } finally {
+          setIsUpdatingBranch(false);
+        }
+      },
+      [branchUuid]
+    );
+    return { updateBranch, isUpdatingBranch };
+  },
+  useDeleteBranch: (branchUuid: string) => {
+    const [isDeletingBranch, setIsDeletingBranch] = useState(false);
+
+    const deleteBranch = useCallback(async () => {
+      setIsDeletingBranch(true);
+      if (!branchUuid) {
+        return;
+      }
+      try {
+        return await api.deleteBranch(branchUuid);
+      } catch (error) {
+        return Promise.reject(error);
+      } finally {
+        setIsDeletingBranch(false);
+      }
+    }, [branchUuid]);
+    return { deleteBranch, isDeletingBranch };
+  },
   useGetDivisions: (companyUuid: string) => {
     const [isFetchingDivisions, setIsFetchingDivisions] = useState(false);
 
@@ -114,24 +172,25 @@ const company = {
     return { fetchDivisions, isFetchingDivisions };
   },
   useDeleteDivision: (divisionUuid: string) => {
-        const [isDeletingDivision, setIsDeletingDivision] = useState(false);
+    const [isDeletingDivision, setIsDeletingDivision] = useState(false);
 
-        const deleteDivision = useCallback(async () => {
-            setIsDeletingDivision(true);
-            if (!divisionUuid) {
-                return;
-            }
-            try {
-                return await api.deleteDivision(divisionUuid);
-            } catch (error) {
-                return Promise.reject(error);
-            } finally {
-                setIsDeletingDivision(false);
-            }
-        }, [divisionUuid])
+    const deleteDivision = useCallback(async () => {
+      setIsDeletingDivision(true);
+      if (!divisionUuid) {
+        return;
+      }
+      try {
+        return await api.deleteDivision(divisionUuid);
+      } catch (error) {
+        return Promise.reject(error);
+      } finally {
+        setIsDeletingDivision(false);
+      }
+    }, [divisionUuid]);
 
-        return { deleteDivision, isDeletingDivision }
-    },useGetSubDivisions: (companyUuid: string) => {
+    return { deleteDivision, isDeletingDivision };
+  },
+  useGetSubDivisions: (companyUuid: string) => {
     const [isFetchingSubDivisions, setIsFetchingSubDivisions] = useState(false);
 
     const fetchSubDivisions = useCallback(async () => {
