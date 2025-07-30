@@ -403,6 +403,8 @@
         "employeeEmail": "Email Karyawan",
         "employeePhone": "Telepon Karyawan",
         "freelanceStatus": "Status Freelance",
+        "employeeDepartment": "Departemen Karyawan",
+        "unassigned": "Belum Ditugaskan",
         "freelance": "Freelance",
         "employee": "Karyawan",
         "actions": "Aksi",
@@ -450,5 +452,45 @@
         "confirmPlaceholder": "Ketik: {email}",
         "cancel": "Batal",
         "submit": "Berhentikan"
+    },
+    "assignEmployeeDialog": {
+        "assignButton": "Tetapkan",
+        "assignTitle": "Tetapkan {name} ke Sub-Divisi",
+        "assignDescription": "Silakan pilih sub-divisi untuk menetapkan karyawan ini.",
+        "cancel": "Batal",
+        "confirmAssign": "Konfirmasi Penetapan"
+    },
+    "removeEmployeeDialog": {
+        "removeButton": "Hapus",
+        "removeTitle": "Hapus {name} dari {department}",
+        "removeDescription": "Apakah Anda yakin ingin menghapus karyawan ini dari sub-divisi saat ini?",
+        "cancel": "Batal",
+        "confirmRemove": "Konfirmasi Penghapusan"
+    },
+    "assignEmployees": {
+        "assignTitle": "Tetapkan Karyawan",
+        "assignDescription": "Tetapkan karyawan ke sub-divisi",
+        "selectSubDivision": "Pilih Sub-Divisi",
+        "noSubDivisions": "Tidak ada sub-divisi tersedia",
+        "noEmployees": "Tidak ada karyawan yang tersedia untuk penetapan",
+        "assignButton": "Tetapkan Karyawan",
+        "assignSuccess": "{count} karyawan{plural} berhasil ditetapkan",
+        "assignFailed": "Gagal menetapkan karyawan",
+        "searchPlaceholder": "Cari karyawan berdasarkan nama, email, atau telepon...",
+        "viewTable": "Tabel",
+        "viewCards": "Kartu",
+        "noEmployeesFoundTitle": "Tidak ada karyawan ditemukan",
+        "noEmployeesFoundDesc": "Tidak ada karyawan yang sesuai dengan kriteria pencarian Anda.",
+        "clearSearch": "Hapus Pencarian",
+        "employeeName": "Nama Karyawan",
+        "employeeEmail": "Email Karyawan",
+        "employeePhone": "Telepon Karyawan",
+        "freelanceStatus": "Status Freelance",
+        "department": "Departemen Karyawan",
+        "unassigned": "Belum Ditugaskan",
+        "freelance": "Freelance",
+        "employee": "Karyawan",
+        "actions": "Aksi",
+        "totalEmployees": "Total Karyawan"
     }
 }

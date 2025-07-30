@@ -34,7 +34,7 @@ const company = {
         return;
       }
       try {
-        return await api.getCompanyByUuid(companyUuid);
+        return await api.getCompanyByUserUuid(companyUuid);
       } catch (error) {
         return Promise.reject(error);
       } finally {

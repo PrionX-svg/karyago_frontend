@@ -21,6 +21,10 @@ export interface GetEmployeeByCompanyUuidResponse {
         company: {
             uuid: string;
         };
+        department?: {
+            uuid: string;
+            name: string;
+        }
         termination?: {
             reason: string | null,
             date: string | null

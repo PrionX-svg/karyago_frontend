@@ -9,15 +9,15 @@ import {
 	UpdateDivisionResponse,
 	UpdateSubDivisionResponse
 } from "../interfaces/company-interface";
-import {GetMeResponse} from "../interfaces/user-interface";
+import { GetMeResponse } from "../interfaces/user-interface";
 import {
 	CompanyBranchType,
 	CompanyType,
 	DivisionType,
 	SubDivisionType,
 } from "../types/company-type";
-import {UserType} from "../types/user-type";
-import {EmployeeHistoryType, EmployeeType} from "../types/employee-type";
+import { UserType } from "../types/user-type";
+import { EmployeeHistoryType, EmployeeType } from "../types/employee-type";
 import {
 	CreateEmployeeHistoryResponse,
 	CreateEmployeeResponse,
@@ -25,8 +25,8 @@ import {
 	ImportEmployeeResponse,
 	UpdateEmployeeResponse,
 } from "../interfaces/employee-interface";
-import {RoleType} from "../types/role-type";
-import {GetRoleByCompanyUuidResponse} from "../interfaces/role-interface";
+import { RoleType } from "../types/role-type";
+import { GetRoleByCompanyUuidResponse } from "../interfaces/role-interface";
 
 export const responseFormatter = {
 	formatUserData(response: GetMeResponse): UserType {
@@ -275,25 +275,41 @@ export const responseFormatter = {
 		response: GetEmployeeByCompanyUuidResponse
 	): EmployeeType[] {
 		if (!response.data) return [];
-		return response.data?.map((employee) => ({
-			company_uuid: employee?.company?.uuid,
-			user_uuid: employee?.user_uuid,
-			employee_uuid: employee?.employee_uuid,
-			role: {
-				name: employee?.role?.name ?? "",
-				uuid: employee?.role?.uuid ?? "",
-			},
-			name: {
-				fullname: employee?.full_name ?? "",
-				firstname: employee?.first_name ?? "",
-				lastname: employee?.last_name ?? "",
-			},
-			phone: employee?.phone,
-			email: employee?.email,
-			dob: employee?.dob,
-			gender: employee?.gender,
-			is_freelance: employee?.is_freelance,
-		}));
+
+		return response.data.map((employee) => {
+			const formattedEmployee: EmployeeType = {
+				company_uuid: employee.company?.uuid,
+				user_uuid: employee.user_uuid,
+				employee_uuid: employee.employee_uuid,
+				phone: employee.phone,
+				email: employee.email,
+				dob: employee.dob,
+				gender: employee.gender,
+				is_freelance: employee.is_freelance,
+				role: {
+					name: employee.role?.name ?? "",
+					uuid: employee.role?.uuid ?? "",
+				},
+				name: {
+					fullname: employee.full_name ?? "",
+					firstname: employee.first_name ?? "",
+					lastname: employee.last_name ?? "",
+				},
+			};
+			if (employee.department?.uuid) {
+				formattedEmployee.subDivision = {
+					uuid: employee.department.uuid,
+					name: employee.department.name ?? "",
+				};
+			}
+			if (employee.termination?.date || employee.termination?.reason) {
+				formattedEmployee.termination = {
+					reason: employee.termination.reason ?? null,
+					date: employee.termination.date ?? null,
+				};
+			}
+			return formattedEmployee;
+		});
 	},
 	formatCreateEmployeeResponse(response: CreateEmployeeResponse): EmployeeType {
 		return {

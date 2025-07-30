@@ -197,6 +197,28 @@ export const api = {
             return Promise.reject(error)
         }
     },
+    async assignEmployeeToSubDivision(userUuid: string, data: { uuid: string; name: string; }) {
+        const updateEmployee = useEmployeeStore.getState().updateEmployee;
+        try {
+            const response = await patchAPI({ department_uuid: data.uuid }, `${API_URL.assignEmployeeToSubDivision}${userUuid}`);
+            if (response.status === 200) {
+                updateEmployee({
+                    ...response.data,
+                    subDivision: {
+                        uuid: data.uuid,
+                        name: data.name,
+                    },
+                });
+            } else {
+                throw new Error("Failed to assign employee to sub-division");
+            }
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    },
+    // async removeEmployeeFromSubDivision(userUuid: string) {
+
+    // },
     async terminateUser(userUuid: string, companyUuid: string, reason: string) {
         const { removeEmployee, addTerminatedEmployee, employees } = useEmployeeStore.getState();
         try {

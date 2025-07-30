@@ -403,6 +403,8 @@
     "employeeEmail": "Mitarbeiter-E-Mail",
     "employeePhone": "Mitarbeiter-Telefon",
     "freelanceStatus": "Freiberufler-Status",
+    "employeeDepartment": "Mitarbeiterabteilung",
+    "unassigned": "Nicht zugewiesen",
     "freelance": "Freiberufler",
     "employee": "Mitarbeiter",
     "actions": "Aktionen",
@@ -450,5 +452,45 @@
     "confirmPlaceholder": "Eingeben: {email}",
     "cancel": "Abbrechen",
     "submit": "Kündigen"
+  },
+  "assignEmployeeDialog": {
+    "assignButton": "Zuweisen",
+    "assignTitle": "{name} einem Unterbereich zuweisen",
+    "assignDescription": "Bitte wählen Sie einen Unterbereich aus, um diesen Mitarbeiter zuzuweisen.",
+    "cancel": "Abbrechen",
+    "confirmAssign": "Zuweisung bestätigen"
+  },
+  "removeEmployeeDialog": {
+    "removeButton": "Entfernen",
+    "removeTitle": "{name} aus {department} entfernen",
+    "removeDescription": "Möchten Sie diesen Mitarbeiter wirklich aus seinem aktuellen Unterbereich entfernen?",
+    "cancel": "Abbrechen",
+    "confirmRemove": "Entfernung bestätigen"
+  },
+  "assignEmployees": {
+    "assignTitle": "Mitarbeiter zuweisen",
+    "assignDescription": "Mitarbeiter Unterbereichen zuweisen",
+    "selectSubDivision": "Unterbereich auswählen",
+    "noSubDivisions": "Keine Unterbereiche verfügbar",
+    "noEmployees": "Keine Mitarbeiter zur Zuweisung verfügbar",
+    "assignButton": "Mitarbeiter zuweisen",
+    "assignSuccess": "{count} Mitarbeiter{plural} erfolgreich zugewiesen",
+    "assignFailed": "Mitarbeiter konnten nicht zugewiesen werden",
+    "searchPlaceholder": "Mitarbeiter nach Name, E-Mail oder Telefon suchen...",
+    "viewTable": "Tabelle",
+    "viewCards": "Karten",
+    "noEmployeesFoundTitle": "Keine Mitarbeiter gefunden",
+    "noEmployeesFoundDesc": "Keine Mitarbeiter entsprechen Ihren Suchkriterien.",
+    "clearSearch": "Suche zurücksetzen",
+    "employeeName": "Mitarbeitername",
+    "employeeEmail": "Mitarbeiter-E-Mail",
+    "employeePhone": "Mitarbeiter-Telefon",
+    "freelanceStatus": "Freiberufler-Status",
+    "department": "Mitarbeiterabteilung",
+    "unassigned": "Nicht zugewiesen",
+    "freelance": "Freiberufler",
+    "employee": "Mitarbeiter",
+    "actions": "Aktionen",
+    "totalEmployees": "Gesamtmitarbeiter"
   }
 }
