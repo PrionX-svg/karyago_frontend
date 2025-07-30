@@ -1,10 +1,14 @@
-import { useUserStore } from "@/stores/user-store"
+import { useUserStore } from "@/stores/user-store";
 import getAPI from "./getAPI";
 import { API_URL } from "./constants";
 import { responseFormatter } from "./responseFormatter";
 import { useCompanyStore } from "@/stores/company-store";
 import { useEmployeeStore } from "@/stores/employee-store";
-import { CreateEmployeeHistoryPayload, CreateEmployeePayload, UpdateEmployeePayload } from "../interfaces/employee-interface";
+import {
+  CreateEmployeeHistoryPayload,
+  CreateEmployeePayload,
+  UpdateEmployeePayload,
+} from "../interfaces/employee-interface";
 import postAPI from "./postAPI";
 import { useRoleStore } from "@/stores/role-store";
 import { DivisionPayload, SubDivisionPayload } from "../interfaces/company-interface";
@@ -108,12 +112,17 @@ export const api = {
         }
     },
     async getSubDivisionsByCompanyUuid(companyUuid: string) {
-        try {
-            const setSubDivisions = useCompanyStore.getState().setSubDivision;
-            const query = companyUuid ? `?company_uuid=${companyUuid}&limit=50` : "?limit=50";
-            const response = await getAPI(`${API_URL.getSubDivisionsByCompanyUuid}${query}`);
-            const formattedSubDivisions = responseFormatter.formatGetSubDivisionsByCompanyUuid(response)
-            setSubDivisions(formattedSubDivisions);
+    try {
+      const setSubDivisions = useCompanyStore.getState().setSubDivision;
+      const query = companyUuid
+        ? `?company_uuid=${companyUuid}&limit=50`
+        : "?limit=50";
+      const response = await getAPI(
+        `${API_URL.getSubDivisionsByCompanyUuid}${query}`
+      );
+      const formattedSubDivisions =
+        responseFormatter.formatGetSubDivisionsByCompanyUuid(response);
+      setSubDivisions(formattedSubDivisions);
         } catch (error) {
             return Promise.reject(error)
         }

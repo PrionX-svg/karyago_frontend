@@ -1,85 +1,112 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Pencil, Trash, Layers, Menu, Users2, Briefcase, Target } from "lucide-react"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { useCompanyStore } from "@/stores/company-store"
-import { decrypt } from "@/lib/encrypt"
-import { api } from "@/lib/api/api"
-import { SubDivisionDialog } from "@/components/company-structure/subdivision-form"
+import {useEffect, useState} from "react";
+import {Card, CardHeader, CardTitle, CardContent} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {
+	Pencil,
+	Trash,
+	Layers,
+	Menu,
+	Users2,
+	Briefcase,
+	Target,
+} from "lucide-react";
+import {
+	Select,
+	SelectTrigger,
+	SelectValue,
+	SelectContent,
+	SelectItem,
+} from "@/components/ui/select";
+import {useCompanyStore} from "@/stores/company-store"
+import {decrypt} from "@/lib/encrypt"
+import {api} from "@/lib/api/api"
+import {SubDivisionDialog} from "@/components/company-structure/subdivision-form"
 import DeleteConfirmDialog from "@/components/company-structure/delete-confirm-dialog"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 
 export default function SubDivisionsRoundedTable() {
-    const [selectedDivision, setSelectedDivision] = useState<string | undefined>()
-    const [searchTerm, setSearchTerm] = useState("")
-    const [viewType, setViewType] = useState<"card" | "table">("table")
-    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-    const [selectedSubDivision, setSubSelectedDivision] = useState<string | null>(null);
-    const divisionsData = useCompanyStore((state) => state.division)
-    const isDivisionsEmpty = Array.isArray(divisionsData) && divisionsData.length === 0
-    const subDivisionsData = useCompanyStore((state) => state.subDivision)
-    const storedUuid = localStorage.getItem("atem")
+	const [decryptedUuid, setDecryptedUuid] = useState<string | null>(null);
+	const [hasMounted, setHasMounted] = useState(false);
+	const [selectedDivision, setSelectedDivision] = useState<string | undefined>()
+	const [searchTerm, setSearchTerm] = useState("")
+	const [viewType, setViewType] = useState<"card" | "table">("table")
+	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+	const [selectedSubDivision, setSubSelectedDivision] = useState<string | null>(null);
+	const divisionsData = useCompanyStore((state) => state.division)
+	const subDivisionsData = useCompanyStore((state) => state.subDivision)
 
-    const handleDeleteClick = (uuid: string) => {
-        setSubSelectedDivision(uuid);
-        setIsDeleteOpen(true);
-    };
+	const handleDeleteClick = (uuid: string) => {
+		setSubSelectedDivision(uuid);
+		setIsDeleteOpen(true);
+	};
 
-    const handleConfirmDelete = async () => {
-        if (!selectedSubDivision) return;
-        try {
-            await api.deleteSubDivision(selectedSubDivision)
-                .then(() => toast.success("Sub-Division deleted successfully"))
-                .catch(() => toast.error("Failed to delete Sub-Division"))
-        } catch (error) {
-            console.error("Failed to delete Sub-Division", error);
-        } finally {
-            setIsDeleteOpen(false);
-            setSubSelectedDivision(null);
-        }
-    };
+	const handleConfirmDelete = async () => {
+		if (!selectedSubDivision) return;
+		try {
+			await api.deleteSubDivision(selectedSubDivision)
+				.then(() => toast.success("Sub-Division deleted successfully"))
+				.catch(() => toast.error("Failed to delete Sub-Division"))
+		} catch (error) {
+			console.error("Failed to delete Sub-Division", error);
+		} finally {
+			setIsDeleteOpen(false);
+			setSubSelectedDivision(null);
+		}
+	};
 
-    useEffect(() => {
-        if (isDivisionsEmpty) {
-            const fetchDivisions = async () => {
-                if (!storedUuid) return
-                try {
-                    const decryptedUuid = decrypt(storedUuid)
-                    await api.getDivisionsByCompanyUuid(await decryptedUuid)
-                } catch (error) {
-                    console.error("Failed to fetch divisions:", error)
-                }
-            }
-            fetchDivisions()
-        }
-    }, [isDivisionsEmpty, storedUuid])
+	useEffect(() => {
+		const fetchData = async () => {
+			setHasMounted(true);
+			const uuid = localStorage.getItem("atem");
 
-    useEffect(() => {
-        const fetchSubDivisions = async () => {
-            if (!storedUuid) return
-            try {
-                const decryptedUuid = decrypt(storedUuid)
-                await api.getSubDivisionsByCompanyUuid(await decryptedUuid)
-            } catch (error) {
-                console.error("Failed to fetch sub-divisions:", error)
-            }
-        }
-        fetchSubDivisions()
-    }, [storedUuid])
+			if (uuid) {
+				const decrypted = await decrypt(uuid);
+				setDecryptedUuid(decrypted);
+			}
+		};
+		fetchData();
+	}, []);
 
-    const filteredSubDivisions = subDivisionsData.filter((sub) => {
-        // Filter by division
-        const matchesDivision = selectedDivision
-            ? sub.divisions?.name?.toLowerCase() === selectedDivision.toLowerCase()
-            : true;
+	useEffect(() => {
+		const fetchDivisions = async () => {
+			if (!decryptedUuid) return;
+			try {
+				await api.getDivisionsByCompanyUuid(decryptedUuid);
+			} catch (error) {
+				console.error("Failed to fetch divisions:", error);
+			}
+		};
+		fetchDivisions();
+	}, [decryptedUuid]);
 
-        // Filter by search term
-        const term = searchTerm.toLowerCase();
-        const matchesSearch = sub.name.toLowerCase().includes(term) || (sub.desc?.toLowerCase() ?? "").includes(term);
+	useEffect(() => {
+		const fetchSubDivisions = async () => {
+			if (!decryptedUuid) return;
+			try {
+				await api.getSubDivisionsByCompanyUuid(decryptedUuid);
+			} catch (error) {
+				console.error("Failed to fetch sub-divisions:", error);
+			}
+		};
+		fetchSubDivisions();
+	}, [decryptedUuid]);
+
+	if (!hasMounted) {
+		return null;
+	}
+
+	const filteredSubDivisions = subDivisionsData.filter((sub) => {
+		// Filter by division
+		const matchesDivision = selectedDivision
+			? sub.divisions?.name?.toLowerCase() === selectedDivision.toLowerCase()
+			: true;
+
+		// Filter by search term
+		const term = searchTerm.toLowerCase();
+		const matchesSearch = sub.name.toLowerCase().includes(term) || (sub.desc?.toLowerCase() ?? "").includes(term);
 
         return matchesDivision && matchesSearch;
     });

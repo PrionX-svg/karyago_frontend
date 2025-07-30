@@ -1,56 +1,82 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Pencil, Trash, LayoutGrid, List, Search, Building2, Crown } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { useCompanyStore } from "@/stores/company-store"
-import { decrypt } from "@/lib/encrypt"
-import { api } from "@/lib/api/api"
-import { DivisionDialog } from "@/components/company-structure/division-form"
+import {useEffect, useState} from "react";
+import {Card, CardHeader, CardTitle, CardContent} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {
+	Pencil,
+	Trash,
+	LayoutGrid,
+	List,
+	Search,
+	Building2,
+	Crown,
+} from "lucide-react";
+import {Input} from "@/components/ui/input";
+import {useCompanyStore} from "@/stores/company-store"
+import {decrypt} from "@/lib/encrypt"
+import {api} from "@/lib/api/api"
+import {DivisionDialog} from "@/components/company-structure/division-form"
 import DeleteConfirmDialog from "@/components/company-structure/delete-confirm-dialog"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 
 export default function DivisionsPage() {
-    const [viewType, setViewType] = useState<"card" | "table">("table")
-    const [searchTerm, setSearchTerm] = useState("")
-    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-    const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
-    const divisionsData = useCompanyStore((state) => state.division)
-    const storedUuid = localStorage.getItem("atem")
+	const [decryptedUuid, setDecryptedUuid] = useState<string | null>(null);
+	const [hasMounted, setHasMounted] = useState(false);
+	const [viewType, setViewType] = useState<"card" | "table">("table");
+	const [searchTerm, setSearchTerm] = useState("");
+	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+	const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
+	const divisionsData = useCompanyStore((state) => state.division);
 
-    const handleDeleteClick = (uuid: string) => {
-        setSelectedDivision(uuid);
-        setIsDeleteOpen(true);
-    };
+	const handleDeleteClick = (uuid: string) => {
+		setSelectedDivision(uuid);
+		setIsDeleteOpen(true);
+	};
 
-    const handleConfirmDelete = async () => {
-        if (!selectedDivision) return;
-        try {
-            await api.deleteDivision(selectedDivision)
-                .then(() => toast.success("Division deleted successfully"))
-                .catch((error) => toast.error(`Failed to delete division: ${error.message}`))
-        } catch (error) {
-            console.error("Failed to delete division", error);
-        } finally {
-            setIsDeleteOpen(false);
-            setSelectedDivision(null);
-        }
-    };
-    useEffect(() => {
-        const fetchDivisions = async () => {
-            if (!storedUuid) return;
-            try {
-                const decryptedUuid = decrypt(storedUuid)
-                await api.getDivisionsByCompanyUuid(await decryptedUuid)
-            } catch (error) {
-                console.error("Error fetching divisions:", error)
-            }
-        }
-        fetchDivisions()
-    }, [storedUuid])
+	useEffect(() => {
+		const fetchData = async () => {
+			setHasMounted(true);
+			const uuid = localStorage.getItem("atem");
+
+			if (uuid) {
+				const decrypted = await decrypt(uuid);
+				setDecryptedUuid(decrypted);
+			}
+		};
+		fetchData();
+	}, []);
+
+	useEffect(() => {
+		const fetchDivisions = async () => {
+			if (!decryptedUuid) return;
+			try {
+				await api.getDivisionsByCompanyUuid(decryptedUuid);
+			} catch (error) {
+				console.error("Error fetching divisions:", error);
+			}
+		};
+		fetchDivisions();
+	}, [decryptedUuid]);
+
+	if (!hasMounted) {
+		return null;
+	}
+
+	const handleConfirmDelete = async () => {
+		if (!selectedDivision) return;
+		try {
+			await api.deleteDivision(selectedDivision)
+				.then(() => toast.success("Division deleted successfully"))
+				.catch((error) => toast.error(`Failed to delete division: ${error.message}`))
+		} catch (error) {
+			console.error("Failed to delete division", error);
+		} finally {
+			setIsDeleteOpen(false);
+			setSelectedDivision(null);
+		}
+	};
 
     const filteredDivisions = divisionsData.filter((division) => {
         const searchLower = searchTerm.toLowerCase()

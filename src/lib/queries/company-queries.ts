@@ -2,95 +2,118 @@ import { useState, useCallback, useEffect } from "react";
 import { api } from "../api/api";
 
 const company = {
-    useGetCompanyByUserUuid: (userUuid: string) => {
-        const [isFetchingCompany, setIsFetchingCompany] = useState(false);
+  useGetCompanyByUserUuid: (userUuid: string) => {
+    const [isFetchingCompany, setIsFetchingCompany] = useState(false);
 
-        const fetchCompanyByUserUuid = useCallback(async () => {
-            setIsFetchingCompany(true);
-            if (!userUuid) {
-                return;
-            }
-            try {
-                return await api.getCompanyByUserUuid(userUuid);
-            } catch (error) {
-                return Promise.reject(error);
-            } finally {
-                setIsFetchingCompany(false);
-            }
-        }, [userUuid])
+    const fetchCompanyByUserUuid = useCallback(async () => {
+      setIsFetchingCompany(true);
+      if (!userUuid) {
+        return;
+      }
+      try {
+        return await api.getCompanyByUserUuid(userUuid);
+      } catch (error) {
+        return Promise.reject(error);
+      } finally {
+        setIsFetchingCompany(false);
+      }
+    }, [userUuid]);
 
-        useEffect(() => {
-            fetchCompanyByUserUuid().catch((error) => console.error(error))
-        }, [fetchCompanyByUserUuid])
+    useEffect(() => {
+      fetchCompanyByUserUuid().catch((error) => console.error(error));
+    }, [fetchCompanyByUserUuid]);
 
-        return { fetchCompanyByUserUuid, isFetchingCompany }
-    },
-    useGetCompaniesByUserUuid: () => {
-        const [isFetchingCompanies, setIsFetchingCompanies] = useState(false);
-        
-        const fetchCompaniesByUserUuid = useCallback(async (userUuid: string) => {
-            setIsFetchingCompanies(true);
-            if (!userUuid) {
-                return;
-            }
-            try {
-                return await api.getCompaniesByUserUuid(userUuid);
-            } catch (error) {
-                return Promise.reject(error);
-            } finally {
-                setIsFetchingCompanies(false);
-            }
-        }, [])
+    return { fetchCompanyByUserUuid, isFetchingCompany };
+  },
+  useGetCompanyByUuid: (companyUuid: string) => {
+    const [isFetchingCompany, setIsFetchingCompany] = useState(false);
 
-        return { fetchCompaniesByUserUuid, isFetchingCompanies }
-    },
-    useGetBranchesByCompanyUuid: (companyUuid: string) => {
-        const [isFetchingBranches, setIsFetchingBranches] = useState(false);
+    const fetchCompanyByUuid = useCallback(async () => {
+      setIsFetchingCompany(true);
+      if (!companyUuid) {
+        return;
+      }
+      try {
+        return await api.getCompanyByUuid(companyUuid);
+      } catch (error) {
+        return Promise.reject(error);
+      } finally {
+        setIsFetchingCompany(false);
+      }
+    }, [companyUuid]);
 
-        const fetchBranchesByCompanyUuid = useCallback(async () => {
-            setIsFetchingBranches(true);
-            if (!companyUuid) {
-                return;
-            }
-            try {
-                return await api.getBranchesByCompanyUuid(companyUuid);
-            } catch (error) {
-                return Promise.reject(error);
-            } finally {
-                setIsFetchingBranches(false);
-            }
-        }, [companyUuid])
+    useEffect(() => {
+      fetchCompanyByUuid().catch((error) => console.error(error));
+    }, [fetchCompanyByUuid]);
 
-        useEffect(() => {
-            fetchBranchesByCompanyUuid().catch((error) => console.error(error))
-        }, [fetchBranchesByCompanyUuid])
+    return { fetchCompanyByUuid, isFetchingCompany };
+  },
+  useGetCompaniesByUserUuid: () => {
+    const [isFetchingCompanies, setIsFetchingCompanies] = useState(false);
 
-        return { fetchBranchesByCompanyUuid, isFetchingBranches }
-    },
-    useGetDivisions: (companyUuid: string) => {
-        const [isFetchingDivisions, setIsFetchingDivisions] = useState(false);
+    const fetchCompaniesByUserUuid = useCallback(async (userUuid: string) => {
+      setIsFetchingCompanies(true);
+      if (!userUuid) {
+        return;
+      }
+      try {
+        return await api.getCompaniesByUserUuid(userUuid);
+      } catch (error) {
+        return Promise.reject(error);
+      } finally {
+        setIsFetchingCompanies(false);
+      }
+    }, []);
 
-        const fetchDivisions = useCallback(async () => {
-            setIsFetchingDivisions(true);
-            if (!companyUuid) {
-                return;
-            }
-            try {
-                return await api.getDivisionsByCompanyUuid(companyUuid);
-            } catch (error) {
-                return Promise.reject(error);
-            } finally {
-                setIsFetchingDivisions(false);
-            }
-        }, [companyUuid])
+    return { fetchCompaniesByUserUuid, isFetchingCompanies };
+  },
+  useGetBranchesByCompanyUuid: (companyUuid: string) => {
+    const [isFetchingBranches, setIsFetchingBranches] = useState(false);
 
-        useEffect(() => {
-            fetchDivisions().catch((error) => console.error(error))
-        }, [fetchDivisions])
+    const fetchBranchesByCompanyUuid = useCallback(async () => {
+      setIsFetchingBranches(true);
+      if (!companyUuid) {
+        return;
+      }
+      try {
+        return await api.getBranchesByCompanyUuid(companyUuid);
+      } catch (error) {
+        return Promise.reject(error);
+      } finally {
+        setIsFetchingBranches(false);
+      }
+    }, [companyUuid]);
 
-        return { fetchDivisions, isFetchingDivisions }
-    },
-    useDeleteDivision: (divisionUuid: string) => {
+    useEffect(() => {
+      fetchBranchesByCompanyUuid().catch((error) => console.error(error));
+    }, [fetchBranchesByCompanyUuid]);
+
+    return { fetchBranchesByCompanyUuid, isFetchingBranches };
+  },
+  useGetDivisions: (companyUuid: string) => {
+    const [isFetchingDivisions, setIsFetchingDivisions] = useState(false);
+
+    const fetchDivisions = useCallback(async () => {
+      setIsFetchingDivisions(true);
+      if (!companyUuid) {
+        return;
+      }
+      try {
+        return await api.getDivisionsByCompanyUuid(companyUuid);
+      } catch (error) {
+        return Promise.reject(error);
+      } finally {
+        setIsFetchingDivisions(false);
+      }
+    }, [companyUuid]);
+
+    useEffect(() => {
+      fetchDivisions().catch((error) => console.error(error));
+    }, [fetchDivisions]);
+
+    return { fetchDivisions, isFetchingDivisions };
+  },
+  useDeleteDivision: (divisionUuid: string) => {
         const [isDeletingDivision, setIsDeletingDivision] = useState(false);
 
         const deleteDivision = useCallback(async () => {
@@ -108,30 +131,29 @@ const company = {
         }, [divisionUuid])
 
         return { deleteDivision, isDeletingDivision }
-    },
-    useGetSubDivisions: (companyUuid: string) => {
-        const [isFetchingSubDivisions, setIsFetchingSubDivisions] = useState(false);
+    },useGetSubDivisions: (companyUuid: string) => {
+    const [isFetchingSubDivisions, setIsFetchingSubDivisions] = useState(false);
 
-        const fetchSubDivisions = useCallback(async () => {
-            setIsFetchingSubDivisions(true);
-            if (!companyUuid) {
-                return;
-            }
-            try {
-                return await api.getSubDivisionsByCompanyUuid(companyUuid);
-            } catch (error) {
-                return Promise.reject(error);
-            } finally {
-                setIsFetchingSubDivisions(false);
-            }
-        }, [companyUuid])
+    const fetchSubDivisions = useCallback(async () => {
+      setIsFetchingSubDivisions(true);
+      if (!companyUuid) {
+        return;
+      }
+      try {
+        return await api.getSubDivisionsByCompanyUuid(companyUuid);
+      } catch (error) {
+        return Promise.reject(error);
+      } finally {
+        setIsFetchingSubDivisions(false);
+      }
+    }, [companyUuid]);
 
-        useEffect(() => {
-            fetchSubDivisions().catch((error) => console.error(error))
-        }, [fetchSubDivisions])
+    useEffect(() => {
+      fetchSubDivisions().catch((error) => console.error(error));
+    }, [fetchSubDivisions]);
 
-        return { fetchSubDivisions, isFetchingSubDivisions }
-    }
-}
+    return { fetchSubDivisions, isFetchingSubDivisions };
+  },
+};
 
 export default company;

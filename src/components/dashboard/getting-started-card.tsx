@@ -7,7 +7,6 @@ interface GettingStartedCardProps {
   title: string;
   description: string;
   icon: "task" | "clock" | "document";
-  color: "blue" | "purple" | "green";
 }
 
 const iconMap = {
@@ -16,36 +15,19 @@ const iconMap = {
   document: FileText,
 };
 
-const colorMap = {
-  blue: "bg-feature-task/10 text-feature-task border-feature-task/20",
-  purple:
-    "bg-feature-time-off/10 text-feature-time-off border-feature-time-off/20",
-  green: "bg-feature-payroll/10 text-feature-payroll border-feature-payroll/20",
-};
-
-const cardTypeMap = {
-  blue: "feature-card-task",
-  purple: "feature-card-time-off",
-  green: "feature-card-payroll",
-};
-
 export function GettingStartedCard({
   title,
   description,
   icon,
-  color,
 }: GettingStartedCardProps) {
   const Icon = iconMap[icon];
 
   return (
-    <Card
-      className={cn("p-0 feature-card card-hover-lift rounded-sm", cardTypeMap[color])}
-    >
+    <Card className={cn("p-0 rounded-sm")}>
       <CardContent className="p-6 space-y-4">
         <div
           className={cn(
-            "w-12 h-12 rounded-lg flex items-center justify-center border",
-            colorMap[color]
+            "w-12 h-12 rounded-lg flex items-center justify-center border"
           )}
         >
           <Icon className="w-6 h-6" />
