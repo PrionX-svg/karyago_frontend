@@ -21,6 +21,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   previewUrl,
   disabled,
 }) => {
+  const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(previewUrl || null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -78,11 +79,26 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     }
   };
 
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
   return (
     <div
-      className="relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 border-gray-300 hover:border-orange-300 hover:bg-orange-50/50"
+      className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 border-gray-300 dark:border-stone-700 dark:hover:border-orange-300 hover:border-orange-300 hover:bg-orange-50/50 dark:hover:bg-orange-900/10 ${
+        dragActive &&
+        "bg-orange-50 dark:bg-orange-900/20 !dark:border-orange-400 !border-orange-400"
+      }`}
+      onDragEnter={handleDrag}
+      onDragLeave={handleDrag}
+      onDragOver={handleDrag}
       onDrop={handleDrop}
-      onDragOver={(e) => e.preventDefault()}
       style={{
         cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled ? 0.6 : 1,
@@ -98,7 +114,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       />
       <div className="space-y-3">
         {!preview && (
-          <div className="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+          <div className="mx-auto w-12 h-12 bg-orange-100 dark:bg-slate-100/10 rounded-lg flex items-center justify-center">
             <Upload className="h-6 w-6 text-orange-600" />
           </div>
         )}
@@ -132,7 +148,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           </div>
         ) : (
           <div className="space-y-2">
-            <p className="font-medium text-gray-700">
+            <p className="font-medium text-gray-700 dark:text-foreground/70">
               Drop your logo here, or click to browse
             </p>
             <p className="text-sm text-gray-500">PNG, JPG up to 10MB</p>

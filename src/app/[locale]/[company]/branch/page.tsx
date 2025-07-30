@@ -182,31 +182,22 @@ export default function BranchPage() {
   }
 
   return (
-    <>
-      <div className="p-6 mx-auto">
+    <div className="min-h-screen">
+      <div className="bg-background">
         {/* Enhanced Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex flex-col space-y-2">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Building2 className="h-6 w-6 text-primary" />
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-card rounded-xl border border-purple-200 dark:border-stone-700">
+              <Building2 className="w-6 h-6 text-orange-600 dark:text-orange-500" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">
                 Branch Management
               </h1>
+              <p className="mt-1 text-gray-600 dark:text-muted-foreground">
+                Manage and organize your company locations efficiently
+              </p>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">
-              Manage and organize your company locations efficiently
-            </p>
-            {companyBranches.length > 0 && (
-              <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-                <span className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  {companyBranches.length} active{" "}
-                  {companyBranches.length === 1 ? "branch" : "branches"}
-                </span>
-              </div>
-            )}
           </div>
           <AddBranchDialog
             open={open}
@@ -269,7 +260,7 @@ export default function BranchPage() {
                       variant="secondary"
                       size="sm"
                       onClick={() => handleEditBranch(branch)}
-                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-lg"
+                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white dark:bg-slate-200/60 shadow-lg"
                     >
                       <Edit3 className="h-4 w-4" />
                     </Button>
@@ -419,6 +410,6 @@ export default function BranchPage() {
         handleSubmit={handleUpdateSubmit}
         isUpdating={isUpdatingBranch}
       />
-    </>
+    </div>
   );
 }
