@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Building2 } from "lucide-react";
 import {
   Dialog,
@@ -36,6 +37,7 @@ export function AddBranchDialog({
   handleSubmit,
   setForm,
 }: AddBranchDialogProps) {
+  const t = useTranslations("branchPage");
   // Track last uploaded image file name to delete on dialog close
   const lastImageRef = useRef<string | null>(null);
 
@@ -70,17 +72,17 @@ export function AddBranchDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="default">Add Branch</Button>
+        <Button variant="default">{t("addBranch")}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden">
         <div className="flex flex-col items-center py-6 px-6 bg-gradient-to-br from-gray-50 to-white dark:from-stone-900 dark:to-stone-950">
           <Building2 size={40} className="mb-2 text-primary" />
           <DialogHeader className="w-full items-center text-center mb-2">
             <DialogTitle className="text-xl font-bold">
-              Add New Branch
+              {t("addNewBranch")}
             </DialogTitle>
             <DialogDescription className="text-gray-500 dark:text-gray-400">
-              Fill in the details to create a new branch.
+              {t("addBranchDescription")}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="w-full space-y-4 mt-2">
@@ -89,12 +91,12 @@ export function AddBranchDialog({
                 htmlFor="name"
                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Branch Name
+                {t("branchName")}
               </label>
               <Input
                 id="name"
                 name="name"
-                placeholder="e.g. Jakarta Office"
+                placeholder={t("branchNamePlaceholder")}
                 value={form.name}
                 onChange={handleInput}
                 required
@@ -106,12 +108,12 @@ export function AddBranchDialog({
                 htmlFor="address"
                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Address
+                {t("address")}
               </label>
               <Input
                 id="address"
                 name="address"
-                placeholder="e.g. Jl. Sudirman No. 1"
+                placeholder={t("addressPlaceholder")}
                 value={form.address}
                 onChange={handleInput}
                 required
@@ -122,13 +124,13 @@ export function AddBranchDialog({
                 htmlFor="email"
                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Email
+                {t("email")}
               </label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="e.g. branch@email.com"
+                placeholder={t("emailPlaceholder")}
                 value={form.email}
                 onChange={handleInput}
                 required
@@ -139,12 +141,12 @@ export function AddBranchDialog({
                 htmlFor="phone"
                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Phone
+                {t("phone")}
               </label>
               <Input
                 id="phone"
                 name="phone"
-                placeholder="e.g. 0812-3456-7890"
+                placeholder={t("phonePlaceholder")}
                 value={form.phone}
                 onChange={handleInput}
                 required
@@ -152,7 +154,7 @@ export function AddBranchDialog({
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Branch Image
+                {t("branchImage")}
               </label>
               <FileDropUploader
                 folder="/branch-images"
@@ -163,7 +165,7 @@ export function AddBranchDialog({
             </div>
             <DialogFooter className="mt-4">
               <Button type="submit" variant="default" className="w-full">
-                Create Branch
+                {t("createBranch")}
               </Button>
             </DialogFooter>
           </form>

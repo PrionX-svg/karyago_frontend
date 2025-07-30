@@ -3,6 +3,7 @@ import { Upload, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 type FileUploaderProps = {
   value?: string | null; // file name or url
@@ -21,6 +22,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   previewUrl,
   disabled,
 }) => {
+  const t = useTranslations('branchPage');
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(previewUrl || null);
@@ -41,11 +43,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     const f = e.target.files?.[0];
     if (!f) return;
     if (!f.type.startsWith("image/")) {
-      alert("Only image files are allowed.");
+      alert(t("onlyImageFiles"));
       return;
     }
     if (f.size > 10 * 1024 * 1024) {
-      alert("File size must be less than 10MB.");
+      alert(t("fileSizeLimit"));
       return;
     }
     setFile(f);
@@ -66,11 +68,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     const f = e.dataTransfer.files[0];
     if (f) {
       if (!f.type.startsWith("image/")) {
-        alert("Only image files are allowed.");
+        alert(t("onlyImageFiles"));
         return;
       }
       if (f.size > 10 * 1024 * 1024) {
-        alert("File size must be less than 10MB.");
+        alert(t("fileSizeLimit"));
         return;
       }
       setFile(f);
@@ -143,15 +145,15 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               </Button>
             </div>
             <p className="text-sm text-gray-600 text-center">
-              Click to change or drag a new image
+              {t("clickChange")}
             </p>
           </div>
         ) : (
           <div className="space-y-2">
             <p className="font-medium text-gray-700 dark:text-foreground/70">
-              Drop your logo here, or click to browse
+              {t("dropLogo")}
             </p>
-            <p className="text-sm text-gray-500">PNG, JPG up to 10MB</p>
+            <p className="text-sm text-gray-500">{t("pngJpgMax")}</p>
           </div>
         )}
       </div>

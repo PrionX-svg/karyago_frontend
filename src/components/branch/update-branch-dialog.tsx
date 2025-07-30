@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useTranslations } from "next-intl";
 import FileUploader from "./FileUploader";
 
 interface UpdateBranchDialogProps {
@@ -37,6 +38,7 @@ export function UpdateBranchDialog({
   setForm,
   isUpdating,
 }: UpdateBranchDialogProps) {
+  const t = useTranslations('branchPage');
   // File state for deferred upload
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(
@@ -76,10 +78,10 @@ export function UpdateBranchDialog({
         <div className="flex flex-col items-center py-6 px-6 bg-gradient-to-br from-gray-50 to-white dark:from-stone-900 dark:to-stone-950">
           <DialogHeader className="w-full items-center text-center mb-2">
             <DialogTitle className="text-xl font-bold">
-              Update Branch
+              {t("updateBranch")}
             </DialogTitle>
             <DialogDescription className="text-gray-500 dark:text-gray-400">
-              Edit the details of this branch.
+              {t("editBranchDetails")}
             </DialogDescription>
           </DialogHeader>
           <form
@@ -112,12 +114,12 @@ export function UpdateBranchDialog({
                 htmlFor="name"
                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Branch Name
+                {t("branchName")}
               </label>
               <Input
                 id="name"
                 name="name"
-                placeholder="e.g. Jakarta Office"
+                placeholder={t("branchNamePlaceholder")}
                 value={form.name}
                 onChange={handleInput}
                 required
@@ -129,12 +131,12 @@ export function UpdateBranchDialog({
                 htmlFor="address"
                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Address
+                {t("address")}
               </label>
               <Input
                 id="address"
                 name="address"
-                placeholder="e.g. Jl. Sudirman No. 1"
+                placeholder={t("addressPlaceholder")}
                 value={form.address}
                 onChange={handleInput}
                 required
@@ -145,13 +147,13 @@ export function UpdateBranchDialog({
                 htmlFor="email"
                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Email
+                {t("email")}
               </label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="e.g. branch@email.com"
+                placeholder={t("emailPlaceholder")}
                 value={form.email}
                 onChange={handleInput}
                 required
@@ -162,12 +164,12 @@ export function UpdateBranchDialog({
                 htmlFor="phone"
                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Phone
+                {t("phone")}
               </label>
               <Input
                 id="phone"
                 name="phone"
-                placeholder="e.g. 0812-3456-7890"
+                placeholder={t("phonePlaceholder")}
                 value={form.phone}
                 onChange={handleInput}
                 required
@@ -175,7 +177,7 @@ export function UpdateBranchDialog({
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Branch Image
+                {t("branchImage")}
               </label>
               <FileUploader
                 value={selectedFile ? undefined : form.image || null}
@@ -191,7 +193,7 @@ export function UpdateBranchDialog({
                 className="w-full"
                 disabled={isUpdating}
               >
-                {isUpdating ? "Updating..." : "Update Branch"}
+                {isUpdating ? t("updating") : t("updateBranchButton")}
               </Button>
             </DialogFooter>
           </form>
