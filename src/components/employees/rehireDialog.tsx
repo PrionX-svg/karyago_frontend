@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { EmployeeType } from "@/lib/types/employee-type"
 import { decrypt } from "@/lib/encrypt"
 import { api } from "@/lib/api/api"
+import { useTranslations } from "next-intl"
 
 interface RehireEmployeeDialogProps {
     employeeData: EmployeeType
@@ -48,35 +49,34 @@ export function RehireEmployeeDialog({
         }
     }
 
+    const rh = useTranslations("rehireDialog")
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            {/* Trigger button */}
             <DialogTrigger asChild>
                 <Button className="bg-green-600 hover:bg-green-700 gap-2">
                     <RefreshCw className="w-4 h-4" />
-                    {triggerLabel}
+                    {triggerLabel || rh("submit")}
                 </Button>
             </DialogTrigger>
 
-            {/* Dialog content */}
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-green-700">
                         <RefreshCw className="w-5 h-5" />
-                        Rehire Employee
+                        {rh("title")}
                     </DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4 mt-2">
                     <p className="text-sm text-gray-600">
-                        Apakah Anda yakin ingin merekrut kembali <b>{employeeData.email}</b>? <br />
-                        Harap ketik nama/email karyawan untuk konfirmasi.
+                        {rh("confirmDesc", { email: employeeData.email })}
                     </p>
 
                     <div className="space-y-2">
-                        <Label>Konfirmasi Nama/Email</Label>
+                        <Label>{rh("confirmPlaceholder", { email: employeeData.email })}</Label>
                         <Input
-                            placeholder={`Ketik: ${employeeData.email}`}
+                            placeholder={rh("confirmPlaceholder", { email: employeeData.email })}
                             value={confirmText}
                             onChange={(e) => setConfirmText(e.target.value)}
                         />
@@ -84,19 +84,16 @@ export function RehireEmployeeDialog({
 
                     <div className="flex justify-end gap-3 pt-4">
                         <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
-                            Cancel
+                            {rh("cancel")}
                         </Button>
-                        <Button
-                            type="submit"
-                            disabled={!isConfirmed || loading}
-                            className="bg-green-600 hover:bg-green-700"
-                        >
+                        <Button type="submit" disabled={!isConfirmed || loading} className="bg-green-600 hover:bg-green-700">
                             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                            Rehire
+                            {rh("submit")}
                         </Button>
                     </div>
                 </form>
             </DialogContent>
         </Dialog>
+
     )
 }

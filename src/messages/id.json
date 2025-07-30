@@ -410,5 +410,45 @@
         "terminated": "Berhenti",
         "terminationDate": "Tanggal Berhenti",
         "reason": "Alasan"
+    },
+    "employeesDialog": {
+        "createTitle": "Buat Akun Karyawan",
+        "editTitle": "Perbarui Karyawan",
+        "firstName": "Nama Depan",
+        "lastName": "Nama Belakang",
+        "phone": "Nomor Telepon",
+        "dob": "Tanggal Lahir",
+        "gender": "Jenis Kelamin",
+        "genderPlaceholder": "Pilih Jenis Kelamin",
+        "male": "Laki-laki",
+        "female": "Perempuan",
+        "isFreelance": "Freelance",
+        "email": "Email",
+        "password": "Kata Sandi",
+        "generatePassword": "Buat Kata Sandi",
+        "cancel": "Batal",
+        "save": "Simpan",
+        "createSuccess": "Karyawan berhasil dibuat",
+        "createFailed": "Gagal membuat karyawan",
+        "updateSuccess": "Karyawan berhasil diperbarui",
+        "updateFailed": "Gagal memperbarui karyawan"
+    },
+    "rehireDialog": {
+        "title": "Rekrut Ulang Karyawan",
+        "confirmDesc": "Apakah Anda yakin ingin merekrut ulang {email}? Silakan ketik email karyawan untuk konfirmasi.",
+        "confirmPlaceholder": "Ketik: {email}",
+        "cancel": "Batal",
+        "submit": "Rekrut Ulang",
+        "success": "Karyawan berhasil direkrut ulang",
+        "failed": "Gagal merekrut ulang karyawan"
+    },
+    "terminateDialog": {
+        "title": "Berhentikan Karyawan",
+        "confirmDesc": "Apakah Anda yakin ingin memberhentikan {email}? Tindakan ini tidak dapat dibatalkan. Silakan masukkan email karyawan dan alasan untuk melanjutkan.",
+        "reasonLabel": "Alasan",
+        "reasonPlaceholder": "Masukkan alasan pemberhentian...",
+        "confirmPlaceholder": "Ketik: {email}",
+        "cancel": "Batal",
+        "submit": "Berhentikan"
     }
 }

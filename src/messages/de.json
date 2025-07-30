@@ -410,5 +410,45 @@
     "terminated": "Beendet",
     "terminationDate": "Beendigungsdatum",
     "reason": "Grund"
+  },
+  "employeesDialog": {
+    "createTitle": "Mitarbeiterkonto erstellen",
+    "editTitle": "Mitarbeiter aktualisieren",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "phone": "Telefon",
+    "dob": "Geburtsdatum",
+    "gender": "Geschlecht",
+    "genderPlaceholder": "Geschlecht auswählen",
+    "male": "Männlich",
+    "female": "Weiblich",
+    "isFreelance": "Freiberufler",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "generatePassword": "Passwort generieren",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "createSuccess": "Mitarbeiter erfolgreich erstellt",
+    "createFailed": "Mitarbeiter konnte nicht erstellt werden",
+    "updateSuccess": "Mitarbeiter erfolgreich aktualisiert",
+    "updateFailed": "Mitarbeiter konnte nicht aktualisiert werden"
+  },
+  "rehireDialog": {
+    "title": "Mitarbeiter wieder einstellen",
+    "confirmDesc": "Möchten Sie {email} wirklich wieder einstellen? Bitte geben Sie die E-Mail des Mitarbeiters zur Bestätigung ein.",
+    "confirmPlaceholder": "Eingeben: {email}",
+    "cancel": "Abbrechen",
+    "submit": "Wieder einstellen",
+    "success": "Mitarbeiter erfolgreich wieder eingestellt",
+    "failed": "Mitarbeiter konnte nicht wieder eingestellt werden"
+  },
+  "terminateDialog": {
+    "title": "Mitarbeiter kündigen",
+    "confirmDesc": "Möchten Sie {email} wirklich kündigen? Diese Aktion kann nicht rückgängig gemacht werden. Bitte geben Sie die E-Mail des Mitarbeiters und den Grund ein, um fortzufahren.",
+    "reasonLabel": "Grund",
+    "reasonPlaceholder": "Kündigungsgrund eingeben...",
+    "confirmPlaceholder": "Eingeben: {email}",
+    "cancel": "Abbrechen",
+    "submit": "Kündigen"
   }
 }

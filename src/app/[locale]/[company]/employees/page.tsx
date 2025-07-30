@@ -22,6 +22,7 @@ export default function EmployeePage() {
     const [selectedEmployee, setSelectedEmployee] = useState<EmployeeType | null>(null)
 
     const employeesData = useEmployeeStore((state) => state.employees)
+    const terminatedEmployees = useEmployeeStore((state) => state.terminatedEmployees)
     const storedUuid = localStorage.getItem("atem")
 
     const handleDeleteClick = (employee: EmployeeType) => {
@@ -53,8 +54,6 @@ export default function EmployeePage() {
             employee.phone?.toLowerCase().includes(searchLower)
         );
     });
-    const terminatedEmployees = employeesData.filter(e => e.termination && e.termination.reason && e.termination.date)
-
 
     useEffect(() => {
         const fetchDivisions = async () => {

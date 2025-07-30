@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useTranslations } from "next-intl"
 
 interface TerminateEmployeeDialogProps {
     isOpen: boolean
@@ -38,6 +39,8 @@ export default function TerminateEmployeeDialog({
         }
     }
 
+    const td = useTranslations("terminateDialog")
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[500px] bg-white/95 backdrop-blur-sm border-red-200">
@@ -46,32 +49,28 @@ export default function TerminateEmployeeDialog({
                         <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
                             <AlertTriangle className="w-5 h-5 text-red-600" />
                         </div>
-                        <div>
-                            <DialogTitle className="text-lg font-semibold text-red-900">
-                                Terminate Employee
-                            </DialogTitle>
-                        </div>
+                        <DialogTitle className="text-lg font-semibold text-red-900">
+                            {td("title")}
+                        </DialogTitle>
                     </div>
                     <DialogDescription className="text-sm text-muted-foreground mt-2">
-                        Anda yakin ingin mengakhiri hubungan kerja dengan <b>{employeeNameOrEmail}</b>?
-                        Tindakan ini tidak dapat dibatalkan.
-                        Harap masukkan nama/email karyawan dan alasan penghentian untuk melanjutkan.
+                        {td("confirmDesc", { email: employeeNameOrEmail })}
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 mt-4">
                     <div className="space-y-2">
-                        <Label>Alasan</Label>
+                        <Label>{td("reasonLabel")}</Label>
                         <Input
-                            placeholder="Masukkan alasan penghentian..."
+                            placeholder={td("reasonPlaceholder")}
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label>Konfirmasi Nama/Email</Label>
+                        <Label>{td("confirmPlaceholder", { email: employeeNameOrEmail })}</Label>
                         <Input
-                            placeholder={`Ketik: ${employeeNameOrEmail}`}
+                            placeholder={td("confirmPlaceholder", { email: employeeNameOrEmail })}
                             value={confirmText}
                             onChange={(e) => setConfirmText(e.target.value)}
                         />
@@ -79,13 +78,8 @@ export default function TerminateEmployeeDialog({
                 </div>
 
                 <DialogFooter className="gap-2 mt-6">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={onClose}
-                        className="border-gray-200 hover:bg-gray-50 bg-transparent"
-                    >
-                        Cancel
+                    <Button type="button" variant="outline" onClick={onClose}>
+                        {td("cancel")}
                     </Button>
                     <Button
                         type="button"
@@ -94,7 +88,7 @@ export default function TerminateEmployeeDialog({
                         onClick={handleConfirm}
                         className="bg-red-600 hover:bg-red-700"
                     >
-                        Terminate
+                        {td("submit")}
                     </Button>
                 </DialogFooter>
             </DialogContent>

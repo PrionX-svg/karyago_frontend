@@ -426,5 +426,45 @@
     "terminated": "Terminated",
     "terminationDate": "Termination Date",
     "reason": "Reason"
+  },
+  "employeesDialog": {
+    "createTitle": "Create Employee Account",
+    "editTitle": "Update Employee",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone",
+    "dob": "Date of Birth",
+    "gender": "Gender",
+    "genderPlaceholder": "Select gender",
+    "male": "Male",
+    "female": "Female",
+    "isFreelance": "Freelance",
+    "email": "Email",
+    "password": "Password",
+    "generatePassword": "Generate Password",
+    "cancel": "Cancel",
+    "save": "Save",
+    "createSuccess": "Employee created successfully",
+    "createFailed": "Failed to create employee",
+    "updateSuccess": "Employee updated successfully",
+    "updateFailed": "Failed to update employee"
+  },
+  "rehireDialog": {
+    "title": "Rehire Employee",
+    "confirmDesc": "Are you sure you want to rehire {email}? Please type the employee's email to confirm.",
+    "confirmPlaceholder": "Type: {email}",
+    "cancel": "Cancel",
+    "submit": "Rehire",
+    "success": "Employee rehired successfully",
+    "failed": "Failed to rehire employee"
+  },
+  "terminateDialog": {
+    "title": "Terminate Employee",
+    "confirmDesc": "Are you sure you want to terminate {email}? This action cannot be undone. Please enter the employee's email and reason to proceed.",
+    "reasonLabel": "Reason",
+    "reasonPlaceholder": "Enter termination reason...",
+    "confirmPlaceholder": "Type: {email}",
+    "cancel": "Cancel",
+    "submit": "Terminate"
   }
 }
