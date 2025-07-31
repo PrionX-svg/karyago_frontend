@@ -28,10 +28,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { useTranslations } from "next-intl";
 
 export default function BranchPage() {
-  const t = useTranslations('branchPage');
   // Delete Branch Dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [branchToDelete, setBranchToDelete] =
@@ -184,22 +182,31 @@ export default function BranchPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="bg-background">
+    <>
+      <div className="p-6 mx-auto">
         {/* Enhanced Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-card rounded-xl border border-purple-200 dark:border-stone-700">
-              <Building2 className="w-6 h-6 text-orange-600 dark:text-orange-500" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">
-                {t('title')}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Building2 className="h-6 w-6 text-primary" />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Branch Management
               </h1>
-              <p className="mt-1 text-gray-600 dark:text-muted-foreground">
-                {t('description')}
-              </p>
             </div>
+            <p className="text-gray-600 dark:text-gray-400 text-lg">
+              Manage and organize your company locations efficiently
+            </p>
+            {companyBranches.length > 0 && (
+              <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                <span className="flex items-center">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                  {companyBranches.length} active{" "}
+                  {companyBranches.length === 1 ? "branch" : "branches"}
+                </span>
+              </div>
+            )}
           </div>
           <AddBranchDialog
             open={open}
@@ -250,7 +257,7 @@ export default function BranchPage() {
                       <div className="text-center">
                         <ImageIcon className="h-12 w-12 text-slate-400 mx-auto mb-2" />
                         <span className="text-sm text-slate-500 dark:text-slate-400">
-                          {t('noImageAvailable')}
+                          No image available
                         </span>
                       </div>
                     </div>
@@ -262,8 +269,7 @@ export default function BranchPage() {
                       variant="secondary"
                       size="sm"
                       onClick={() => handleEditBranch(branch)}
-                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white dark:bg-slate-200/60 shadow-lg"
-                      aria-label={t('edit')}
+                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-lg"
                     >
                       <Edit3 className="h-4 w-4" />
                     </Button>
@@ -275,7 +281,6 @@ export default function BranchPage() {
                         setDeleteDialogOpen(true);
                       }}
                       className="h-8 w-8 p-0 shadow-lg"
-                      aria-label={t('delete')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -323,7 +328,7 @@ export default function BranchPage() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors duration-200 group/link"
                     >
-                      <span className="text-sm font-medium">{t('viewOnMaps')}</span>
+                      <span className="text-sm font-medium">View on Maps</span>
                       <ExternalLink className="h-3 w-3 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform duration-200" />
                     </a>
                   </div>
@@ -342,10 +347,11 @@ export default function BranchPage() {
 
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                      {t('noBranchesYet')}
+                      No branches yet
                     </h3>
                     <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                      {t('noBranchesDescription')}
+                      Start building your business presence by adding your first
+                      branch location.
                     </p>
                   </div>
 
@@ -355,7 +361,7 @@ export default function BranchPage() {
                     className="bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-200"
                   >
                     <Plus className="h-5 w-5 mr-2" />
-                    {t('createFirstBranch')}
+                    Create First Branch
                   </Button>
                 </div>
               </Card>
@@ -373,10 +379,15 @@ export default function BranchPage() {
               </div>
             </div>
             <DialogTitle className="text-center text-xl">
-              {t('deleteBranch')}
+              Delete Branch
             </DialogTitle>
             <DialogDescription className="text-center text-base">
-              {branchToDelete && t('deleteBranchDescription', { branchName: branchToDelete.name })}
+              Are you sure you want to delete{" "}
+              <span className="font-semibold text-gray-900 dark:text-white">
+                {branchToDelete?.name}
+              </span>
+              ? This action cannot be undone and will permanently remove all
+              branch data.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-3 sm:gap-3">
@@ -386,7 +397,7 @@ export default function BranchPage() {
               disabled={isDeletingBranch}
               className="flex-1"
             >
-              {t('cancel')}
+              Cancel
             </Button>
             <Button
               variant="destructive"
@@ -394,7 +405,7 @@ export default function BranchPage() {
               disabled={isDeletingBranch}
               className="flex-1"
             >
-              {isDeletingBranch ? t('deleting') : t('deleteBranchButton')}
+              {isDeletingBranch ? "Deleting..." : "Delete Branch"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -408,6 +419,6 @@ export default function BranchPage() {
         handleSubmit={handleUpdateSubmit}
         isUpdating={isUpdatingBranch}
       />
-    </div>
+    </>
   );
 }
