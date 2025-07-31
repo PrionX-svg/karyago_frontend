@@ -192,6 +192,8 @@ export const api = {
                 const formattedEmployee = responseFormatter.formatCreateEmployeeResponse(response.data);
                 addEmployee(formattedEmployee);
                 return formattedEmployee;
+            } else {
+                throw new Error("Failed to create employee");
             }
         } catch (error) {
             return Promise.reject(error)
@@ -203,7 +205,7 @@ export const api = {
             const response = await patchAPI({ department_uuid: data.uuid }, `${API_URL.assignEmployeeToSubDivision}${userUuid}`);
             if (response.status === 200) {
                 updateEmployee({
-                    ...response.data,
+                    user_uuid: userUuid,
                     subDivision: {
                         uuid: data.uuid,
                         name: data.name,

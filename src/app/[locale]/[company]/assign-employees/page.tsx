@@ -16,6 +16,7 @@ export default function AssignEmployeePage() {
 
     const employeesData = useEmployeeStore((state) => state.employees)
     const storedUuid = localStorage.getItem("atem")
+    const em = useTranslations("assignEmployees")
 
     const filteredEmployees = employeesData.filter((employee) => {
         if (employee.termination) return false;
@@ -40,7 +41,10 @@ export default function AssignEmployeePage() {
         fetchEmployees()
     }, [storedUuid])
 
-    const em = useTranslations("assignEmployees")
+    useEffect(() => {
+        console.log("Employee Data:", employeesData)
+    }, [employeesData])
+
 
     return (
         <div className="min-h-screen">

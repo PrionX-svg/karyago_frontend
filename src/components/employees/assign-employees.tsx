@@ -9,6 +9,7 @@ import { useCompanyStore } from "@/stores/company-store"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { api } from "@/lib/api/api"
 import { decrypt } from "@/lib/encrypt"
+import { toast } from "sonner"
 
 type EmployeeDialogProps = {
     employee: EmployeeType
@@ -25,8 +26,13 @@ export function AssignEmployeeDialog({ employee, mode, storedUuid }: EmployeeDia
     const handleAction = async () => {
         if (mode === "assign") {
             const parsed = JSON.parse(selectedSubDivision);
-            console.log("Assign employee:", parsed);
-            await api.assignEmployeeToSubDivision(employee.user_uuid, parsed);
+            await api.assignEmployeeToSubDivision(employee.user_uuid, parsed)
+            .then(() => {
+                toast.success("Employee assigned successfully!");
+            })
+            .catch(() => {
+                toast.error("Failed to assign employee.");
+            });
         } else {
             console.log("Remove employee:", employee.user_uuid);
         }
