@@ -419,6 +419,8 @@
     "employeeEmail": "Employee Email",
     "employeePhone": "Employee Phone",
     "freelanceStatus": "Freelance Status",
+    "employeeDepartment": "Employee Department",
+    "unassigned": "Unassigned",
     "freelance": "Freelance",
     "employee": "Employee",
     "actions": "Actions",
@@ -504,5 +506,45 @@
     "addNewBranch": "Add New Branch",
     "addBranchDescription": "Fill in the details to create a new branch.",
     "createBranch": "Create Branch"
+  },
+  "assignEmployeeDialog": {
+    "assignButton": "Assign",
+    "assignTitle": "Assign {name} to a Sub-Division",
+    "assignDescription": "Please select a sub-division to assign this employee.",
+    "cancel": "Cancel",
+    "confirmAssign": "Confirm Assignment"
+  },
+  "assignEmployees": {
+    "assignTitle": "Assign Employees",
+    "assignDescription": "Assign employees to sub-divisions",
+    "selectSubDivision": "Select Sub-Division",
+    "noSubDivisions": "No sub-divisions available",
+    "noEmployees": "No employees available for assignment",
+    "assignButton": "Assign Employees",
+    "assignSuccess": "{count} employee{plural} assigned successfully",
+    "assignFailed": "Failed to assign employees",
+    "searchPlaceholder": "Search employees by name, email, or phone...",
+    "viewTable": "Table",
+    "viewCards": "Cards",
+    "noEmployeesFoundTitle": "No employees found",
+    "noEmployeesFoundDesc": "No employees match your search criteria.",
+    "clearSearch": "Clear Search",
+    "employeeName": "Employee Name",
+    "employeeEmail": "Employee Email",
+    "employeePhone": "Employee Phone",
+    "freelanceStatus": "Freelance Status",
+    "department": "Employee Department",
+    "unassigned": "Unassigned",
+    "freelance": "Freelance",
+    "employee": "Employee",
+    "actions": "Actions",
+    "totalEmployees": "Total Employees"
+  },
+  "removeEmployeeDialog": {
+    "removeButton": "Remove",
+    "removeTitle": "Remove {name} from {department}",
+    "removeDescription": "Are you sure you want to remove this employee from their current sub-division?",
+    "cancel": "Cancel",
+    "confirmRemove": "Confirm Removal"
   }
 }

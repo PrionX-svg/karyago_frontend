@@ -24,7 +24,8 @@ export function EmployeesDialog({ mode, trigger, employeeData }: EmployeesDialog
     const [open, setOpen] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false)
-    const storedUuid = localStorage.getItem("atem")
+    const [storedUuid, setStoredUuid] = useState<string | null>(null)
+
     const ae = useTranslations("employeeOnboarding")
     const ap = useTranslations("api")
     const co = useTranslations("common")
@@ -40,6 +41,15 @@ export function EmployeesDialog({ mode, trigger, employeeData }: EmployeesDialog
         is_freelance: false,
     })
 
+    const handleInputChange = (field: string, value: string | boolean) => {
+        setFormData((prev) => ({ ...prev, [field]: value }))
+    }
+
+    useEffect(() => {
+        const uuid = localStorage.getItem("atem")
+        setStoredUuid(uuid)
+    }, [])
+
     useEffect(() => {
         if (mode === "edit" && employeeData) {
             setFormData({
@@ -54,10 +64,6 @@ export function EmployeesDialog({ mode, trigger, employeeData }: EmployeesDialog
             })
         }
     }, [mode, employeeData])
-
-    const handleInputChange = (field: string, value: string | boolean) => {
-        setFormData((prev) => ({ ...prev, [field]: value }))
-    }
 
     const generatePassword = () => {
         const length = 12

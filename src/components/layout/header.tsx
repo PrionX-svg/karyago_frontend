@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Settings } from "lucide-react";
+import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -21,42 +21,19 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import user from "@/lib/queries/user-queries";
 import { useUserStore } from "@/stores/user-store";
 import { Skeleton } from "../ui/skeleton";
-
-import { useEffect, useState } from "react";
-import { decrypt } from "@/lib/encrypt";
 import company from "@/lib/queries/company-queries";
 import { useCompanyStore } from "@/stores/company-store";
 
 export function Header() {
   const currentCompany = useCompanyStore((state) => state.currentCompany);
-  const [decryptedUuid, setDecryptedUuid] = useState<string | null>(null);
-  const [hasMounted, setHasMounted] = useState(false);
 
   const userInfo = useUserStore.getState().user;
   const isMobile = useIsMobile();
   const isSidebarCollapsed = useGeneralStore((s) => s.isSidebarCollapsed);
   const toggleSidebarCollapse = useGeneralStore((s) => s.toggleSidebarCollapse);
-
   const { isFetchingGetMe } = user.useGetMe();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setHasMounted(true);
-      const uuid = localStorage.getItem("atem");
-
-      if (uuid) {
-        const decrypted = await decrypt(uuid);
-        setDecryptedUuid(decrypted);
-      }
-    };
-    fetchData();
-  }, []);
-
-  company.useGetCompanyByUuid(decryptedUuid ?? "");
-
-  if (!hasMounted) {
-    return null;
-  }
+  company.useGetCompanyByUuid(userInfo.uuid ?? "");
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
