@@ -13,9 +13,9 @@ import { AssignEmployeeDialog } from "@/components/employees/assign-employees"
 export default function AssignEmployeePage() {
     const [searchTerm, setSearchTerm] = useState("")
     const [viewType, setViewType] = useState<"card" | "table">("table")
+    const [storedUuid, setStoredUuid] = useState<string | null>(null)
 
     const employeesData = useEmployeeStore((state) => state.employees)
-    const storedUuid = localStorage.getItem("atem")
     const em = useTranslations("assignEmployees")
 
     const filteredEmployees = employeesData.filter((employee) => {
@@ -42,9 +42,9 @@ export default function AssignEmployeePage() {
     }, [storedUuid])
 
     useEffect(() => {
-        console.log("Employee Data:", employeesData)
-    }, [employeesData])
-
+        const uuid = localStorage.getItem("atem")
+        setStoredUuid(uuid)
+    }, [])
 
     return (
         <div className="min-h-screen">
@@ -159,7 +159,7 @@ export default function AssignEmployeePage() {
                                             {employee.subDivision?.name ? (
                                                 <AssignEmployeeDialog employee={employee} mode="remove" storedUuid={storedUuid} />
                                             ) : (
-                                                <AssignEmployeeDialog employee={employee} mode="assign" storedUuid={storedUuid}  />
+                                                <AssignEmployeeDialog employee={employee} mode="assign" storedUuid={storedUuid} />
                                             )}
                                         </div>
                                     </CardHeader>

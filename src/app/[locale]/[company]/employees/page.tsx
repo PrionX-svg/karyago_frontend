@@ -20,10 +20,11 @@ export default function EmployeePage() {
     const [showTerminated, setShowTerminated] = useState(false)
     const [isTerminateOpen, setIsTerminateOpen] = useState(false)
     const [selectedEmployee, setSelectedEmployee] = useState<EmployeeType | null>(null)
+    const [storedUuid, setStoredUuid] = useState<string | null>(null)
+    const em = useTranslations("employees")
 
     const employeesData = useEmployeeStore((state) => state.employees)
     const terminatedEmployees = useEmployeeStore((state) => state.terminatedEmployees)
-    const storedUuid = localStorage.getItem("atem")
 
     const handleDeleteClick = (employee: EmployeeType) => {
         setSelectedEmployee(employee)
@@ -56,6 +57,11 @@ export default function EmployeePage() {
     });
 
     useEffect(() => {
+        const uuid = localStorage.getItem("atem");
+        setStoredUuid(uuid);
+    }, []);
+
+    useEffect(() => {
         const fetchDivisions = async () => {
             if (!storedUuid) return;
             try {
@@ -67,8 +73,6 @@ export default function EmployeePage() {
         }
         fetchDivisions()
     }, [storedUuid])
-
-    const em = useTranslations("employees")
 
     return (
         <div className="min-h-screen">
@@ -116,6 +120,7 @@ export default function EmployeePage() {
                         <Button
                             onClick={() => setShowTerminated((prev) => !prev)}
                             variant="outline"
+                            disabled={terminatedEmployees.length === 0}
                         >
                             {showTerminated ? em('hideTerminated') : em('showTerminated')}
                         </Button>
