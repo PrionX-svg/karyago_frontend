@@ -46,6 +46,10 @@ export default function AssignEmployeePage() {
         setStoredUuid(uuid)
     }, [])
 
+    useEffect(() => {
+        console.log("Employees data:", employeesData)
+    }, [employeesData])
+
     return (
         <div className="min-h-screen">
             {/* HEADER SECTION */}

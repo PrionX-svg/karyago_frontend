@@ -34,7 +34,13 @@ export function AssignEmployeeDialog({ employee, mode, storedUuid }: EmployeeDia
                 toast.error("Failed to assign employee.");
             });
         } else {
-            console.log("Remove employee:", employee.user_uuid);
+            await api.removeEmployeeFromSubDivision(employee.user_uuid, employee.subDivision!.uuid)
+            .then(() => {
+                toast.success("Employee removed successfully!");
+            })
+            .catch(() => {
+                toast.error("Failed to remove employee.");
+            });
         }
         setOpen(false);
         setSelectedSubDivision("");
@@ -54,8 +60,6 @@ export function AssignEmployeeDialog({ employee, mode, storedUuid }: EmployeeDia
 
         fetchSubDivisions();
     }, [storedUuid, open, mode]);
-
-
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
