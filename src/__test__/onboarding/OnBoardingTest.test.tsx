@@ -88,19 +88,17 @@ jest.mock("@/components/onboarding/steps/branch-information", () => ({
     BranchLocations: ({ onNext }: any) => (
         <div data-testid="branch-screen">
             <button onClick={onNext}>Next Step</button>
+            <button onClick={onNext}>Skip This Step</button>
         </div>
     ),
-
-    //   skipStep
 }))
 
 jest.mock("@/components/onboarding/steps/organizational-structure", () => ({
     OrganizationalStructure: ({ onNext }: any) => (
         <div data-testid="organizational-structure">
             <button onClick={onNext}>Next Step</button>
+            <button onClick={onNext}>Skip This Step</button>
         </div>
-
-        // skipStep
     ),
 }))
 
@@ -138,6 +136,12 @@ describe("On Boarding Test Black Box", () => {
         expect(screen.getByRole("heading", { name: /onboarding.loadingTitle/i })).toBeInTheDocument()
     })
 
+    it("test`isFetchingGetMe` if false", () => {
+        user.useGetMe.mockReturnValue({ isFetchingGetMe: false })
+        render(<OnboardingPage />)
+        expect(screen.getByRole("heading", { name: /onboarding.loadingTitle/i })).toBeInTheDocument()
+    })
+
     it("renders WelcomeScreen by default when no saved step & no company", async () => {
         useCompanyStore.mockImplementation((selector: any) =>
             selector({ company: [] })
@@ -156,6 +160,46 @@ describe("On Boarding Test Black Box", () => {
         fireEvent.click(await screen.findByText("Start"))
         await waitFor(() => screen.getByTestId("branch-screen"))
         expect(localStorage.getItem("onboardingStep")).toBe("2")
+    })
+
+    it("skip branchlocation when it's not needed", async () => {
+        render(<OnboardingPage />)
+        fireEvent.click(await screen.findByText("Start"))
+        const branchSection = await waitFor(() => screen.getByTestId("branch-screen"))
+
+        const skipBtn = within(branchSection).getByText("Skip This Step")
+        fireEvent.click(skipBtn)
+
+        expect(
+            await screen.findByTestId("organizational-structure")
+        ).toBeInTheDocument()
+
+        // 7) And localStorage should have advanced to step 3
+        expect(localStorage.getItem("onboardingStep")).toBe("3")
+
+    })
+
+    it("skip organizationstructure when it's not needed", async () => {
+        render(<OnboardingPage />)
+
+        // Welcome → Branch
+        fireEvent.click(await screen.findByText("Start"))
+        await waitFor(() => screen.getByTestId("branch-screen"))
+
+        // Branch → Division
+        fireEvent.click(screen.getByText("Next Step"))
+        const organizationSection = await waitFor(() => screen.getByTestId("organizational-structure"))
+        expect(localStorage.getItem("onboardingStep")).toBe("3")
+
+        // Click “Skip This Step” inside that section
+        const skipBtn = within(organizationSection).getByText("Skip This Step")
+        fireEvent.click(skipBtn)
+
+        // Verify we’re on the TeamMembers step (step 4)
+        expect(await screen.findByTestId("team-members")).toBeInTheDocument()
+
+        // And localStorage should have been bumped to "4"
+        expect(localStorage.getItem("onboardingStep")).toBe("4")
     })
 
     it("stays on CompanyInformation if company uuid is invalid", async () => {
