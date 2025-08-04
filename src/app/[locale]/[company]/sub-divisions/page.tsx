@@ -122,7 +122,12 @@ export default function SubDivisionsRoundedTable() {
       <div className="pb-3">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-card rounded-xl border border-orange-200 dark:border-stone-700">
+            <div
+              className={`p-3 rounded-xl border ${
+                "border-orange-200 " +
+                "bg-gradient-to-br from-orange-50 via-orange-100 to-orange-200 dark:bg-card dark:border-stone-700"
+                }`}
+            >
               <Users2 className="w-6 h-6 text-orange-600 dark:text-orange-500" />
             </div>
             <div>
@@ -187,16 +192,14 @@ export default function SubDivisionsRoundedTable() {
                 variant={viewType === "table" ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setViewType("table")}
-                className={`gap-2 rounded-md ${
-                  viewType === "table"
-                    ? "bg-orange-500 text-white hover:bg-orange-600"
-                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-stone-700"
-                }`}
+                className={`gap-2 rounded-md ${viewType === "table"
+                  ? "bg-orange-500 text-white hover:bg-orange-600"
+                  : "text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-stone-700"
+                  }`}
               >
                 <Menu
-                  className={`w-4 h-4 ${
-                    viewType === "table" ? "text-white" : ""
-                  }`}
+                  className={`w-4 h-4 ${viewType === "table" ? "text-white" : ""
+                    }`}
                 />
                 {t("viewTable")}
               </Button>
@@ -205,16 +208,14 @@ export default function SubDivisionsRoundedTable() {
                 variant={viewType === "card" ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setViewType("card")}
-                className={`gap-2 rounded-md ${
-                  viewType === "card"
-                    ? "bg-orange-500 text-white hover:bg-orange-600"
-                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-stone-700"
-                }`}
+                className={`gap-2 rounded-md ${viewType === "card"
+                  ? "bg-orange-500 text-white hover:bg-orange-600"
+                  : "text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-stone-700"
+                  }`}
               >
                 <Layers
-                  className={`w-4 h-4 ${
-                    viewType === "card" ? "text-white" : ""
-                  }`}
+                  className={`w-4 h-4 ${viewType === "card" ? "text-white" : ""
+                    }`}
                 />
                 {t("viewCards")}
               </Button>
@@ -256,9 +257,8 @@ export default function SubDivisionsRoundedTable() {
                     {filteredSubDivisions.map((sub, idx) => (
                       <tr
                         key={sub.uuid}
-                        className={`border-b border-gray-100 dark:border-stone-800 hover:bg-gray-50 dark:hover:bg-stone-800/50 transition-colors ${
-                          idx % 2 ? "bg-gray-50/30 dark:bg-stone-800/20" : ""
-                        }`}
+                        className={`border-b border-gray-100 dark:border-stone-800 hover:bg-gray-50 dark:hover:bg-stone-800/50 transition-colors ${idx % 2 ? "bg-gray-50/30 dark:bg-stone-800/20" : ""
+                          }`}
                       >
                         <td className="py-4 px-6">
                           <div className="font-medium text-gray-900 dark:text-foreground">
@@ -388,6 +388,16 @@ export default function SubDivisionsRoundedTable() {
               ))}
             </div>
           )
+        ) : subDivisionsData.length === 0 ? (
+          <div className="text-center py-12 bg-card rounded-xl border-2 border-dashed border-gray-300 dark:border-stone-700 space-y-4">
+            <Users2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground">
+              {t("noSubDivisionsAvailableTitle")}
+            </h3>
+            <p className="mb-4 text-gray-600 dark:text-muted-foreground">
+              {t("noSubDivisionsAvailableDesc")}
+            </p>
+          </div>
         ) : (
           <div className="text-center py-12 bg-card rounded-xl border-2 border-dashed border-gray-300 dark:border-stone-700">
             <Users2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
