@@ -197,11 +197,6 @@ export default function ImportFromExcel() {
     fetchCompanyData()
   }, [userUuid])
 
-  useEffect(() => {
-    console.log("EmployeeData", employeeData)
-    console.log("EmployeeHistoryData", employeeHistoryData)
-  }, [employeeData, employeeHistoryData])
-
   if (loading || isFetchingRoles) {
     return <ExcelImportSkeleton />
   }

@@ -13,6 +13,7 @@ import { Target, Plus, Pencil, Loader2 } from "lucide-react"
 import { useCompanyStore } from "@/stores/company-store"
 import { api } from "@/lib/api/api"
 import { decrypt } from "@/lib/encrypt"
+import { toast } from "sonner"
 
 interface SubDivisionDialogProps {
     mode: "create" | "edit"
@@ -20,20 +21,18 @@ interface SubDivisionDialogProps {
         uuid: string
         name: string
         desc?: string
-        departmentGroupUuid?: string
         divisions?: { name: string; uuid: string }
     }
     trigger?: React.ReactNode
-    onSuccess?: () => void
 }
 
-export function SubDivisionDialog({ mode, subDivision, trigger, onSuccess }: SubDivisionDialogProps) {
+export function SubDivisionDialog({ mode, subDivision, trigger }: SubDivisionDialogProps) {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         name: "",
         desc: "",
-        departmentGroupUuid: "",
+        department_group_uuid: "",
     })
 
     const divisionsData = useCompanyStore((state) => state.division)
@@ -44,13 +43,13 @@ export function SubDivisionDialog({ mode, subDivision, trigger, onSuccess }: Sub
             setFormData({
                 name: subDivision.name || "",
                 desc: subDivision.desc || "",
-                departmentGroupUuid: subDivision.departmentGroupUuid || "",
+                department_group_uuid: subDivision.divisions?.uuid || "",
             })
         } else {
             setFormData({
                 name: "",
                 desc: "",
-                departmentGroupUuid: "",
+                department_group_uuid: "",
             })
         }
     }, [mode, subDivision, open])
@@ -77,26 +76,23 @@ export function SubDivisionDialog({ mode, subDivision, trigger, onSuccess }: Sub
 
         setLoading(true)
         try {
-            const decryptedUuid = decrypt(storedUuid)
-            const companyUuid = await decryptedUuid
-
             const payload = {
                 name: formData.name,
                 desc: formData.desc,
-                departmentGroupUuid: formData.departmentGroupUuid,
+                department_group_uuid: formData.department_group_uuid,
             }
 
             if (mode === "create") {
                 await api.createSubDivision(payload)
+                    .then(() => toast.success("Sub-Division created successfully!"))
+                    .catch(() => toast.error("Failed to create sub-division"))
             } else if (subDivision) {
                 await api.updateSubDivision(subDivision.uuid, payload)
+                    .then(() => toast.success("Sub-Division updated successfully!"))
+                    .catch(() => toast.error("Failed to update sub-division"))
             }
 
-            // Refresh sub-divisions data
-            await api.getSubDivisionsByCompanyUuid(companyUuid)
-
             setOpen(false)
-            onSuccess?.()
         } catch (error) {
             console.error(`Failed to ${mode} sub-division:`, error)
         } finally {
@@ -109,14 +105,15 @@ export function SubDivisionDialog({ mode, subDivision, trigger, onSuccess }: Sub
             className={`gap-2 ${mode === "create" ? "bg-orange-500 hover:bg-orange-600" : "hover:bg-teal-100"} rounded-lg`}
             variant={mode === "create" ? "default" : "ghost"}
             size={mode === "create" ? "default" : "icon"}
+            disabled={divisionsData.length === 0}
         >
             {mode === "create" ? (
-                <>
-                    <Plus className="w-4 h-4" />
-                    Add Sub-Division
-                </>
+            <>
+                <Plus className="w-4 h-4" />
+                Add Sub-Division
+            </>
             ) : (
-                <Pencil className="w-4 h-4 text-gray-600" />
+            <Pencil className="w-4 h-4 text-gray-600" />
             )}
         </Button>
     )
@@ -135,38 +132,40 @@ export function SubDivisionDialog({ mode, subDivision, trigger, onSuccess }: Sub
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="name">Sub-Division Name *</Label>
-                        <Input
-                            id="name"
-                            value={formData.name}
-                            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                            placeholder="Enter sub-division name"
-                            required
-                            className="rounded-lg"
-                        />
-                    </div>
+                    <div className="flex flex-col sm:flex-row space gap-4">
+                        <div className="space-y-2 w-full">
+                            <Label htmlFor="name">Sub-Division Name *</Label>
+                            <Input
+                                id="name"
+                                value={formData.name}
+                                onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                                placeholder="Enter sub-division name"
+                                required
+                                className="rounded-lg"
+                            />
+                        </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="departmentGroup">Parent Division *</Label>
-                        <Select
-                            value={formData.departmentGroupUuid}
-                            onValueChange={(value) => setFormData((prev) => ({ ...prev, departmentGroupUuid: value }))}
-                            required
-                        >
-                            <SelectTrigger className="rounded-lg">
-                                <SelectValue placeholder="Select parent division" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {divisionsData.map((division) => (
-                                    <SelectItem key={division.uuid} value={division.uuid}>
-                                        {division.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                        <div className="space-y-2 min-w-fit">
+                            <Label htmlFor="departmentGroup">Parent Division *</Label>
+                            <Select
+                                value={formData.department_group_uuid}
+                                onValueChange={(value) => setFormData((prev) => ({ ...prev, department_group_uuid: value }))}
+                                required
+                            >
+                                <SelectTrigger className="rounded-lg">
+                                    <SelectValue placeholder="Select parent division" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {divisionsData.map((division) => (
+                                        <SelectItem key={division.uuid} value={division.uuid}>
+                                            {division.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
+                    </div>
                     <div className="space-y-2">
                         <Label htmlFor="desc">Description</Label>
                         <Textarea
@@ -191,7 +190,7 @@ export function SubDivisionDialog({ mode, subDivision, trigger, onSuccess }: Sub
                         </Button>
                         <Button
                             type="submit"
-                            disabled={loading || !formData.name.trim() || !formData.departmentGroupUuid}
+                            disabled={loading || !formData.name.trim() || !formData.department_group_uuid}
                             className="bg-orange-500 hover:bg-orange-600 rounded-lg"
                         >
                             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}

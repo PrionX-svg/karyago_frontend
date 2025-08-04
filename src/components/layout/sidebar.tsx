@@ -39,6 +39,7 @@ import {
   Spline,
   GitBranch,
   Github,
+  Building,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
@@ -88,15 +89,23 @@ const baseNavigationItems: NavigationItems = {
     },
   ],
   company: [
-    { name: "Employees", icon: Users, path: "/employees" },
+    {
+      name: "Employees",
+      icon: Users,
+      children: [
+        { name: "Manage Employees", path: "/employees" },
+        { name: "Assign Employees", path: "/assign-employees" },
+      ]
+    },
     {
       name: "Organization",
-      icon: Users,
+      icon: Building,
       children: [
         { name: "Division", path: "/divisions" },
         { name: "Sub-Division", path: "/sub-divisions" },
       ],
     },
+    { name: "Branch", icon: Building, path: "/branch" },
     { name: "Calendar", icon: Calendar, path: "/calendar" },
     { name: "Files", icon: Folder, path: "/files" },
     { name: "Report", icon: BarChart3, path: "/reports" },
@@ -219,7 +228,7 @@ function DesktopSidebar() {
                       className={cn(
                         "flex items-center justify-center w-8 h-8 my-1 rounded hover:bg-sidebar-accent",
                         isChildActive(child) &&
-                          "bg-sidebar-primary text-sidebar-primary-foreground"
+                        "bg-sidebar-primary text-sidebar-primary-foreground"
                       )}
                       tabIndex={0}
                     >
@@ -248,7 +257,7 @@ function DesktopSidebar() {
               "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md cursor-pointer",
               "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
               active &&
-                "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             )}
             onClick={() => toggleExpanded(item.name)}
           >
@@ -268,9 +277,9 @@ function DesktopSidebar() {
                   key={child.name}
                   href={child.path}
                   className={cn(
-                    "block px-3 py-1 text-sm rounded-md transition-colors",
+                    "block px-3 py-2 text-sm rounded-md transition-colors",
                     isChildActive(child)
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                      ? "bg-stone-300 dark:bg-stone-800 text-sidebar-foreground/80"
                       : "text-sidebar-foreground/80 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent"
                   )}
                 >
@@ -291,7 +300,7 @@ function DesktopSidebar() {
               className={cn(
                 "flex items-center justify-center w-8 h-8 my-1 rounded hover:bg-sidebar-accent",
                 active &&
-                  "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
               tabIndex={0}
             >
@@ -318,7 +327,7 @@ function DesktopSidebar() {
           "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
           "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
           active &&
-            "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         )}
       >
         <item.icon className="w-4 h-4 flex-shrink-0" />

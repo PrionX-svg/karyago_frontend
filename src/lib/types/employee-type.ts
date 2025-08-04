@@ -10,7 +10,15 @@ export type EmployeeType = {
         fullname: string;
         firstname: string;
         lastname: string;
+    },
+    subDivision?: {
+        uuid: string;
+        name: string;
     }
+    termination?: {
+        reason: string | null;
+        date: string | null;
+    };
     phone: string;
     email: string;
     dob: string | null;

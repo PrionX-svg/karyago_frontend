@@ -21,13 +21,17 @@ const config: Config = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
+  moduleDirectories: ["node_modules"],
   // Enable fake timers globally to avoid timer warnings
   // fakeTimers: {
   //   enableGlobally: true,
   // },
 
   // Add more setup options before each test is run
-  setupFilesAfterEnv: ["<rootDir>/src/__test__/setup.ts"],
+  setupFilesAfterEnv: [
+    "<rootDir>/src/__test__/setup.ts",
+    "<rootDir>/src/__test__/jest-setup.ts",
+  ],
   watch: false,
   watchAll: false,
 };

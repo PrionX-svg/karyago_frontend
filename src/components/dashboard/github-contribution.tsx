@@ -1,4 +1,7 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMemo } from "react";
 
 export function GitHubContribution() {
   const months = [
@@ -17,34 +20,24 @@ export function GitHubContribution() {
   ];
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  // Generate contribution data (0-4 intensity levels)
-  const generateContributionData = () => {
+  const contributionData = useMemo(() => {
     const data = [];
+    // Use a fixed seed or a deterministic loop instead of Math.random()
     for (let week = 0; week < 52; week++) {
       const weekData = [];
       for (let day = 0; day < 7; day++) {
-        // Create more realistic contribution pattern
-        const isWeekend = day === 0 || day === 6;
-        const baseChance = isWeekend ? 0.3 : 0.7;
-        const random = Math.random();
-
-        let intensity = 0;
-        if (random < baseChance) {
-          intensity = Math.floor(Math.random() * 5);
-        }
-
+        // Deterministic “random” value between 0-4
+        const intensity = (week * 7 + day) % 5;
         weekData.push({
           intensity,
           date: new Date(2024, 0, week * 7 + day + 1),
-          contributions: intensity * Math.floor(Math.random() * 3) + intensity,
+          contributions: intensity * 2 + intensity,
         });
       }
       data.push(weekData);
     }
     return data;
-  };
-
-  const contributionData = generateContributionData();
+  }, []);
 
   const getIntensityClass = (intensity: number) => {
     const classes = [
@@ -85,7 +78,6 @@ export function GitHubContribution() {
 
   return (
     <Card className="p-0 feature-card card-hover-lift animate-fade-in overflow-hidden rounded-sm">
-
       <CardHeader className="p-6">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold">
