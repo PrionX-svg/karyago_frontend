@@ -27,20 +27,20 @@ export function AssignEmployeeDialog({ employee, mode, storedUuid }: EmployeeDia
         if (mode === "assign") {
             const parsed = JSON.parse(selectedSubDivision);
             await api.assignEmployeeToSubDivision(employee.user_uuid, parsed)
-            .then(() => {
-                toast.success("Employee assigned successfully!");
-            })
-            .catch(() => {
-                toast.error("Failed to assign employee.");
-            });
+                .then(() => {
+                    toast.success("Employee assigned successfully!");
+                })
+                .catch(() => {
+                    toast.error("Failed to assign employee.");
+                });
         } else {
             await api.removeEmployeeFromSubDivision(employee.user_uuid, employee.subDivision!.uuid)
-            .then(() => {
-                toast.success("Employee removed successfully!");
-            })
-            .catch(() => {
-                toast.error("Failed to remove employee.");
-            });
+                .then(() => {
+                    toast.success("Employee removed successfully!");
+                })
+                .catch(() => {
+                    toast.error("Failed to remove employee.");
+                });
         }
         setOpen(false);
         setSelectedSubDivision("");
@@ -64,12 +64,20 @@ export function AssignEmployeeDialog({ employee, mode, storedUuid }: EmployeeDia
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant={mode === "assign" ? "outline" : "destructive"} size="sm" className="rounded-lg">
+                <Button
+                    variant={mode === "assign" ? "outline" : "destructive"}
+                    size="sm"
+                    className={`rounded-lg ${
+                        mode === "remove"
+                            ? "dark:bg-red-700 dark:text-white"
+                            : "dark:bg-zinc-800 dark:text-white"
+                    }`}
+                >
                     {t(mode === "assign" ? "assignButton" : "removeButton")}
                 </Button>
             </DialogTrigger>
 
-            <DialogContent>
+            <DialogContent className="dark:bg-zinc-900 dark:text-white">
                 <DialogHeader>
                     <DialogTitle>
                         {t(mode === "assign" ? "assignTitle" : "removeTitle", {
@@ -78,26 +86,27 @@ export function AssignEmployeeDialog({ employee, mode, storedUuid }: EmployeeDia
                         })}
                     </DialogTitle>
                     {mode === "assign" && (
-                        <p className="text-sm text-gray-600">{t("assignDescription")}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">{t("assignDescription")}</p>
                     )}
                 </DialogHeader>
 
                 {mode === "assign" ? (
                     <div className="space-y-4 mt-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Select Department</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Select Department</label>
                             <Select
                                 value={selectedSubDivision}
                                 onValueChange={(value) => setSelectedSubDivision(value)}
                             >
-                                <SelectTrigger>
+                                <SelectTrigger className="dark:bg-zinc-800 dark:text-white">
                                     <SelectValue placeholder="Choose a sub-division..." />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent className="dark:bg-zinc-800 dark:text-white">
                                     {subDivisionData.map((subdivision) => (
                                         <SelectItem
                                             key={subdivision.uuid}
                                             value={JSON.stringify({ uuid: subdivision.uuid, name: subdivision.name })}
+                                            className="dark:bg-zinc-800 dark:text-white"
                                         >
                                             {subdivision.name}
                                         </SelectItem>
@@ -107,17 +116,22 @@ export function AssignEmployeeDialog({ employee, mode, storedUuid }: EmployeeDia
                         </div>
                     </div>
                 ) : (
-                    <p className="text-sm text-gray-600 mt-2">{t("removeDescription")}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">{t("removeDescription")}</p>
                 )}
 
                 <div className="flex justify-end mt-6 gap-2">
-                    <Button variant="outline" onClick={() => setOpen(false)}>
+                    <Button variant="outline" onClick={() => setOpen(false)} className="dark:bg-zinc-700 dark:text-white">
                         {t("cancel")}
                     </Button>
                     <Button
                         onClick={handleAction}
                         variant={mode === "assign" ? "default" : "destructive"}
                         disabled={mode === "assign" && !selectedSubDivision}
+                        className={
+                            mode === "remove"
+                                ? "bg-red-600 hover:bg-red-700 text-white dark:bg-red-700 dark:hover:bg-red-800"
+                                : "dark:text-white"
+                        }
                     >
                         {t(mode === "assign" ? "confirmAssign" : "confirmRemove")}
                     </Button>

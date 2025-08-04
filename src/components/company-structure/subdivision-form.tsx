@@ -35,8 +35,6 @@ export function SubDivisionDialog({ mode, subDivision, trigger }: SubDivisionDia
         department_group_uuid: "",
     })
 
-    console.log("SubDivision: ", subDivision)
-
     const divisionsData = useCompanyStore((state) => state.division)
     const storedUuid = localStorage.getItem("atem")
 
@@ -107,14 +105,15 @@ export function SubDivisionDialog({ mode, subDivision, trigger }: SubDivisionDia
             className={`gap-2 ${mode === "create" ? "bg-orange-500 hover:bg-orange-600" : "hover:bg-teal-100"} rounded-lg`}
             variant={mode === "create" ? "default" : "ghost"}
             size={mode === "create" ? "default" : "icon"}
+            disabled={divisionsData.length === 0}
         >
             {mode === "create" ? (
-                <>
-                    <Plus className="w-4 h-4" />
-                    Add Sub-Division
-                </>
+            <>
+                <Plus className="w-4 h-4" />
+                Add Sub-Division
+            </>
             ) : (
-                <Pencil className="w-4 h-4 text-gray-600" />
+            <Pencil className="w-4 h-4 text-gray-600" />
             )}
         </Button>
     )

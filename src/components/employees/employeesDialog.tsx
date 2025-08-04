@@ -112,7 +112,6 @@ export function EmployeesDialog({ mode, trigger, employeeData }: EmployeesDialog
             if (mode === "create") {
                 await api.createEmployee(payload)
                     .then(() => {
-                        console.log("Employee created successfully");
                         toast.success("Employee created")
                     })
                     .catch((err) => {
@@ -122,7 +121,6 @@ export function EmployeesDialog({ mode, trigger, employeeData }: EmployeesDialog
             } else if (employeeData) {
                 await api.updateEmployeeByUuid(employeeData.user_uuid, payload)
                     .then(() => {
-                        console.log("Employee updated successfully");
                         toast.success("Employee updated")
                     })
                     .catch((err) => {

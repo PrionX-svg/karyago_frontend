@@ -401,7 +401,9 @@
     "noSubDivisionsFoundDesc": "No sub-divisions match your current filter criteria.",
     "clearFilter": "Clear Filter",
     "deleteTitle": "Delete Sub-Division",
-    "deleteDescription": "Are you sure you want to delete this sub-division? This action cannot be undone."
+    "deleteDescription": "Are you sure you want to delete this sub-division? This action cannot be undone.",
+    "noSubDivisionsAvailableTitle": "No Sub-Divisions Available",
+    "noSubDivisionsAvailableDesc": "You have not created any sub-divisions yet. Start by adding your first sub-division to organize your teams."
   },
   "employees": {
     "title": "Employees",

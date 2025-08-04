@@ -89,7 +89,6 @@ export function DivisionDialog({ mode, division, trigger }: DivisionDialogProps)
             if (mode === "create") {
                 await api.createDivision(payload)
                     .then(() => {
-                        console.log("Division created successfully");
                         toast.success("Division created")
                     })
                     .catch((err) => {
@@ -99,7 +98,6 @@ export function DivisionDialog({ mode, division, trigger }: DivisionDialogProps)
             } else if (division) {
                 await api.updateDivision(division.uuid, payload)
                     .then(() => {
-                        console.log("Division updated successfully");
                         toast.success("Division updated")
                     })
                     .catch((err) => {
@@ -172,7 +170,7 @@ export function DivisionDialog({ mode, division, trigger }: DivisionDialogProps)
                                 <SelectContent>
                                     <SelectItem value="none">No one assigned</SelectItem>
                                     {employees.map((employee) => (
-                                        <SelectItem key={employee.employee_uuid} value={employee.employee_uuid}>
+                                        <SelectItem key={employee.user_uuid} value={employee.user_uuid}>
                                             {employee.name.fullname}
                                         </SelectItem>
                                     ))}
