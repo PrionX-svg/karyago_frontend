@@ -11,6 +11,7 @@ import {
   Users2,
   Briefcase,
   Target,
+  Building2,
 } from "lucide-react";
 import {
   Select,
@@ -123,12 +124,11 @@ export default function SubDivisionsRoundedTable() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="flex items-center gap-4">
             <div
-              className={`p-3 rounded-xl border ${
-                "border-orange-200 " +
+              className={`p-3 rounded-xl border ${"border-orange-200 " +
                 "bg-gradient-to-br from-orange-50 via-orange-100 to-orange-200 dark:bg-card dark:border-stone-700"
                 }`}
             >
-              <Users2 className="w-6 h-6 text-orange-600 dark:text-orange-500" />
+              <Building2 className="w-6 h-6 text-orange-600 dark:text-orange-500" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">
@@ -345,7 +345,7 @@ export default function SubDivisionsRoundedTable() {
                         </div>
                       </div>
 
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-1">
                         <SubDivisionDialog
                           mode="edit"
                           subDivision={sub}

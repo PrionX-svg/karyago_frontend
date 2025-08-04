@@ -89,7 +89,11 @@ export function Header() {
             <Button variant="ghost" className="flex items-center gap-2 px-2">
               <Avatar className="w-8 h-8">
                 <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                <AvatarFallback>EG</AvatarFallback>
+                <AvatarFallback>
+                  {userInfo?.fullName
+                  ? userInfo.fullName.split(" ")[0][0].toUpperCase()
+                  : "?"}
+                </AvatarFallback>
               </Avatar>
               <div className="text-left hidden sm:block">
                 {isFetchingGetMe ? (
