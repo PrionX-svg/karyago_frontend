@@ -87,9 +87,7 @@ export default function OnboardingPage() {
         const savedStep = localStorage.getItem("onboardingStep");
         if (savedStep) {
           initialStep = parseInt(savedStep);
-          console.log("Found onboarding step in localStorage:", initialStep);
         } else {
-          console.log("No onboarding step found in localStorage.");
           initialStep = hasCompany ? 2 : 1;
         }
       }

@@ -89,7 +89,6 @@ export function DivisionDialog({ mode, division, trigger }: DivisionDialogProps)
             if (mode === "create") {
                 await api.createDivision(payload)
                     .then(() => {
-                        console.log("Division created successfully");
                         toast.success("Division created")
                     })
                     .catch((err) => {
@@ -99,7 +98,6 @@ export function DivisionDialog({ mode, division, trigger }: DivisionDialogProps)
             } else if (division) {
                 await api.updateDivision(division.uuid, payload)
                     .then(() => {
-                        console.log("Division updated successfully");
                         toast.success("Division updated")
                     })
                     .catch((err) => {
