@@ -33,7 +33,7 @@ export function Header() {
   const toggleSidebarCollapse = useGeneralStore((s) => s.toggleSidebarCollapse);
   const { isFetchingGetMe } = user.useGetMe();
 
-  company.useGetCompanyByUuid(userInfo.uuid ?? "");
+  company.useGetCurrentCompanyByUserUuid(userInfo.uuid ?? "");
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
@@ -89,7 +89,11 @@ export function Header() {
             <Button variant="ghost" className="flex items-center gap-2 px-2">
               <Avatar className="w-8 h-8">
                 <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                <AvatarFallback>EG</AvatarFallback>
+                <AvatarFallback>
+                  {userInfo?.fullName
+                  ? userInfo.fullName.split(" ")[0][0].toUpperCase()
+                  : "?"}
+                </AvatarFallback>
               </Avatar>
               <div className="text-left hidden sm:block">
                 {isFetchingGetMe ? (

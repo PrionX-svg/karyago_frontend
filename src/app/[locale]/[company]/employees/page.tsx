@@ -185,6 +185,17 @@ export default function EmployeePage() {
                                                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{employee.email}</p>
                                             </div>
                                         </div>
+                                        <div className="flex justify-end gap-2">
+                                            <EmployeesDialog mode="edit" employeeData={employee} />
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleDeleteClick(employee)}
+                                                className="h-8 w-8 rounded-lg"
+                                            >
+                                                <Trash className="w-4 h-4 text-red-500 dark:text-red-400" />
+                                            </Button>
+                                        </div>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-4">

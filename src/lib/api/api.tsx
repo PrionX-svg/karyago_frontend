@@ -30,15 +30,19 @@ export const api = {
       return Promise.reject(error);
     }
   },
-  async getCompanyByUserUuid(userUuid: string) {
+  async getCompanyByUserUuid(userUuid: string, useSetterCurrentCompany: boolean) {
     try {
       const setAddCompany = useCompanyStore.getState().setAddCompany;
+      const setCurrentCompany = useCompanyStore.getState().setCurrentCompany
       const response = await getAPI(
         `${API_URL.getCompanyByUserUuid}${userUuid}`
       );
       const formattedCompanyData =
         responseFormatter.formatGetCompanyByUserUuid(response);
       setAddCompany(formattedCompanyData);
+      if (useSetterCurrentCompany) {
+        setCurrentCompany(formattedCompanyData);
+      }
     } catch (error) {
       return Promise.reject(error);
     }

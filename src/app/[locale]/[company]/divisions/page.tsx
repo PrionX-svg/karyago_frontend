@@ -11,6 +11,7 @@ import {
   Search,
   Building2,
   Crown,
+  Building,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useCompanyStore } from "@/stores/company-store";
@@ -107,7 +108,7 @@ export default function DivisionsPage() {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-card rounded-xl bg-gradient-to-br from-orange-50 via-orange-100 to-orange-200 border dark:border-stone-700">
-                <Building2 className="w-6 h-6 text-orange-600 dark:text-orange-500" />
+                <Building className="w-6 h-6 text-orange-600 dark:text-orange-500" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">
@@ -222,15 +223,29 @@ export default function DivisionsPage() {
                         </p>
                       </div>
                     </div>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteClick(division.uuid)}
-                      className="h-8 w-8 rounded-lg"
-                    >
-                      <Trash className="w-4 h-4 text-red-500" />
-                    </Button>
+                    <div>
+                      <DivisionDialog
+                        mode="edit"
+                        division={division}
+                        trigger={
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-lg"
+                          >
+                            <Pencil className="w-4 h-4 text-gray-500" />
+                          </Button>
+                        }
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteClick(division.uuid)}
+                        className="h-8 w-8 rounded-lg"
+                      >
+                        <Trash className="w-4 h-4 text-red-500" />
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
 
