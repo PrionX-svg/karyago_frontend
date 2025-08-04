@@ -23,6 +23,7 @@ import { useUserStore } from "@/stores/user-store";
 import { Skeleton } from "../ui/skeleton";
 import company from "@/lib/queries/company-queries";
 import { useCompanyStore } from "@/stores/company-store";
+import Image from "next/image";
 
 export function Header() {
   const currentCompany = useCompanyStore((state) => state.currentCompany);
@@ -47,9 +48,19 @@ export function Header() {
         )}
         <div className="flex items-center gap-2 hidden sm:flex">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">
-              {currentCompany?.name?.charAt(1).toUpperCase() ?? ""}
-            </span>
+            {currentCompany?.logo ? (
+              <Image
+              src={currentCompany.logo}
+              alt="Company Logo"
+              width={160}
+              height={160}
+              className="w-8 h-8 object-cover rounded-lg"
+              />
+            ) : (
+              <span className="text-primary-foreground font-bold text-sm">
+              {currentCompany?.name?.charAt(0).toUpperCase() ?? ""}
+              </span>
+            )}
           </div>
           <span className="font-semibold text-lg">{currentCompany?.name}</span>
           <Button
