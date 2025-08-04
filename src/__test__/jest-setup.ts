@@ -32,15 +32,15 @@ jest.mock("@/lib/get-timezone", () => ({
   getClientUTCOffset: () => "+07:00",
 }));
 
-jest.mock("@/lib/get-api", () => ({
+jest.mock("@/lib/api/api", () => ({
   __esModule: true,
   default: jest.fn(() => Promise.resolve({ status: 200, data: {} })),
 }));
 
-jest.mock("@/lib/post-api", () => ({
-  __esModule: true,
-  default: jest.fn(() => Promise.resolve({ status: 200, data: {} })),
-}));
+// jest.mock("@/lib/api/post-api", () => ({
+//   __esModule: true,
+//   default: jest.fn(() => Promise.resolve({ status: 200, data: {} })),
+// }));
 
 jest.mock("next/navigation", () => ({
   __esModule: true,

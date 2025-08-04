@@ -130,16 +130,22 @@ describe("On Boarding Test Black Box", () => {
         localStorage.clear()
     })
 
-    it("shows loader when `isFetchingGetMe` is true", () => {
+    it("shows loader when `isFetchingGetMe` is true", async () => {
         user.useGetMe.mockReturnValue({ isFetchingGetMe: true })
-        render(<OnboardingPage />)
+        await act(async () => {
+            render(<OnboardingPage />);
+            // any async fireEvent or logic here
+        });
         expect(screen.getByRole("heading", { name: /onboarding.loadingTitle/i })).toBeInTheDocument()
     })
 
-    it("test`isFetchingGetMe` if false", () => {
+    it("test`isFetchingGetMe` if false", async () => {
         user.useGetMe.mockReturnValue({ isFetchingGetMe: false })
-        render(<OnboardingPage />)
-        expect(screen.getByRole("heading", { name: /onboarding.loadingTitle/i })).toBeInTheDocument()
+        await act(async () => {
+            render(<OnboardingPage />);
+            // any async fireEvent or logic here
+        });
+        expect(await screen.findByTestId("welcome-screen")).toBeInTheDocument();
     })
 
     it("renders WelcomeScreen by default when no saved step & no company", async () => {
@@ -236,7 +242,7 @@ describe("On Boarding Test Black Box", () => {
         const finishBtn = within(teamSection).getByText("Complete Onboarding")
         fireEvent.click(finishBtn)
 
-        expect(mockPush).toHaveBeenCalledWith("/dashboard")
+        expect(mockPush).toHaveBeenCalledWith("/")
         expect(localStorage.getItem("onboardingStep")).toBeNull()
     })
 
@@ -277,7 +283,7 @@ describe("On Boarding Test White Box", () => {
         })
     })
 
-    it("gracefully handles API failure in initializeOnboarding", async () => {
+    it("API failure in initializeOnboarding", async () => {
         api.getCompanyByUserUuid.mockRejectedValue(new Error("fail"))
         await act(async () => {
             render(<OnboardingPage />)
