@@ -28,14 +28,15 @@ export default function ChooseCompanyPage() {
     setSelectedCompany(companyName);
     const encrypted = await encrypt(companyUuid);
     localStorage.setItem("atem", encrypted);
-    router.push(`/${companyName}`);
+    const slug = companyName.toLowerCase().replace(/\s+/g, "-");
+    router.push(`/${slug}`);
   };
 
   useEffect(() => {
     if (!companyData || companyData.length === 0) {
       const fetchCompanydata = async () => {
         try {
-          await fetchCompaniesByUserUuid(userData.uuid);
+          await fetchCompaniesByUserUuid(userData.userUuid);
         } catch (error) {
           console.error("Failed to fetch company data:", error);
         }
@@ -43,7 +44,7 @@ export default function ChooseCompanyPage() {
       fetchCompanydata();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [companyData, userData.uuid]);
+  }, [companyData, userData.userUuid]);
 
   if (isFetchingGetMe || isFetchingCompanies) {
     return <CompanySkeleton />;

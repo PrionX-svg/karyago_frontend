@@ -13,7 +13,10 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "HRIS",
+  title: {
+    default: "HRIS",
+    template: "%s | HRIS", // Jika halaman override title, akan ditambahkan template ini
+  },
   description: "Manage your HR processes with ease",
   icons: {
     icon: "/helpernet-logo.png",
@@ -21,6 +24,7 @@ export const metadata = {
     apple: "/helpernet-logo.png",
   },
 };
+
 
 async function getMessages(locale: string) {
   // Early check for common file extensions that aren't locales

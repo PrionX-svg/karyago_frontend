@@ -103,7 +103,7 @@ export default function AddUserManually() {
   const router = useRouter();
 
   const employees = useEmployeeStore((state) => state.employees);
-  const userUuid = useUserStore((state) => state.user.uuid);
+  const userUuid = useUserStore((state) => state.user.userUuid);
   const companyUuid = useCompanyStore((state) => state.company[0]?.uuid);
   const { createEmployee, isCreatingEmployee } = employee.useCreateEmployee();
   const { createEmployeeHistory, isCreatingEmployeeHistory } =
@@ -341,7 +341,7 @@ export default function AddUserManually() {
       if (userUuid) {
         setLoading(true);
         try {
-          await api.getCompanyByUserUuid(userUuid);
+          await api.getCompanyByUserUuid(userUuid, true);
         } finally {
           setLoading(false);
         }

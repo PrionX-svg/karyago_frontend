@@ -10,10 +10,12 @@ type EmployeeStore = {
     setTerminatedEmployees: (employees: EmployeeType[]) => void;
 
     addEmployee: (employee: EmployeeType) => void;
+    addEmployees: (employees: EmployeeType[]) => void;
     addTerminatedEmployee: (employee: EmployeeType) => void;
 
     setEmployeeHistory: (employeeHistory: EmployeeHistoryType[]) => void;
     addEmployeeHistory: (employeeHistory: EmployeeHistoryType) => void;
+    addEmployeesHistory: (employeeHistory: EmployeeHistoryType[]) => void;
 
     updateEmployee: (employeeUpdate: Partial<EmployeeType> & { user_uuid: string }) => void;
     updateTerminatedEmployee: (employeeUpdate: Partial<EmployeeType> & { user_uuid: string }) => void;
@@ -35,6 +37,7 @@ export const useEmployeeStore = create<EmployeeStore>((set, get) => ({
     setTerminatedEmployees: (employees) => set({ terminatedEmployees: employees }),
     setEmployeeHistory: (employeeHistory) => set({ employeeHistory }),
 
+    addEmployees: (employees) => set((state) => ({ employees: [...employees, ...state.employees] })),
     addEmployee: (employee) =>
         set((state) => ({ employees: [employee, ...state.employees] })),
     addTerminatedEmployee: (employee) =>
@@ -42,6 +45,13 @@ export const useEmployeeStore = create<EmployeeStore>((set, get) => ({
     addEmployeeHistory: (employeeHistory) =>
         set((state) => ({
             employeeHistory: [employeeHistory, ...state.employeeHistory],
+        })),
+    addEmployeesHistory: (employeeHistory) =>
+        set((state) => ({
+            employeeHistory: [
+                ...(employeeHistory ?? []),
+                ...state.employeeHistory
+            ],
         })),
 
     updateEmployee: (employeeUpdate) =>

@@ -2,6 +2,7 @@ export const API_URL = {
   login: "/auth/login",
   register: "/auth/register",
   getMe: "/users/@me",
+  updateUser: "/users/update/",
   getCompanyByUserUuid: "/companies/get-by-user/",
   getCompaniesByUserUuid: "/companies/get-companies-by-user/",
   getCompanyByUuid: "/companies/get/",

@@ -21,6 +21,7 @@ import deleteAPI from "./deleteAPI";
 import { get } from "http";
 import { useEventStore } from "@/stores/event-store";
 import { CreateEventPayload } from "../interfaces/event-interface";
+import { UpdateUserPayload } from "../interfaces/user-interface";
 
 export const api = {
   async getMe() {
@@ -29,6 +30,20 @@ export const api = {
       const response = await getAPI(`${API_URL.getMe}`);
       const formattedUserData = responseFormatter.formatUserData(response);
       setUserInfo(formattedUserData);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  async updateUser(data: UpdateUserPayload, userUuid: string) {
+    try {
+      const updateUser = useUserStore.getState().updateUser;
+      const response = await patchAPI(data, `${API_URL.updateUser}${userUuid}`);
+      if (response.status === 200) {
+        const formattedData = responseFormatter.formatUpdateUser(response.data.data)
+        updateUser(formattedData);
+      } else {
+        throw new Error("Failed to update user");
+      }
     } catch (error) {
       return Promise.reject(error);
     }
@@ -420,18 +435,19 @@ export const api = {
     }
   },
   async importEmployee(formData: FormData) {
-    const setEmployee = useEmployeeStore.getState().setEmployees;
-    const setEmployeeHistory = useEmployeeStore.getState().setEmployeeHistory;
+    const addEmployees = useEmployeeStore.getState().addEmployees;
+    const addEmployeeHistory = useEmployeeStore.getState().addEmployeesHistory;
     try {
       const response = await postAPI(formData, `${API_URL.importEmployee}`);
       if (response.status === 200) {
-        const employeesData = responseFormatter.formatImportEmployeeData(
-          response.data
-        );
+        const employeesData = responseFormatter.formatImportEmployeeData(response.data);
         const employeeHistoryData =
           responseFormatter.formatImportEmployeeHistoryData(response.data);
-        setEmployee(employeesData);
-        setEmployeeHistory(employeeHistoryData);
+        addEmployees(employeesData);
+        addEmployeeHistory(employeeHistoryData);
+      }
+      else {
+        throw new Error("Failed to import employee data");
       }
     } catch (error) {
       return Promise.reject(error);

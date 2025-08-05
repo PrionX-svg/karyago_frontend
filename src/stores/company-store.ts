@@ -22,7 +22,7 @@ type CompanyStore = {
   setSubDivision: (subDivision: SubDivisionType[]) => void;
   addSubDivision: (subDivision: SubDivisionType) => void;
   updateDivision: (divisionUuid: string, updatedDivision: Partial<DivisionType>) => void;
-    updateSubDivision: (subDivisionUuid: string, updatedSubDivision: Partial<SubDivisionType>) => void;removeCompany: (uuid: string) => void;
+  updateSubDivision: (subDivisionUuid: string, updatedSubDivision: Partial<SubDivisionType>) => void; removeCompany: (uuid: string) => void;
   removeCompanyBranch: (uuid: string) => void;
   removeDivision: (uuid: string) => void;
   removeSubDivision: (uuid: string) => void;
@@ -60,24 +60,24 @@ export const useCompanyStore = create<CompanyStore>((set) => ({
   addSubDivision: (subDivision) =>
     set((state) => ({ subDivision: [...state.subDivision, subDivision] })),
   updateDivision: (divisionUuid, updatedDivision) =>
-        set((state) => ({
-            division: state.division.map((division) =>
-                division.uuid === divisionUuid
-                    ? { ...division, ...updatedDivision }
-                    : division
-            ),
-        })),
-    updateSubDivision: (subDivisionUuid, updatedSubDivision) =>
-        set((state) => ({
-            subDivision: state.subDivision.map((subDivision) =>
-                subDivision.uuid === subDivisionUuid
-                    ? { ...subDivision, ...updatedSubDivision }
-                    : subDivision
-            ),
-        })),removeCompany: (uuid) =>
     set((state) => ({
-      company: state.company.filter((company) => company.uuid !== uuid),
+      division: state.division.map((division) =>
+        division.uuid === divisionUuid
+          ? { ...division, ...updatedDivision }
+          : division
+      ),
     })),
+  updateSubDivision: (subDivisionUuid, updatedSubDivision) =>
+    set((state) => ({
+      subDivision: state.subDivision.map((subDivision) =>
+        subDivision.uuid === subDivisionUuid
+          ? { ...subDivision, ...updatedSubDivision }
+          : subDivision
+      ),
+    })), removeCompany: (uuid) =>
+      set((state) => ({
+        company: state.company.filter((company) => company.uuid !== uuid),
+      })),
   removeCompanyBranch: (uuid) =>
     set((state) => ({
       companyBranch: state.companyBranch.filter(

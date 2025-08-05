@@ -25,7 +25,7 @@ export default function OnboardingPage() {
 
   const { isFetchingGetMe } = user.useGetMe();
   const router = useRouter();
-  const userUuid = useUserStore((state) => state.user.uuid);
+  const userUuid = useUserStore((state) => state.user.userUuid);
   const lo = useTranslations("onboarding");
 
   const handleCompanyNext = () => {
@@ -74,7 +74,7 @@ export default function OnboardingPage() {
 
       if (userUuid) {
         try {
-          await api.getCompanyByUserUuid(userUuid);
+          await api.getCompanyByUserUuid(userUuid, true);
         } catch (error) {
           console.error("Failed to fetch company data:", error);
         }

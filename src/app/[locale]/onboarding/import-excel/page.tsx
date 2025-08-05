@@ -78,7 +78,7 @@ export default function ImportFromExcel() {
   const employeeData = useEmployeeStore.getState().employees
   const employeeHistoryData = useEmployeeStore.getState().employeeHistory
   const { isImportingEmployee, importEmployee } = employee.useImportEmployee()
-  const userUuid = useUserStore((state) => state.user.uuid)
+  const userUuid = useUserStore((state) => state.user.userUuid)
   const ap = useTranslations("api")
   const ie = useTranslations("import-excel")
   const co = useTranslations("common")
@@ -188,7 +188,7 @@ export default function ImportFromExcel() {
       if (userUuid) {
         setLoading(true)
         try {
-          await api.getCompanyByUserUuid(userUuid)
+          await api.getCompanyByUserUuid(userUuid, true)
         } finally {
           setLoading(false)
         }
