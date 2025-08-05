@@ -12,7 +12,7 @@ const company = {
         return;
       }
       try {
-        return await api.getCompanyByUserUuid(userUuid);
+        return await api.getCompanyByUserUuid(userUuid, false);
       } catch (error) {
         return Promise.reject(error);
       } finally {
@@ -26,7 +26,30 @@ const company = {
 
     return { fetchCompanyByUserUuid, isFetchingCompany };
   },
-  useGetCompanyByUuid: (companyUuid: string) => {
+  useGetCurrentCompanyByUserUuid: (userUuid: string) => {
+    const [isFetchingCurrentCompany, setIsFetchingCurrentCompany] = useState(false);
+
+    const fetchCurrentCompanyByUserUuid = useCallback(async () => {
+      setIsFetchingCurrentCompany(true);
+      if (!userUuid) {
+        return;
+      }
+      try {
+        return await api.getCompanyByUserUuid(userUuid, true);
+      } catch (error) {
+        return Promise.reject(error);
+      } finally {
+        setIsFetchingCurrentCompany(false);
+      }
+    }, [userUuid]);
+
+    useEffect(() => {
+      fetchCurrentCompanyByUserUuid().catch((error) => console.error(error));
+    }, [fetchCurrentCompanyByUserUuid]);
+
+    return { fetchCurrentCompanyByUserUuid, isFetchingCurrentCompany };
+  },
+  useGetCompanyByUuid: (companyUuid: string, setCurrentCompany: boolean) => {
     const [isFetchingCompany, setIsFetchingCompany] = useState(false);
 
     const fetchCompanyByUuid = useCallback(async () => {
@@ -35,13 +58,13 @@ const company = {
         return;
       }
       try {
-        return await api.getCompanyByUuid(companyUuid);
+        return await api.getCompanyByUserUuid(companyUuid, setCurrentCompany);
       } catch (error) {
         return Promise.reject(error);
       } finally {
         setIsFetchingCompany(false);
       }
-    }, [companyUuid]);
+    }, [companyUuid, setCurrentCompany]);
 
     useEffect(() => {
       fetchCompanyByUuid().catch((error) => console.error(error));

@@ -21,42 +21,20 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import user from "@/lib/queries/user-queries";
 import { useUserStore } from "@/stores/user-store";
 import { Skeleton } from "../ui/skeleton";
-
-import { useEffect, useState } from "react";
-import { decrypt } from "@/lib/encrypt";
 import company from "@/lib/queries/company-queries";
 import { useCompanyStore } from "@/stores/company-store";
+import Image from "next/image";
 
 export function Header() {
   const currentCompany = useCompanyStore((state) => state.currentCompany);
-  const [decryptedUuid, setDecryptedUuid] = useState<string | null>(null);
-  const [hasMounted, setHasMounted] = useState(false);
 
   const userInfo = useUserStore.getState().user;
   const isMobile = useIsMobile();
   const isSidebarCollapsed = useGeneralStore((s) => s.isSidebarCollapsed);
   const toggleSidebarCollapse = useGeneralStore((s) => s.toggleSidebarCollapse);
-
   const { isFetchingGetMe } = user.useGetMe();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setHasMounted(true);
-      const uuid = localStorage.getItem("atem");
-
-      if (uuid) {
-        const decrypted = await decrypt(uuid);
-        setDecryptedUuid(decrypted);
-      }
-    };
-    fetchData();
-  }, []);
-
-  company.useGetCompanyByUuid(decryptedUuid ?? "");
-
-  if (!hasMounted) {
-    return null;
-  }
+  company.useGetCurrentCompanyByUserUuid(userInfo.uuid ?? "");
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
@@ -70,9 +48,19 @@ export function Header() {
         )}
         <div className="flex items-center gap-2 hidden sm:flex">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">
+            {currentCompany?.logo ? (
+              <Image
+              src={currentCompany.logo}
+              alt="Company Logo"
+              width={160}
+              height={160}
+              className="w-8 h-8 object-cover rounded-lg"
+              />
+            ) : (
+              <span className="text-primary-foreground font-bold text-sm">
               {currentCompany?.name?.charAt(0).toUpperCase() ?? ""}
-            </span>
+              </span>
+            )}
           </div>
           <span className="font-semibold text-lg">{currentCompany?.name}</span>
           <Button
@@ -112,7 +100,11 @@ export function Header() {
             <Button variant="ghost" className="flex items-center gap-2 px-2">
               <Avatar className="w-8 h-8">
                 <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                <AvatarFallback>EG</AvatarFallback>
+                <AvatarFallback>
+                  {userInfo?.fullName
+                  ? userInfo.fullName.split(" ")[0][0].toUpperCase()
+                  : "?"}
+                </AvatarFallback>
               </Avatar>
               <div className="text-left hidden sm:block">
                 {isFetchingGetMe ? (

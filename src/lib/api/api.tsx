@@ -45,15 +45,19 @@ export const api = {
       return Promise.reject(error);
     }
   },
-  async getCompanyByUserUuid(userUuid: string) {
+  async getCompanyByUserUuid(userUuid: string, useSetterCurrentCompany: boolean) {
     try {
       const setAddCompany = useCompanyStore.getState().setAddCompany;
+      const setCurrentCompany = useCompanyStore.getState().setCurrentCompany
       const response = await getAPI(
         `${API_URL.getCompanyByUserUuid}${userUuid}`
       );
       const formattedCompanyData =
         responseFormatter.formatGetCompanyByUserUuid(response);
       setAddCompany(formattedCompanyData);
+      if (useSetterCurrentCompany) {
+        setCurrentCompany(formattedCompanyData);
+      }
     } catch (error) {
       return Promise.reject(error);
     }
@@ -314,6 +318,43 @@ export const api = {
           responseFormatter.formatCreateEmployeeResponse(response.data);
         addEmployee(formattedEmployee);
         return formattedEmployee;
+      } else {
+        throw new Error("Failed to create employee");
+      }
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  },
+  async assignEmployeeToSubDivision(userUuid: string, data: { uuid: string; name: string; }) {
+    const updateEmployee = useEmployeeStore.getState().updateEmployee;
+    try {
+      const response = await patchAPI({ department_uuid: data.uuid }, `${API_URL.assignEmployeeToSubDivision}${userUuid}`);
+      if (response.status === 200) {
+        updateEmployee({
+          user_uuid: userUuid,
+          subDivision: {
+            uuid: data.uuid,
+            name: data.name,
+          },
+        });
+      } else {
+        throw new Error("Failed to assign employee to sub-division");
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  async removeEmployeeFromSubDivision(userUuid: string, departmentUuid: string) {
+    const updateEmployee = useEmployeeStore.getState().updateEmployee;
+    try {
+      const response = await patchAPI({ department_uuid: departmentUuid }, `${API_URL.unassignEmployeeFromSubDivision}${userUuid}`);
+      if (response.status === 200) {
+        updateEmployee({
+          user_uuid: userUuid,
+          subDivision: undefined,
+        });
+      } else {
+        throw new Error("Failed to unassign employee from sub-division");
       }
     } catch (error) {
       return Promise.reject(error);

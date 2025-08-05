@@ -52,7 +52,6 @@ export default async function RootLayout({
 }) {
   // Get locale from URL parameters
   const { locale } = await params;
-  console.log("Resolved locale:", locale);
 
   const messages = await getMessages(locale);
 
