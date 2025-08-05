@@ -7,8 +7,7 @@ function formatSlugToTitle(slug: string): string {
     .join(" ");
 }
 
-export async function generateMetadata({ params }: { params: { company: string } }) {
-  const { company } = await params;
+export function generateMetadata({ params }: { params: { company: string } }) {
   const formattedTitle = formatSlugToTitle(params.company);
   return {
     title: `Dashboard - ${formattedTitle}`,
