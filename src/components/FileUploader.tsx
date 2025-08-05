@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 
 type FileUploaderProps = {
-  value?: string | null; // file name or url
+  value?: string | File | null; // file name or url
   onChange: (file: File | null) => void;
   previewUrl?: string | null; // for previewing existing image
   disabled?: boolean;
@@ -22,7 +22,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   previewUrl,
   disabled,
 }) => {
-  const t = useTranslations('branchPage');
+  const t = useTranslations("branchPage");
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(previewUrl || null);

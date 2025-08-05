@@ -18,6 +18,9 @@ import {
 } from "../interfaces/company-interface";
 import patchAPI from "./patchAPI";
 import deleteAPI from "./deleteAPI";
+import { get } from "http";
+import { useEventStore } from "@/stores/event-store";
+import { CreateEventPayload } from "../interfaces/event-interface";
 
 export const api = {
   async getMe() {
@@ -30,10 +33,13 @@ export const api = {
       return Promise.reject(error);
     }
   },
-  async getCompanyByUserUuid(userUuid: string, useSetterCurrentCompany: boolean) {
+  async getCompanyByUserUuid(
+    userUuid: string,
+    useSetterCurrentCompany: boolean
+  ) {
     try {
       const setAddCompany = useCompanyStore.getState().setAddCompany;
-      const setCurrentCompany = useCompanyStore.getState().setCurrentCompany
+      const setCurrentCompany = useCompanyStore.getState().setCurrentCompany;
       const response = await getAPI(
         `${API_URL.getCompanyByUserUuid}${userUuid}`
       );
@@ -307,13 +313,19 @@ export const api = {
         throw new Error("Failed to create employee");
       }
     } catch (error) {
-      return Promise.reject(error)
+      return Promise.reject(error);
     }
   },
-  async assignEmployeeToSubDivision(userUuid: string, data: { uuid: string; name: string; }) {
+  async assignEmployeeToSubDivision(
+    userUuid: string,
+    data: { uuid: string; name: string }
+  ) {
     const updateEmployee = useEmployeeStore.getState().updateEmployee;
     try {
-      const response = await patchAPI({ department_uuid: data.uuid }, `${API_URL.assignEmployeeToSubDivision}${userUuid}`);
+      const response = await patchAPI(
+        { department_uuid: data.uuid },
+        `${API_URL.assignEmployeeToSubDivision}${userUuid}`
+      );
       if (response.status === 200) {
         updateEmployee({
           user_uuid: userUuid,
@@ -329,10 +341,16 @@ export const api = {
       return Promise.reject(error);
     }
   },
-  async removeEmployeeFromSubDivision(userUuid: string, departmentUuid: string) {
+  async removeEmployeeFromSubDivision(
+    userUuid: string,
+    departmentUuid: string
+  ) {
     const updateEmployee = useEmployeeStore.getState().updateEmployee;
     try {
-      const response = await patchAPI({ department_uuid: departmentUuid }, `${API_URL.unassignEmployeeFromSubDivision}${userUuid}`);
+      const response = await patchAPI(
+        { department_uuid: departmentUuid },
+        `${API_URL.unassignEmployeeFromSubDivision}${userUuid}`
+      );
       if (response.status === 200) {
         updateEmployee({
           user_uuid: userUuid,
@@ -496,6 +514,66 @@ export const api = {
         response.data
       );
       setRoles(formattedRoles);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  async getEventByCompanyUuid(companyUuid: string) {
+    try {
+      const setEvents = useEventStore.getState().setEvents;
+      const response = await getAPI(
+        `${API_URL.getEventByCompanyUuid}${companyUuid}`
+      );
+      const formattedEvents =
+        responseFormatter.formatGetEventsByCompanyUuid(response);
+      setEvents(formattedEvents);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  async createEventByCompanyUuid(eventData: CreateEventPayload) {
+    try {
+      const response = await postAPI(
+        eventData,
+        `${API_URL.createEventByCompanyUuid}`
+      );
+      if (response.status === 201) {
+        await api.getEventByCompanyUuid(eventData.company_uuid);
+      } else {
+        throw new Error("Failed to create event");
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  async updateEventByUuid(eventUuid: string, eventData: CreateEventPayload) {
+    try {
+      const response = await patchAPI(
+        eventData,
+        `${API_URL.updateEventByUuid}${eventUuid}`
+      );
+      if (response.status === 200) {
+        await api.getEventByCompanyUuid(eventData.company_uuid);
+      } else {
+        throw new Error("Failed to update event");
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  async deleteEventByUuid(eventUuid: string) {
+    try {
+      const response = await deleteAPI(
+        {},
+        `${API_URL.deleteEventByUuid}${eventUuid}`
+      );
+      if (response.status === 200) {
+        await api.getEventByCompanyUuid(
+          useCompanyStore.getState().currentCompany?.uuid || ""
+        );
+      } else {
+        throw new Error("Failed to delete event");
+      }
     } catch (error) {
       return Promise.reject(error);
     }

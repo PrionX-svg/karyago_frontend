@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
-import FileUploader from "./FileUploader";
+import FileUploader from "../FileUploader";
 
 interface UpdateBranchDialogProps {
   open: boolean;
@@ -38,7 +38,7 @@ export function UpdateBranchDialog({
   setForm,
   isUpdating,
 }: UpdateBranchDialogProps) {
-  const t = useTranslations('branchPage');
+  const t = useTranslations("branchPage");
   // File state for deferred upload
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(

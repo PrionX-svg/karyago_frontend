@@ -28,6 +28,8 @@ import {
 } from "../interfaces/employee-interface";
 import { RoleType } from "../types/role-type";
 import { GetRoleByCompanyUuidResponse } from "../interfaces/role-interface";
+import { getEventByCompanyUuidResponse } from "../interfaces/event-interface";
+import { EventType } from "../types/event-type";
 
 export const responseFormatter = {
   formatUserData(response: GetMeResponse): UserType {
@@ -394,6 +396,18 @@ export const responseFormatter = {
     return response.data.map((role) => ({
       uuid: role?.uuid ?? "",
       name: role?.name ?? "",
+    }));
+  },
+  formatGetEventsByCompanyUuid(
+    response: getEventByCompanyUuidResponse
+  ): EventType[] {
+    if (!response.data) return [];
+    return response.data.map((event) => ({
+      uuid: event?.uuid ?? "",
+      name: event?.name ?? "",
+      startDate: event?.start_date ?? "",
+      endDate: event?.end_date ?? "",
+      photo: event?.photo ?? null,
     }));
   },
 };

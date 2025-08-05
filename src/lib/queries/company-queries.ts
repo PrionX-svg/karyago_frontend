@@ -27,7 +27,8 @@ const company = {
     return { fetchCompanyByUserUuid, isFetchingCompany };
   },
   useGetCurrentCompanyByUserUuid: (userUuid: string) => {
-    const [isFetchingCurrentCompany, setIsFetchingCurrentCompany] = useState(false);
+    const [isFetchingCurrentCompany, setIsFetchingCurrentCompany] =
+      useState(false);
 
     const fetchCurrentCompanyByUserUuid = useCallback(async () => {
       setIsFetchingCurrentCompany(true);

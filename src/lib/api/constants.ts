@@ -28,4 +28,8 @@ export const API_URL = {
   createBranchByCompanyUuid: "/branches/create",
   updateBranchByUuid: "/branches/update/",
   deleteBranchByUuid: "/branches/delete/",
+  getEventByCompanyUuid: "/events/get-by-company/",
+  createEventByCompanyUuid: "/events/create",
+  updateEventByUuid: "/events/update/",
+  deleteEventByUuid: "/events/delete/",
 };

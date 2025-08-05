@@ -28,6 +28,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { useTranslations } from "next-intl";
 
 export default function BranchPage() {
   // Delete Branch Dialog state
@@ -49,6 +50,7 @@ export default function BranchPage() {
       console.error(error);
     }
   };
+  const t = useTranslations("branchPage");
   const [decryptedUuid, setDecryptedUuid] = useState("");
   const [hasMounted, setHasMounted] = useState(false);
   // Dialog state for Add Branch
@@ -192,21 +194,12 @@ export default function BranchPage() {
                 <Building2 className="h-6 w-6 text-primary" />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Branch Management
+                {t("title")}
               </h1>
             </div>
             <p className="text-gray-600 dark:text-gray-400 text-lg">
-              Manage and organize your company locations efficiently
+              {t("description")}
             </p>
-            {companyBranches.length > 0 && (
-              <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-                <span className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  {companyBranches.length} active{" "}
-                  {companyBranches.length === 1 ? "branch" : "branches"}
-                </span>
-              </div>
-            )}
           </div>
           <AddBranchDialog
             open={open}
