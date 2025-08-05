@@ -1,5 +1,4 @@
 export type EmployeeType = {
-    fullname: { fullname: string; firstname: string; lastname: string; };
     company_uuid: string;
     user_uuid: string;
     employee_uuid: string;

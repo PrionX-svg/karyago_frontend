@@ -63,8 +63,6 @@ export default function EmployeePage() {
   const userData = useUserStore((state) => state.user);
 
   const em = useTranslations("employees");
-  const ie = useTranslations("import-excel");
-  const co = useTranslations("common");
   const ap = useTranslations("api");
 
   const employeesData = useEmployeeStore((state) => state.employees);
@@ -147,9 +145,13 @@ export default function EmployeePage() {
     formData.append("role_uuid", userData.role.uuid);
 
     importEmployee(formData)
-      .then(() => {
+      .then((data) => {
         toast.success(ap("importSuccess"));
         setFile(null);
+        if (data) {
+          setImportedData(data);
+          setShowImportedDataDialog(true);
+        }
       })
       .catch((error) => {
         const errorMessage =
@@ -282,36 +284,32 @@ export default function EmployeePage() {
                 variant={viewType === "table" ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setViewType("table")}
-                className={`gap-2 rounded-md ${
-                  viewType === "table"
-                    ? "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:text-white dark:hover:bg-orange-700"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-gray-300 dark:hover:bg-neutral-700"
-                }`}
+                className={`gap-2 rounded-md ${viewType === "table"
+                  ? "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:text-white dark:hover:bg-orange-700"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-gray-300 dark:hover:bg-neutral-700"
+                  }`}
               >
                 <List
-                  className={`w-4 h-4 ${
-                    viewType === "table"
-                      ? "text-white"
-                      : "text-gray-500 dark:text-gray-400"
-                  }`}
+                  className={`w-4 h-4 ${viewType === "table"
+                    ? "text-white"
+                    : "text-gray-500 dark:text-gray-400"
+                    }`}
                 />
               </Button>
               <Button
                 variant={viewType === "card" ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setViewType("card")}
-                className={`gap-2 rounded-md ${
-                  viewType === "card"
-                    ? "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:text-white dark:hover:bg-orange-700"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-gray-300 dark:hover:bg-neutral-700"
-                }`}
+                className={`gap-2 rounded-md ${viewType === "card"
+                  ? "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:text-white dark:hover:bg-orange-700"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-gray-300 dark:hover:bg-neutral-700"
+                  }`}
               >
                 <LayoutGrid
-                  className={`w-4 h-4 ${
-                    viewType === "card"
-                      ? "text-white"
-                      : "text-gray-500 dark:text-gray-400"
-                  }`}
+                  className={`w-4 h-4 ${viewType === "card"
+                    ? "text-white"
+                    : "text-gray-500 dark:text-gray-400"
+                    }`}
                 />
               </Button>
             </div>
@@ -437,11 +435,10 @@ export default function EmployeePage() {
                   {filteredEmployees.map((employee, index) => (
                     <tr
                       key={employee.employee_uuid}
-                      className={`border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors ${
-                        index % 2 === 0
-                          ? "bg-white dark:bg-neutral-900"
-                          : "bg-gray-50/30 dark:bg-neutral-800/30"
-                      }`}
+                      className={`border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors ${index % 2 === 0
+                        ? "bg-white dark:bg-neutral-900"
+                        : "bg-gray-50/30 dark:bg-neutral-800/30"
+                        }`}
                     >
                       <td className="py-4 px-6">
                         <div className="font-medium text-gray-900 dark:text-gray-100">
@@ -653,13 +650,12 @@ export default function EmployeePage() {
 
             {/* File Upload Area */}
             <div
-              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                dragActive
-                  ? "border-orange-400 bg-orange-50 dark:bg-orange-900/20"
-                  : file
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive
+                ? "border-orange-400 bg-orange-50 dark:bg-orange-900/20"
+                : file
                   ? "border-green-400 bg-green-50 dark:bg-green-900/20"
                   : "border-gray-300 hover:border-gray-400 dark:border-gray-700"
-              }`}
+                }`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
