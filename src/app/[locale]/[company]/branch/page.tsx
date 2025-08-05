@@ -269,7 +269,7 @@ export default function BranchPage() {
                       variant="secondary"
                       size="sm"
                       onClick={() => handleEditBranch(branch)}
-                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-lg"
+                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-lg dark:bg-slate-800/90 dark:hover:bg-slate-700 transition-colors duration-200"
                     >
                       <Edit3 className="h-4 w-4" />
                     </Button>

@@ -62,7 +62,7 @@ export default function AuthPage() {
       localStorage.setItem("atem", await encrypt(company[0].uuid));
 
       if (company.length === 1) {
-        const formattedName = company[0].name.replace(/\s+/g, "");
+        const formattedName = company[0].name.toLowerCase().replace(/\s+/g, "-");
         return router.push(`/${formattedName}/`);
       }
 

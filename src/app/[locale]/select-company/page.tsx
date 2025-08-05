@@ -28,7 +28,8 @@ export default function ChooseCompanyPage() {
     setSelectedCompany(companyName);
     const encrypted = await encrypt(companyUuid);
     localStorage.setItem("atem", encrypted);
-    router.push(`/${companyName}`);
+    const slug = companyName.toLowerCase().replace(/\s+/g, "-");
+    router.push(`/${slug}`);
   };
 
   useEffect(() => {
