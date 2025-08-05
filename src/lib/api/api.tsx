@@ -18,6 +18,7 @@ import {
 } from "../interfaces/company-interface";
 import patchAPI from "./patchAPI";
 import deleteAPI from "./deleteAPI";
+import { UpdateUserPayload } from "../interfaces/user-interface";
 
 export const api = {
   async getMe() {
@@ -26,6 +27,20 @@ export const api = {
       const response = await getAPI(`${API_URL.getMe}`);
       const formattedUserData = responseFormatter.formatUserData(response);
       setUserInfo(formattedUserData);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  async updateUser(data: UpdateUserPayload, userUuid: string) {
+    try {
+      const updateUser = useUserStore.getState().updateUser;
+      const response = await patchAPI(data, `${API_URL.updateUser}${userUuid}`);
+      if (response.status === 200) {
+        console.log(response.data.data)
+        updateUser(response.data.data);
+      } else {
+        throw new Error("Failed to update user");
+      }
     } catch (error) {
       return Promise.reject(error);
     }

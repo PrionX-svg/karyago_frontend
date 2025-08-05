@@ -1,5 +1,6 @@
 export type UserType = {
-  uuid: string;
+  userUuid: string;
+  employeeUuid: string;
   name:{
     firstName: string;
     lastName: string;

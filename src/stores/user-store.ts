@@ -10,7 +10,8 @@ type UserStore = {
 
 export const useUserStore = create<UserStore>((set) => ({
     user: {
-        uuid: "",
+        userUuid: "",
+        employeeUuid: "",
         name:{ 
             fullName: "",
             firstName: "",
@@ -40,8 +41,9 @@ export const useUserStore = create<UserStore>((set) => ({
         }
     })),
     removeUser: (uuid) => set((state) => ({
-        user: state.user.uuid === uuid ? {
-            uuid: "",
+        user: state.user.userUuid === uuid ? {
+            userUuid: "",
+            employeeUuid: "",
             name: {
                 fullName: "",
                 firstName: "",

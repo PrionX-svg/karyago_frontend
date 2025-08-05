@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,56 +10,109 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { User, Edit3, X, Save, Camera, Clock } from "lucide-react"
 import { useUserStore } from "@/stores/user-store"
 import { UpdateUserPayload } from "@/lib/interfaces/user-interface"
+import { api } from "@/lib/api/api"
+import { toast } from "sonner"
+import { decrypt } from "@/lib/encrypt"
+import { profileSchema, ProfileSchemaType } from "@/lib/schema"
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
+  const [hasMounted, setHasMounted] = useState(false);
+  const [decryptedUuid, setDecryptedUuid] = useState<string | null>(null)
+  const [errors, setErrors] = useState<Partial<Record<keyof ProfileSchemaType, string>>>({});
   const userData = useUserStore((state) => state.user)
 
-  const mapUserToPayload = (): UpdateUserPayload => ({
+  const mapUserToPayload = (): ProfileSchemaType => ({
     firstname: userData.name.firstName || "",
     lastname: userData.name.lastName || "",
     email: userData.email,
     phone: userData.phone || "",
-    dob: userData.dob || null,
-    gender: userData.gender || null,
+    dob: userData.dob || "",
+    gender: userData.gender || "",
     is_freelance: userData.isFreelance,
   })
 
-  const [editData, setEditData] = useState<UpdateUserPayload>(mapUserToPayload())
+  const [editData, setEditData] = useState<ProfileSchemaType>(mapUserToPayload())
 
   const handleEdit = () => {
     setEditData(mapUserToPayload())
+    setErrors({})
     setIsEditing(true)
   }
 
   const handleCancel = () => {
     setEditData(mapUserToPayload())
+    setErrors({})
     setIsEditing(false)
   }
 
-  const handleSave = () => {
-    const payload: UpdateUserPayload = {
-      ...editData,
-      dob: editData.dob ? new Date(editData.dob).toISOString() : null, // Format untuk backend
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  const toDateInputValue = (dateString?: string | null) => {
+    if (!dateString) return "";
+    return dateString.split("T")[0]; // Ambil format "YYYY-MM-DD"
+  };
+
+  const toRFC3339 = (dateString?: string | null) => {
+    if (!dateString) return null;
+    return new Date(dateString).toISOString(); // Ubah ke RFC3339
+  };
+
+  const handleSave = async () => {
+    const result = profileSchema.safeParse(editData);
+
+    if (!result.success) {
+      const fieldErrors: Partial<Record<keyof ProfileSchemaType, string>> = {};
+      result.error.issues.forEach((issue) => {
+        const fieldName = issue.path[0] as keyof ProfileSchemaType;
+        if (fieldName) {
+          fieldErrors[fieldName] = issue.message;
+        }
+      });
+      setErrors(fieldErrors);
+      toast.error("Please fix the validation errors");
+      return;
     }
-    console.log("Payload ready to send:", payload)
-    // TODO: Panggil API update profile
-    setIsEditing(false)
-  }
 
-  const handleInputChange = (field: keyof UpdateUserPayload, value: string | boolean) => {
+    setErrors({});
+
+    const payload: UpdateUserPayload = {
+      ...result.data,
+      dob: toRFC3339(editData.dob),
+      company_uuid: decryptedUuid || undefined,
+      role_uuid: userData.role.uuid
+    };
+
+    try {
+      await api.updateUser(payload, userData.userUuid);
+      toast.success("Profile updated successfully");
+      setIsEditing(false);
+    } catch (error) {
+      toast.error("Failed to update profile");
+      console.error("Update profile error:", error);
+    }
+  };
+
+  const handleInputChange = (field: keyof ProfileSchemaType, value: string | boolean) => {
     setEditData((prev) => ({
       ...prev,
       [field]: value,
     }))
-  }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
+    if (errors[field]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
   }
 
   const getInitials = (name: string) => {
@@ -69,6 +122,20 @@ export default function ProfilePage() {
       .join("")
       .toUpperCase()
   }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setHasMounted(true);
+      const uuid = localStorage.getItem("atem");
+      if (uuid) {
+        const decrypted = await decrypt(uuid);
+        setDecryptedUuid(decrypted);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (!hasMounted) return null;
 
   return (
     <div className="min-h-screen">
@@ -194,7 +261,11 @@ export default function ProfilePage() {
                     placeholder="First Name"
                     value={editData.firstname}
                     onChange={(e) => handleInputChange("firstname", e.target.value)}
+                    className={errors.firstname ? "border-red-500" : ""}
                   />
+                  {errors.firstname && (
+                    <p className="text-red-500 text-sm">{errors.firstname}</p>
+                  )}
                 </div>
                 <div className="flex-1 space-y-2">
                   <Label>Last Name</Label>
@@ -202,7 +273,11 @@ export default function ProfilePage() {
                     placeholder="Last Name"
                     value={editData.lastname}
                     onChange={(e) => handleInputChange("lastname", e.target.value)}
+                    className={errors.lastname ? "border-red-500" : ""}
                   />
+                  {errors.lastname && (
+                    <p className="text-red-500 text-sm">{errors.lastname}</p>
+                  )}
                 </div>
               </div>
             ) : (
@@ -216,11 +291,17 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <Label>Email Address</Label>
               {isEditing ? (
-                <Input
-                  type="email"
-                  value={editData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                />
+                <>
+                  <Input
+                    type="email"
+                    value={editData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    className={errors.email ? "border-red-500" : ""}
+                  />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm">{errors.email}</p>
+                  )}
+                </>
               ) : (
                 <div className="info-box">{userData.email}</div>
               )}
@@ -230,10 +311,16 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <Label>Phone Number</Label>
               {isEditing ? (
-                <Input
-                  value={editData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
-                />
+                <>
+                  <Input
+                    value={editData.phone}
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
+                    className={errors.phone ? "border-red-500" : ""}
+                  />
+                  {errors.phone && (
+                    <p className="text-red-500 text-sm">{errors.phone}</p>
+                  )}
+                </>
               ) : (
                 <div className="info-box">{userData.phone}</div>
               )}
@@ -243,18 +330,23 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <Label>Gender</Label>
               {isEditing ? (
-                <Select
-                  value={editData.gender || ""}
-                  onValueChange={(value) => handleInputChange("gender", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                  </SelectContent>
-                </Select>
+                <>
+                  <Select
+                    value={editData.gender}
+                    onValueChange={(value) => handleInputChange("gender", value)}
+                  >
+                    <SelectTrigger className={errors.gender ? "border-red-500" : ""}>
+                      <SelectValue placeholder="Select Gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.gender && (
+                    <p className="text-red-500 text-sm">{errors.gender}</p>
+                  )}
+                </>
               ) : (
                 <div className="info-box capitalize">
                   {userData.gender || <span className="italic text-muted-foreground">Not set</span>}
@@ -266,11 +358,17 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <Label>Date of Birth</Label>
               {isEditing ? (
-                <Input
-                  type="date"
-                  value={editData.dob || ""}
-                  onChange={(e) => handleInputChange("dob", e.target.value)}
-                />
+                <>
+                  <Input
+                    type="date"
+                    value={toDateInputValue(editData.dob)}
+                    onChange={(e) => handleInputChange("dob", e.target.value)}
+                    className={errors.dob ? "border-red-500" : ""}
+                  />
+                  {errors.dob && (
+                    <p className="text-red-500 text-sm">{errors.dob}</p>
+                  )}
+                </>
               ) : (
                 <div className="info-box">
                   {userData.dob
@@ -284,20 +382,25 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <Label>Employment Type</Label>
               {isEditing ? (
-                <Select
-                  value={editData.is_freelance ? "freelance" : "fulltime"}
-                  onValueChange={(value) =>
-                    handleInputChange("is_freelance", value === "freelance")
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Employment Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="fulltime">Full-time Employee</SelectItem>
-                    <SelectItem value="freelance">Freelance</SelectItem>
-                  </SelectContent>
-                </Select>
+                <>
+                  <Select
+                    value={editData.is_freelance ? "freelance" : "fulltime"}
+                    onValueChange={(value) =>
+                      handleInputChange("is_freelance", value === "freelance")
+                    }
+                  >
+                    <SelectTrigger className={errors.is_freelance ? "border-red-500" : ""}>
+                      <SelectValue placeholder="Select Employment Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="fulltime">Full-time Employee</SelectItem>
+                      <SelectItem value="freelance">Freelance</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.is_freelance && (
+                    <p className="text-red-500 text-sm">{errors.is_freelance}</p>
+                  )}
+                </>
               ) : (
                 <div className="info-box">
                   {userData.isFreelance ? "Freelance" : "Full-time Employee"}

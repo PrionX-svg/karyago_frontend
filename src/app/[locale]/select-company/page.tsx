@@ -35,7 +35,7 @@ export default function ChooseCompanyPage() {
     if (!companyData || companyData.length === 0) {
       const fetchCompanydata = async () => {
         try {
-          await fetchCompaniesByUserUuid(userData.uuid);
+          await fetchCompaniesByUserUuid(userData.userUuid);
         } catch (error) {
           console.error("Failed to fetch company data:", error);
         }
@@ -43,7 +43,7 @@ export default function ChooseCompanyPage() {
       fetchCompanydata();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [companyData, userData.uuid]);
+  }, [companyData, userData.userUuid]);
 
   if (isFetchingGetMe || isFetchingCompanies) {
     return <CompanySkeleton />;
