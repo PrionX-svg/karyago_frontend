@@ -36,8 +36,8 @@ export const api = {
       const updateUser = useUserStore.getState().updateUser;
       const response = await patchAPI(data, `${API_URL.updateUser}${userUuid}`);
       if (response.status === 200) {
-        console.log(response.data.data)
-        updateUser(response.data.data);
+        const formattedData = responseFormatter.formatUpdateUser(response.data.data)
+        updateUser(formattedData);
       } else {
         throw new Error("Failed to update user");
       }

@@ -38,3 +38,28 @@ export interface UpdateUserPayload {
   company_uuid?: string
   branch_uuid?: string
 }
+
+export interface UpdateUserResponse {
+  user_uuid: string;
+  employee_uuid: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  gender: string | null;
+  dob: string | null;
+  is_freelance: boolean;
+  role: {
+    uuid: string;
+    name: string;
+  };
+  branch: {
+    uuid: string;
+    name: string;
+  };
+  company: {
+    uuid: string;
+    name: string;
+  };
+}
