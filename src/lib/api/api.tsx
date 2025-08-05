@@ -18,7 +18,6 @@ import {
 } from "../interfaces/company-interface";
 import patchAPI from "./patchAPI";
 import deleteAPI from "./deleteAPI";
-import { get } from "http";
 import { useEventStore } from "@/stores/event-store";
 import { CreateEventPayload } from "../interfaces/event-interface";
 import { UpdateUserPayload } from "../interfaces/user-interface";
@@ -102,7 +101,7 @@ export const api = {
       );
 
       const formattedBranches =
-        await responseFormatter.formatGetBranchesByCompanyUuid(response);
+        responseFormatter.formatGetBranchesByCompanyUuid(response);
       setBranches(formattedBranches);
     } catch (error) {
       return Promise.reject(error);
