@@ -34,7 +34,7 @@ export function Header() {
   const toggleSidebarCollapse = useGeneralStore((s) => s.toggleSidebarCollapse);
   const { isFetchingGetMe } = user.useGetMe();
 
-  company.useGetCurrentCompanyByUserUuid(userInfo.uuid ?? "");
+  company.useGetCurrentCompanyByUserUuid(userInfo.userUuid ?? "");
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
@@ -101,8 +101,8 @@ export function Header() {
               <Avatar className="w-8 h-8">
                 <AvatarImage src="/placeholder.svg?height=32&width=32" />
                 <AvatarFallback>
-                  {userInfo?.fullName
-                  ? userInfo.fullName.split(" ")[0][0].toUpperCase()
+                  {userInfo?.name.fullName
+                  ? userInfo.name.fullName.split(" ")[0][0].toUpperCase()
                   : "?"}
                 </AvatarFallback>
               </Avatar>
@@ -115,7 +115,7 @@ export function Header() {
                 ) : (
                   <>
                     <div className="text-sm font-medium">
-                      {userInfo?.fullName}
+                      {userInfo?.name.fullName}
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {userInfo?.role.name}

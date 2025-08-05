@@ -1,10 +1,15 @@
 export type UserType = {
-  uuid: string;
-  fullName: string;
+  userUuid: string;
+  employeeUuid: string;
+  name:{
+    firstName: string;
+    lastName: string;
+    fullName: string;
+  };
   email: string;
   phone: string;
-  gender: string;
-  dob: string;
+  gender: string | null;
+  dob: string | null;
   isFreelance: boolean;
   role: {
     name: string;

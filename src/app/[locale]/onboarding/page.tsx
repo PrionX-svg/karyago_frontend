@@ -25,7 +25,7 @@ export default function OnboardingPage() {
 
   const { isFetchingGetMe } = user.useGetMe();
   const router = useRouter();
-  const userUuid = useUserStore((state) => state.user.uuid);
+  const userUuid = useUserStore((state) => state.user.userUuid);
   const lo = useTranslations("onboarding");
 
   const handleCompanyNext = () => {

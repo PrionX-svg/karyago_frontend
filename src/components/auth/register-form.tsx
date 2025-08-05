@@ -156,11 +156,10 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, password: e.target.value }))
             }
-            className={`border-gray-300 dark:border-stone-800 focus:border-orange-500 focus:ring-orange-500 pr-10 ${
-              formData.password && !isValid
-                ? "border-red-500 focus:border-red-500"
-                : ""
-            }`}
+            className={`border-gray-300 dark:border-stone-800 focus:border-orange-500 focus:ring-orange-500 pr-10 ${formData.password && !isValid
+              ? "border-red-500 focus:border-red-500"
+              : ""
+              }`}
             required
             minLength={8}
           />
@@ -216,11 +215,10 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
                 confirmPassword: e.target.value,
               }))
             }
-            className={`border-gray-300 dark:border-stone-800 focus:border-orange-500 focus:ring-orange-500 pr-10 ${
-              formData.confirmPassword && !isValid
-                ? "border-red-500 focus:border-red-500"
-                : ""
-            }`}
+            className={`border-gray-300 dark:border-stone-800 focus:border-orange-500 focus:ring-orange-500 pr-10 ${formData.confirmPassword && !isValid
+              ? "border-red-500 focus:border-red-500"
+              : ""
+              }`}
             required
             minLength={8}
           />

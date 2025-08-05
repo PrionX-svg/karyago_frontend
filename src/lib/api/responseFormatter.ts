@@ -10,7 +10,7 @@ import {
   UpdateDivisionResponse,
   UpdateSubDivisionResponse,
 } from "../interfaces/company-interface";
-import { GetMeResponse } from "../interfaces/user-interface";
+import { GetMeResponse, UpdateUserResponse } from "../interfaces/user-interface";
 import {
   CompanyBranchType,
   CompanyType,
@@ -32,17 +32,46 @@ import { GetRoleByCompanyUuidResponse } from "../interfaces/role-interface";
 export const responseFormatter = {
   formatUserData(response: GetMeResponse): UserType {
     return {
-      uuid: response.data?.user_uuid,
-      fullName: response.data?.full_name,
-      email: response.data?.email,
-      phone: response.data?.phone,
-      gender: response.data?.gender,
-      dob: response.data?.dob,
-      isFreelance: response.data?.is_freelance,
-      role: response.data?.role,
+      userUuid: response.data.user_uuid,
+      employeeUuid: response.data.employee_uuid,
+      name: {
+        firstName: response.data.first_name,
+        lastName: response.data.last_name,
+        fullName: response.data.full_name,
+      },
+      email: response.data.email,
+      phone: response.data.phone,
+      gender: response.data.gender,
+      dob: response.data.dob,
+      isFreelance: response.data.is_freelance,
+      role: response.data.role,
       branch: {
-        uuid: response.data?.branch.uuid,
-        name: response.data?.branch.name,
+        uuid: response.data.branch.uuid,
+        name: response.data.branch.name,
+      },
+    };
+  },
+  formatUpdateUser(response: UpdateUserResponse): UserType {
+    return {
+      name: {
+        firstName: response.first_name,
+        lastName: response.last_name,
+        fullName: response.full_name,
+      },
+      email: response.email,
+      phone: response.phone,
+      dob: response.dob,
+      isFreelance: response.is_freelance,
+      gender: response.gender,
+      userUuid: response.user_uuid,
+      employeeUuid: response.employee_uuid,
+      role: {
+        uuid: response.role.uuid,
+        name: response.role.name,
+      },
+      branch: {
+        uuid: response.branch.uuid,
+        name: response.branch.name,
       },
     };
   },

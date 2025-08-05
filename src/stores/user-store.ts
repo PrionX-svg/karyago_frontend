@@ -4,31 +4,60 @@ import { create } from "zustand";
 type UserStore = {
     user: UserType;
     setUser: (user: UserType) => void;
+    updateUser: (user: Partial<UserType>) => void;
     removeUser: (uuid: string) => void;
 }
 
 export const useUserStore = create<UserStore>((set) => ({
     user: {
-        uuid: "",
-        fullName: "",
+        userUuid: "",
+        employeeUuid: "",
+        name:{ 
+            fullName: "",
+            firstName: "",
+            lastName: ""
+        },
         email: "",
         phone: "",
         gender: "",
         dob: "",
         isFreelance: false,
-        role: ""
+        role: {
+            name: "",
+            uuid: ""
+        }
     },
     setUser: (user) => set({ user }),
+    updateUser: (user) => set((state) => ({
+        user: {
+            ...state.user,
+            ...user,
+            role: user.role
+                ? { ...state.user.role, ...user.role }
+                : state.user.role,
+            branch: user.branch
+                ? { ...state.user.branch, ...user.branch }
+                : state.user.branch
+        }
+    })),
     removeUser: (uuid) => set((state) => ({
-        user: state.user.uuid === uuid ? {
-            uuid: "",
-            fullName: "",
+        user: state.user.userUuid === uuid ? {
+            userUuid: "",
+            employeeUuid: "",
+            name: {
+                fullName: "",
+                firstName: "",
+                lastName: ""
+            },
             email: "",
             phone: "",
             gender: "",
             dob: "",
             isFreelance: false,
-            role: ""
+            role: {
+                name: "",
+                uuid: "",
+            }
         } : state.user
     }))
 }))
