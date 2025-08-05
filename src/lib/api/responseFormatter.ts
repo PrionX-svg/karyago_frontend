@@ -32,17 +32,21 @@ import { GetRoleByCompanyUuidResponse } from "../interfaces/role-interface";
 export const responseFormatter = {
   formatUserData(response: GetMeResponse): UserType {
     return {
-      uuid: response.data?.user_uuid,
-      fullName: response.data?.full_name,
-      email: response.data?.email,
-      phone: response.data?.phone,
-      gender: response.data?.gender,
-      dob: response.data?.dob,
-      isFreelance: response.data?.is_freelance,
-      role: response.data?.role,
+      uuid: response.data.user_uuid,
+      name: {
+        firstName: response.data.first_name,
+        lastName: response.data.last_name,
+        fullName: response.data.full_name,
+      },
+      email: response.data.email,
+      phone: response.data.phone,
+      gender: response.data.gender,
+      dob: response.data.dob,
+      isFreelance: response.data.is_freelance,
+      role: response.data.role,
       branch: {
-        uuid: response.data?.branch.uuid,
-        name: response.data?.branch.name,
+        uuid: response.data.branch.uuid,
+        name: response.data.branch.name,
       },
     };
   },

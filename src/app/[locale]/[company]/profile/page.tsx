@@ -1,44 +1,57 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { User, Edit3, Save, X, Camera, Clock } from "lucide-react"
-import { UserType } from "@/lib/types/user-type"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import { User, Edit3, X, Save, Camera, Clock } from "lucide-react"
 import { useUserStore } from "@/stores/user-store"
+import { UpdateUserPayload } from "@/lib/interfaces/user-interface"
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const userData = useUserStore((state) => state.user)
-  const [editData, setEditData] = useState<UserType>()
+
+  const mapUserToPayload = (): UpdateUserPayload => ({
+    firstname: userData.name.firstName || "",
+    lastname: userData.name.lastName || "",
+    email: userData.email,
+    phone: userData.phone || "",
+    dob: userData.dob || null,
+    gender: userData.gender || null,
+    is_freelance: userData.isFreelance,
+  })
+
+  const [editData, setEditData] = useState<UpdateUserPayload>(mapUserToPayload())
 
   const handleEdit = () => {
-    setEditData(userData)
+    setEditData(mapUserToPayload())
     setIsEditing(true)
   }
 
   const handleCancel = () => {
-    setEditData(userData)
+    setEditData(mapUserToPayload())
     setIsEditing(false)
   }
 
   const handleSave = () => {
+    const payload: UpdateUserPayload = {
+      ...editData,
+      dob: editData.dob ? new Date(editData.dob).toISOString() : null, // Format untuk backend
+    }
+    console.log("Payload ready to send:", payload)
+    // TODO: Panggil API update profile
     setIsEditing(false)
   }
 
-  const handleInputChange = (field: keyof UserType, value: string | boolean) => {
-    setEditData((prev) =>
-      prev
-        ? {
-          ...prev,
-          [field]: value,
-        }
-        : prev
-    )
+  const handleInputChange = (field: keyof UpdateUserPayload, value: string | boolean) => {
+    setEditData((prev) => ({
+      ...prev,
+      [field]: value,
+    }))
   }
 
   const formatDate = (dateString: string) => {
@@ -108,16 +121,15 @@ export default function ProfilePage() {
 
       {/* Body */}
       <div className="pt-3 space-y-6">
-        {/* 🔶 Card Oranye: Avatar + Info + PTO */}
+        {/* 🔶 Card Oranye */}
         <Card className="bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-950/20 dark:to-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-xl shadow-sm">
           <CardContent>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              {/* Avatar */}
               <div className="relative">
                 <Avatar className="w-24 h-24 border-4 border-white dark:border-stone-800 shadow-lg">
                   <AvatarImage src="/placeholder.svg?height=96&width=96" />
                   <AvatarFallback className="text-xl font-bold bg-gradient-to-br from-orange-400 to-orange-600 text-white">
-                    {getInitials(userData.fullName)}
+                    {getInitials(userData.name.fullName)}
                   </AvatarFallback>
                 </Avatar>
                 {isEditing && (
@@ -130,22 +142,20 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              {/* Info */}
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-foreground">{userData.fullName}</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-foreground">{userData.name.fullName}</h3>
                 <p className="text-orange-600 dark:text-orange-400 font-medium">{userData.role.name}</p>
                 <div className="flex items-center gap-4 mt-2 text-sm text-gray-600 dark:text-muted-foreground">
-                  {userData.branch?.name ? (
+                  {userData.branch?.name && (
                     <>
                       <span>{userData.branch.name}</span>
                       <span>•</span>
                     </>
-                  ) : null}
+                  )}
                   <span>{userData.isFreelance ? "Freelance" : "Full-time Employee"}</span>
                 </div>
               </div>
 
-              {/* PTO */}
               <div>
                 <div className="flex items-center p-3 rounded-lg bg-white/70 dark:bg-stone-900/50 border border-orange-200/60 dark:border-orange-800/60 shadow-sm">
                   <div className="flex items-center gap-3">
@@ -167,7 +177,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* 🔳 Card Putih: Semua Field */}
+        {/* 🔳 Card Putih */}
         <Card className="bg-white dark:bg-card border border-gray-200 dark:border-stone-700 rounded-xl shadow-sm">
           <CardHeader>
             <CardTitle className="text-lg font-bold text-gray-900 dark:text-foreground">
@@ -175,18 +185,32 @@ export default function ProfilePage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Full Name */}
-            <div className="space-y-2">
-              <Label>Full Name</Label>
-              {isEditing ? (
-                <Input
-                  value={editData!.fullName ?? ""}
-                  onChange={(e) => handleInputChange("fullName", e.target.value)}
-                />
-              ) : (
-                <div className="info-box">{userData.fullName}</div>
-              )}
-            </div>
+            {/* First & Last Name */}
+            {isEditing ? (
+              <div className="flex gap-2">
+                <div className="flex-1 space-y-2">
+                  <Label>First Name</Label>
+                  <Input
+                    placeholder="First Name"
+                    value={editData.firstname}
+                    onChange={(e) => handleInputChange("firstname", e.target.value)}
+                  />
+                </div>
+                <div className="flex-1 space-y-2">
+                  <Label>Last Name</Label>
+                  <Input
+                    placeholder="Last Name"
+                    value={editData.lastname}
+                    onChange={(e) => handleInputChange("lastname", e.target.value)}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label>Full Name</Label>
+                <div className="info-box">{userData.name.firstName} {userData.name.lastName}</div>
+              </div>
+            )}
 
             {/* Email */}
             <div className="space-y-2">
@@ -194,7 +218,7 @@ export default function ProfilePage() {
               {isEditing ? (
                 <Input
                   type="email"
-                  value={editData!.email ?? ""}
+                  value={editData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                 />
               ) : (
@@ -207,7 +231,7 @@ export default function ProfilePage() {
               <Label>Phone Number</Label>
               {isEditing ? (
                 <Input
-                  value={editData!.phone ?? ""}
+                  value={editData.phone}
                   onChange={(e) => handleInputChange("phone", e.target.value)}
                 />
               ) : (
@@ -220,7 +244,7 @@ export default function ProfilePage() {
               <Label>Gender</Label>
               {isEditing ? (
                 <Select
-                  value={editData!.gender}
+                  value={editData.gender || ""}
                   onValueChange={(value) => handleInputChange("gender", value)}
                 >
                   <SelectTrigger>
@@ -229,17 +253,11 @@ export default function ProfilePage() {
                   <SelectContent>
                     <SelectItem value="male">Male</SelectItem>
                     <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                    <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
                   </SelectContent>
                 </Select>
               ) : (
                 <div className="info-box capitalize">
-                  {userData.gender
-                    ? userData.gender === "prefer-not-to-say"
-                      ? "Prefer not to say"
-                      : userData.gender
-                    : <span className="italic text-muted-foreground">Not set</span>}
+                  {userData.gender || <span className="italic text-muted-foreground">Not set</span>}
                 </div>
               )}
             </div>
@@ -248,17 +266,17 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <Label>Date of Birth</Label>
               {isEditing ? (
-              <Input
-                type="date"
-                value={editData!.dob ?? ""}
-                onChange={(e) => handleInputChange("dob", e.target.value)}
-              />
+                <Input
+                  type="date"
+                  value={editData.dob || ""}
+                  onChange={(e) => handleInputChange("dob", e.target.value)}
+                />
               ) : (
-              <div className="info-box">
-                {userData.dob
-                ? formatDate(userData.dob)
-                : <span className="italic text-muted-foreground">Not set</span>}
-              </div>
+                <div className="info-box">
+                  {userData.dob
+                    ? formatDate(userData.dob)
+                    : <span className="italic text-muted-foreground">Not set</span>}
+                </div>
               )}
             </div>
 
@@ -267,9 +285,9 @@ export default function ProfilePage() {
               <Label>Employment Type</Label>
               {isEditing ? (
                 <Select
-                  value={editData!.isFreelance ? "freelance" : "fulltime"}
+                  value={editData.is_freelance ? "freelance" : "fulltime"}
                   onValueChange={(value) =>
-                    handleInputChange("isFreelance", value === "freelance")
+                    handleInputChange("is_freelance", value === "freelance")
                   }
                 >
                   <SelectTrigger>
@@ -303,6 +321,6 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </div >
   )
 }

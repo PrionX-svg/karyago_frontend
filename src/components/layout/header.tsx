@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Settings } from "lucide-react";
+import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -123,7 +123,7 @@ export function Header() {
                 ) : (
                   <>
                     <div className="text-sm font-medium">
-                      {userInfo?.fullName}
+                      {userInfo?.name.fullName}
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {userInfo?.role.name}
