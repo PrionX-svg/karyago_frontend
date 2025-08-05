@@ -155,8 +155,8 @@ export function ClockWidget() {
   const statusConfig = getStatusConfig();
 
   return (
-    <Card className="feature-card card-hover-lift animate-fade-in h-full">
-      <CardHeader className="pb-3">
+    <Card className="feature-card card-hover-lift animate-fade-in h-full rounded-sm">
+      <CardHeader className="pb-3 lg:pb-0">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
             <Clock className="w-5 h-5" />
