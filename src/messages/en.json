@@ -577,14 +577,12 @@
     "delete": "Delete",
     "noEventsTitle": "No events yet",
     "noEventsDesc": "Create your first company event to keep everyone informed about important dates.",
-    "createFirstEvent": "Create First Event",
     "noEventsYet": "No Events Yet",
     "emptyStateDescription": "Get started by creating your first company event. Track important dates, celebrations, and milestones to keep your team engaged and informed.",
     "createEvent": "Create New Event",
     "createEventDesc": "Fill in the details to create a new company event.",
     "editEventDesc": "Update the event details below.",
     "eventNameLabel": "Event Name",
-    "eventNamePlaceholder": "Enter event name",
     "startDateLabel": "Start Date",
     "startDatePlaceholder": "Select start date",
     "endDateLabel": "End Date",
@@ -607,5 +605,6 @@
     "nextEvent": "Next Event:",
     "deleting": "Deleting...",
     "createFirstEvent": "Create Your First Event"
+  , "editEvent": "Edit Event"
   }
 }

@@ -588,5 +588,6 @@
     "deleting": "Wird gelöscht...",
     "createFirstEvent": "Erstes Event",
     "deleteEventConfirmation": "Sind Sie sicher, dass Sie das folgende Ereignis löschen möchten?"
+  , "editEvent": "Veranstaltung bearbeiten"
   }
 }

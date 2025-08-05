@@ -528,7 +528,6 @@
     "createEventTitle": "Buat Acara",
     "editEventTitle": "Edit Acara",
     "eventName": "Nama Acara",
-    "eventNamePlaceholder": "Masukkan nama acara",
     "startDateTime": "Tanggal & Waktu Mulai",
     "endDateTime": "Tanggal & Waktu Selesai",
     "eventPhoto": "Foto Acara",
@@ -541,7 +540,6 @@
     "delete": "Hapus",
     "noEventsTitle": "Belum ada acara",
     "noEventsDesc": "Buat acara perusahaan pertama Anda untuk memberi informasi kepada semua orang tentang tanggal penting.",
-    "createFirstEvent": "Buat Acara Pertama",
     "noEventsYet": "Belum Ada Acara",
     "emptyStateDescription": "Mulailah dengan membuat acara perusahaan pertama Anda. Lacak tanggal penting, perayaan, dan tonggak untuk menjaga tim Anda tetap terlibat dan terinformasi.",
     "createEvent": "Buat Acara Baru",
@@ -570,6 +568,7 @@
     "nextEvent": "Acara Selanjutnya:",
     "deleting": "Menghapus...",
     "createFirstEvent": "Buat Acara Pertama"
+  , "editEvent": "Edit Acara"
   },
   "assignEmployees": {
     "assignTitle": "Tetapkan Karyawan",
