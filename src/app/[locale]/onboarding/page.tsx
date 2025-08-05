@@ -74,7 +74,7 @@ export default function OnboardingPage() {
 
       if (userUuid) {
         try {
-          await api.getCompanyByUserUuid(userUuid);
+          await api.getCompanyByUserUuid(userUuid, true);
         } catch (error) {
           console.error("Failed to fetch company data:", error);
         }

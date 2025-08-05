@@ -11,13 +11,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { DivisionPayload, SubDivisionPayload } from "@/lib/interfaces/company-interface"
 import { toast } from "sonner"
-import postAPI from "@/lib/api/postAPI"
 import { HelpFooter } from "../layout/help-footer"
 import { motion, AnimatePresence, easeOut } from "framer-motion"
 import { useCompanyStore } from "@/stores/company-store"
 import { decrypt } from "@/lib/encrypt"
 import deleteAPI from "@/lib/api/deleteAPI"
 import { useTranslations } from "next-intl"
+import { api } from "@/lib/api/api"
 
 interface OrganizationalStructureProps {
     onNext: (divisions: DivisionPayload[], subDivisions: SubDivisionPayload[]) => void
@@ -34,8 +34,6 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
     const companyUuid = useCompanyStore((state) => state.company[0]?.uuid)
     const divisions = useCompanyStore((state) => state.division)
     const subDivisions = useCompanyStore((state) => state.subDivision)
-    const addDivision = useCompanyStore((state) => state.addDivision)
-    const addSubDivision = useCompanyStore((state) => state.addSubDivision)
     const removeDivision = useCompanyStore((state) => state.removeDivision)
     const removeSubDivision = useCompanyStore((state) => state.removeSubDivision)
     const ap = useTranslations("api");
@@ -58,16 +56,15 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
         if (newDivision.name.trim()) {
             try {
                 setIsLoading(true)
-                const response = await postAPI(newDivision, "/department-groups/create")
-                if (response.status === 201) {
-                    const createdDivision = response.data.data
-                    addDivision(createdDivision)
-                    setNewDivision({ company_uuid: resolvedCompanyUuid ?? "", name: "", desc: "" })
-                    setShowDivisionForm(false)
-                    toast.success(ap('createDivisionSuccess'))
-                } else {
-                    toast.error(ap('createDivisionFailed'))
-                }
+                await api.createDivision(newDivision)
+                    .then(() => {
+                        setNewDivision({ company_uuid: resolvedCompanyUuid ?? "", name: "", desc: "" })
+                        setShowDivisionForm(false)
+                        toast.success(ap('createDivisionSuccess'))
+                    })
+                    .catch(() => {
+                        toast.error(ap('createDivisionFailed'))
+                    })
             } catch {
                 toast.error(ap('somethingWentWrong'))
             } finally {
@@ -80,16 +77,15 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
         if (newSubDivision.name.trim() && newSubDivision.department_group_uuid) {
             try {
                 setIsLoading(true)
-                const response = await postAPI(newSubDivision, "/departments/create")
-                if (response.status === 201) {
-                    const createdSubDivision = response.data.data
-                    addSubDivision(createdSubDivision)
-                    setNewSubDivision({ department_group_uuid: "", name: "", desc: "" })
-                    setShowSubDivisionForm(false)
-                    toast.success(ap('createSubDivisionSuccess'))
-                } else {
-                    toast.error(ap('createSubDivisionFailed'))
-                }
+                await api.createSubDivision(newSubDivision)
+                    .then(() => {
+                        setNewSubDivision({ department_group_uuid: "", name: "", desc: "" })
+                        setShowSubDivisionForm(false)
+                        toast.success(ap('createSubDivisionSuccess'))
+                    })
+                    .catch(() => {
+                        toast.error(ap('createSubDivisionFailed'))
+                    })
             } catch {
                 toast.error(ap('somethingWentWrong'))
             } finally {
@@ -142,14 +138,6 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
         }
     }
 
-    const getDivisionName = (divisionId: string) => {
-        return divisions.find((div) => div.uuid === divisionId)?.name || "Unknown Division"
-    }
-
-    const getSubDivisionsByDivision = (divisionId: string) => {
-        return subDivisions.filter((sub) => sub.divisions.uuid === divisionId)
-    }
-
     const handleNext = async () => {
         onNext(
             divisions,
@@ -180,6 +168,11 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
             setNewDivision((prev) => ({ ...prev, company_uuid: resolvedCompanyUuid }))
         }
     }, [resolvedCompanyUuid])
+
+    useEffect(() => {
+        console.log("Divisions:", divisions)
+        console.log("SubDivisions:", subDivisions)
+    }, [divisions, subDivisions])
 
     const containerVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -460,7 +453,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                                                 <div className="flex items-center gap-2 mt-2">
                                                                     <span className="text-xs text-orange-700">Sub-divisions:</span>
                                                                     <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">
-                                                                        {getSubDivisionsByDivision(division.uuid || "").length}
+                                                                        {subDivisions.filter((sub) => sub.divisions?.uuid === division.uuid).length}
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -661,7 +654,7 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                                                                         <div className="flex-1">
                                                                             <div className="flex items-center gap-2 mb-1">
                                                                                 <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                                                                                    {getDivisionName(subDivision.divisions.uuid)}
+                                                                                    {subDivision.divisions?.name}
                                                                                 </span>
                                                                                 <ChevronRight className="w-3 h-3 text-gray-400" />
                                                                             </div>
@@ -760,7 +753,6 @@ export function OrganizationalStructure({ onNext }: OrganizationalStructureProps
                     </motion.section>
                 </div>
             </main>
-            {/* Help Footer */}
             <HelpFooter />
         </motion.div>
     )
