@@ -417,18 +417,19 @@ export const api = {
     }
   },
   async importEmployee(formData: FormData) {
-    const setEmployee = useEmployeeStore.getState().setEmployees;
-    const setEmployeeHistory = useEmployeeStore.getState().setEmployeeHistory;
+    const addEmployees = useEmployeeStore.getState().addEmployees;
+    const addEmployeeHistory = useEmployeeStore.getState().addEmployeesHistory;
     try {
       const response = await postAPI(formData, `${API_URL.importEmployee}`);
       if (response.status === 200) {
-        const employeesData = responseFormatter.formatImportEmployeeData(
-          response.data
-        );
+        const employeesData = responseFormatter.formatImportEmployeeData(response.data);
         const employeeHistoryData =
           responseFormatter.formatImportEmployeeHistoryData(response.data);
-        setEmployee(employeesData);
-        setEmployeeHistory(employeeHistoryData);
+        addEmployees(employeesData);
+        addEmployeeHistory(employeeHistoryData);
+      }
+      else {
+        throw new Error("Failed to import employee data");
       }
     } catch (error) {
       return Promise.reject(error);

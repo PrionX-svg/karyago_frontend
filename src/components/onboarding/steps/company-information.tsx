@@ -82,15 +82,15 @@ export function CompanyInformation({ onNext, companyUuid }: CompanyInformationPr
     const ci = useTranslations("onboarding")
 
     useEffect(() => {
-        if (user.uuid) {
+        if (user.userUuid) {
             setFormData((prev) => ({
                 ...prev,
-                user_uuid: user.uuid,
+                user_uuid: user.userUuid,
             }))
         } else {
             toast.warning("User UUID missing!")
         }
-    }, [user.uuid])
+    }, [user.userUuid])
 
     useEffect(() => {
         const isValidCompanyUuid =
