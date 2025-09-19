@@ -26,7 +26,7 @@ export function AssignEmployeeDialog({ employee, mode, storedUuid }: EmployeeDia
     const handleAction = async () => {
         if (mode === "assign") {
             const parsed = JSON.parse(selectedSubDivision);
-            await api.assignEmployeeToSubDivision(employee.user_uuid, parsed)
+            await api.assignEmployeeToSubDivision(employee.employee_uuid, parsed)
                 .then(() => {
                     toast.success("Employee assigned successfully!");
                 })
@@ -34,7 +34,7 @@ export function AssignEmployeeDialog({ employee, mode, storedUuid }: EmployeeDia
                     toast.error("Failed to assign employee.");
                 });
         } else {
-            await api.removeEmployeeFromSubDivision(employee.user_uuid, employee.subDivision!.uuid)
+            await api.removeEmployeeFromSubDivision(employee.employee_uuid, employee.subDivision!.uuid)
                 .then(() => {
                     toast.success("Employee removed successfully!");
                 })
