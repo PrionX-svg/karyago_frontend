@@ -136,17 +136,6 @@ function DesktopSidebar({ navigationItems = defaultNavigationItems }: { navigati
             <PanelLeftClose className="w-4 h-4 text-sidebar-foreground" />
           )}
         </button>
-
-        {/* {!isCollapsed && (
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-sidebar-foreground/60" />
-            <input
-              type="text"
-              placeholder="Search"
-              className="w-full pl-10 pr-3 py-2 bg-sidebar-accent/50 border border-sidebar-border rounded-md text-sm text-sidebar-foreground placeholder:text-sidebar-foreground/60 focus:outline-none focus:ring-2 focus:ring-sidebar-ring"
-            />
-          </div>
-        )} */}
       </div>
 
       <div className="flex-1 overflow-y-auto p-3">
@@ -254,15 +243,6 @@ function MobileSidebar({ navigationItems = defaultNavigationItems }: { navigatio
   return (
     <TooltipProvider>
       <Sidebar collapsible="offcanvas" className="border-r border-sidebar-border bg-sidebar">
-        <SidebarHeader className="p-4 border-b border-sidebar-border">
-          {/* <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-sidebar-foreground/60" />
-            <SidebarInput
-              placeholder="Search"
-              className="pl-10 bg-sidebar-accent/50 border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/60"
-            />
-          </div> */}
-        </SidebarHeader>
 
         <SidebarContent className="flex-1 overflow-y-auto">
           <SidebarGroup>
