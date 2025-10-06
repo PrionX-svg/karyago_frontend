@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useParams, usePathname } from "next/navigation"
 
-const navigationItems = [
+const navigationItemsAdmin = [
   { name: "Dashboard", icon: Home, path: "" },
   { name: "Profile", icon: User, path: "/profile" },
   {
@@ -43,14 +43,24 @@ const navigationItems = [
     path: "/structure",
     submenu: [
       { name: "Divsions", path: "/structure/divisions" },
-      { name: "Sub-Divisions", path: "/structure/sub-divisions" }, 
+      { name: "Sub-Divisions", path: "/structure/sub-divisions" },
     ],
   },
   { name: "Branch", icon: MapPin, path: "/branch" },
 ]
 
+const navigationItemsEmployee = [
+  { name: "Dashboard", icon: Home, path: "" },
+  { name: "Profile", icon: User, path: "/my/profile" },
+  { name: "Attendance", icon: Users, path: "/my/attendance" },
+  { name: "Department Group", icon: Users, path: "/my/department" },
+]
+
+// keep backwards-compatibility default if needed
+const defaultNavigationItems = navigationItemsAdmin
+
 // Desktop Sidebar Component (Regular Div with Sticky)
-function DesktopSidebar() {
+function DesktopSidebar({ navigationItems = defaultNavigationItems }: { navigationItems?: typeof navigationItemsAdmin }) {
   const [expandedItems, setExpandedItems] = useState<string[]>([])
   const [isCollapsed, setIsCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
@@ -222,7 +232,7 @@ function DesktopSidebar() {
 }
 
 // Mobile Sidebar Component (Using Sidebar Component)
-function MobileSidebar() {
+function MobileSidebar({ navigationItems = defaultNavigationItems }: { navigationItems?: typeof navigationItemsAdmin }) {
   const [expandedItems, setExpandedItems] = useState<string[]>([])
   const params = useParams()
   const pathname = usePathname()
@@ -335,17 +345,18 @@ function MobileSidebar() {
 }
 
 // Main AppSidebar Component
-export function AppSidebar() {
+export function AppSidebar({ role = "admin" }: { role?: "admin" | "employee" }) {
   const isMobile = useIsMobile()
+  const items = role === "employee" ? navigationItemsEmployee : navigationItemsAdmin
 
   return (
     <>
       <div className="hidden md:block">
-        <DesktopSidebar />
+        <DesktopSidebar navigationItems={items} />
       </div>
 
       <div className="md:hidden">
-        <MobileSidebar />
+        <MobileSidebar navigationItems={items} />
       </div>
     </>
   )

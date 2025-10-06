@@ -1,4 +1,4 @@
-import DashboardPage from "@/components/dashboard/dashboard-page";
+import DashboardPage from "@/components/dashboard-admin/page";
 
 function formatSlugToTitle(slug: string): string {
   return slug

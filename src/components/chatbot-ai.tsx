@@ -20,7 +20,7 @@ export function ChatbotAI() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hello! I'm your HR Assistant. How can I help you today?",
+      text: "Hello! I'm your Assistant. How can I help you today?",
       sender: "ai",
       timestamp: new Date(),
     },
@@ -100,7 +100,7 @@ export function ChatbotAI() {
                 <MessageCircle className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-semibold">HR Assistant</h3>
+                <h3 className="font-semibold">Salmon Assistant</h3>
                 <p className="text-xs opacity-90">Always here to help</p>
               </div>
             </div>

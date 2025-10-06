@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import Link from "next/link"
 
-export default function DashboardPage({
+export default function AdminDashboardPage({
   params,
 }: {
   params: { locale: string; company: string }
