@@ -17,8 +17,8 @@ import { Input } from "@/components/ui/input";
 import { useCompanyStore } from "@/stores/company-store";
 import { decrypt } from "@/lib/encrypt";
 import { api } from "@/lib/api/api";
-import { DivisionDialog } from "@/components/company-structure/division-form";
-import DeleteConfirmDialog from "@/components/company-structure/delete-confirm-dialog";
+import {DivisionForm} from "@/components/admin/company-structure/division-form";
+import DeleteConfirmDialog from "@/components/admin/company-structure/delete-confirm-dialog";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
@@ -178,7 +178,11 @@ export default function DivisionsPage() {
               </Button>
             </div>
 
-            <DivisionDialog mode="create" />
+            <DivisionForm mode="create" isOpen={false} onClose={function (): void {
+              throw new Error("Function not implemented.");
+            } } onSubmit={function (): void {
+              throw new Error("Function not implemented.");
+            } } />
           </div>
         </div>
 
@@ -224,19 +228,20 @@ export default function DivisionsPage() {
                       </div>
                     </div>
                     <div>
-                      <DivisionDialog
+                      <DivisionForm
                         mode="edit"
                         division={division}
-                        trigger={
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 rounded-lg"
-                          >
-                            <Pencil className="w-4 h-4 text-gray-500" />
-                          </Button>
-                        }
-                      />
+                        trigger={<Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-lg"
+                        >
+                          <Pencil className="w-4 h-4 text-gray-500" />
+                        </Button>} isOpen={false} onClose={function (): void {
+                          throw new Error("Function not implemented.");
+                        } } onSubmit={function (): void {
+                          throw new Error("Function not implemented.");
+                        } }                      />
                       <Button
                         variant="ghost"
                         size="icon"
@@ -321,19 +326,20 @@ export default function DivisionsPage() {
                       </td>
                       <td className="py-4 px-6">
                         <div className="flex justify-end gap-2">
-                          <DivisionDialog
+                          <DivisionForm
                             mode="edit"
                             division={division}
-                            trigger={
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 rounded-lg"
-                              >
-                                <Pencil className="w-4 h-4 text-gray-500" />
-                              </Button>
-                            }
-                          />
+                            trigger={<Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 rounded-lg"
+                            >
+                              <Pencil className="w-4 h-4 text-gray-500" />
+                            </Button>} isOpen={false} onClose={function (): void {
+                              throw new Error("Function not implemented.");
+                            } } onSubmit={function (): void {
+                              throw new Error("Function not implemented.");
+                            } }                          />
                           <Button
                             variant="ghost"
                             size="icon"

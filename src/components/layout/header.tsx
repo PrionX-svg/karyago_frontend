@@ -63,38 +63,12 @@ export function Header() {
             )}
           </div>
           <span className="font-semibold text-lg">{currentCompany?.name}</span>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Toggle sidebar collapse"
-            onClick={toggleSidebarCollapse}
-            className="ml-2"
-          >
-            <ChevronDown
-              className={
-                isSidebarCollapsed
-                  ? "w-5 h-5 rotate-90 transition-transform"
-                  : "w-5 h-5 -rotate-90 transition-transform"
-              }
-            />
-          </Button>
         </div>
       </div>
 
       <div className="flex items-center gap-4">
         <LanguageSwitcher />
         <ModeToggle />
-
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="w-5 h-5" />
-          <Badge
-            variant="destructive"
-            className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center p-0 text-xs"
-          >
-            1
-          </Badge>
-        </Button>
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2 p-4 px-2 py-7">

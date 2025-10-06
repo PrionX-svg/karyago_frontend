@@ -1,4 +1,4 @@
-import SubDivisionsRoundedTable from "@/components/sub-division/sub-division-page";
+import AttendanceListPage from "@/components/admin/attendance/employee-attendance";
 
 function formatSlugToTitle(slug: string): string {
   return slug
@@ -10,11 +10,11 @@ function formatSlugToTitle(slug: string): string {
 export function generateMetadata({ params }: { params: { company: string } }) {
   const formattedTitle = formatSlugToTitle(params.company);
   return {
-    title: `Sub Divisions - ${formattedTitle}`,
-    description: `Sub Divisions for ${formattedTitle}`,
+    title: `Employee's Attendance - ${formattedTitle}`,
+    description: `Employee's Attendance for ${formattedTitle}`,
   };
 }
 
 export default function Page() {
-  return <SubDivisionsRoundedTable />;
+  return <AttendanceListPage />;
 }

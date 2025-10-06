@@ -14,8 +14,8 @@ const poppins = Poppins({
 
 export const metadata = {
   title: {
-    default: "HRIS",
-    template: "%s | HRIS", // Jika halaman override title, akan ditambahkan template ini
+    default: "ArbeitsHub",
+    template: "%s | ArbeitsHub", // Jika halaman override title, akan ditambahkan template ini
   },
   description: "Manage your HR processes with ease",
   icons: {

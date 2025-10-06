@@ -17,8 +17,8 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
-import { AddBranchDialog } from "@/components/branch/add-branch-dialog";
-import { UpdateBranchDialog } from "@/components/branch/update-branch-dialog";
+import { AddBranchDialog } from "@/components/admin/branch/add-branch-dialog";
+import { UpdateBranchDialog } from "@/components/admin/branch/update-branch-dialog";
 import { CompanyBranchType } from "@/lib/types/company-type";
 import {
   Dialog,

@@ -1,4 +1,5 @@
-import AssignEmployeePage from "@/components/assign-employees/assign-employees-page";
+import AssignEmployeePage from "@/components/admin/employee-assign/assign-employees-page";
+
 
 function formatSlugToTitle(slug: string): string {
   return slug

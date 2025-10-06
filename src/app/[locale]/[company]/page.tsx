@@ -16,5 +16,8 @@ export function generateMetadata({ params }: { params: { company: string } }) {
 }
 
 export default function Page() {
-  return <DashboardPage />;
+  return <DashboardPage params={{
+    locale: "",
+    company: ""
+  }} />;
 }

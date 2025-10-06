@@ -1,4 +1,4 @@
-import DivisionsPage from "@/components/division/division-page";
+import DivisionsPage from "@/components/admin/company-structure/division/division-page";
 
 function formatSlugToTitle(slug: string): string {
   return slug

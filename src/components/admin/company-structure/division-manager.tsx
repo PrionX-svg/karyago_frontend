@@ -7,8 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import DivisionForm from "@/components/company-structure/division-form"
-import DeleteConfirmDialog from "@/components/company-structure/delete-confirm-dialog"
+import { DivisionForm } from "@/components/admin/company-structure/division-form"
+import DeleteConfirmDialog from "@/components/admin/company-structure/delete-confirm-dialog"
 import { DivisionType } from "@/lib/types/company-type"
 
 interface DivisionManagerProps {
@@ -96,7 +96,7 @@ export default function DivisionManager({
                                         <p className="text-sm text-muted-foreground truncate">{division.desc}</p>
                                     </TableCell>
                                     <TableCell>
-                                        {division.responsible_uuid ? (
+                                        {division.responsible?.uuid ? (
                                             <div className="flex items-center gap-2">
                                                 <Avatar className="w-6 h-6">
                                                     <AvatarFallback className="text-xs bg-orange-100 text-orange-700">
@@ -143,13 +143,14 @@ export default function DivisionManager({
                 </div>
 
                 <DivisionForm
+                    mode="edit"
                     isOpen={isFormOpen || !!editingDivision}
                     onClose={() => {
                         setIsFormOpen(false)
                         setEditingDivision(null)
                     }}
-                    onSubmit={editingDivision ? handleUpdate : handleCreate}
-                    initialData={editingDivision}
+                    onSubmit={() => { editingDivision ? handleUpdate : handleCreate }}
+                    initialData={() => editingDivision}
                 />
 
                 <DeleteConfirmDialog
@@ -209,7 +210,7 @@ export default function DivisionManager({
 
                                 <div className="flex items-center justify-between pt-2 border-t border-orange-100">
                                     <div className="flex items-center gap-2">
-                                        {division.responsible_uuid ? (
+                                        {division.responsible?.uuid ? (
                                             <div className="flex items-center gap-2">
                                                 <Avatar className="w-6 h-6">
                                                     <AvatarFallback className="text-xs bg-orange-100 text-orange-700">
@@ -251,13 +252,14 @@ export default function DivisionManager({
             </div>
 
             <DivisionForm
+                mode="edit"
                 isOpen={isFormOpen || !!editingDivision}
                 onClose={() => {
                     setIsFormOpen(false)
                     setEditingDivision(null)
                 }}
-                onSubmit={editingDivision ? handleUpdate : handleCreate}
-                initialData={editingDivision}
+                onSubmit={() => { editingDivision ? handleUpdate : handleCreate }}
+                 initialData={() => editingDivision}
             />
 
             <DeleteConfirmDialog

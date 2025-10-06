@@ -16,6 +16,10 @@ import { useEmployeeStore } from "@/stores/employee-store"
 import { toast } from "sonner"
 
 interface DivisionDialogProps {
+    isOpen: boolean
+    onClose: () => void
+    onSubmit: () => void
+    initialData?: () => void
     mode: "create" | "edit"
     division?: {
         uuid: string
@@ -27,7 +31,7 @@ interface DivisionDialogProps {
     trigger?: React.ReactNode
 }
 
-export function DivisionDialog({ mode, division, trigger }: DivisionDialogProps) {
+export function DivisionForm({ mode, division, trigger }: DivisionDialogProps) {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({

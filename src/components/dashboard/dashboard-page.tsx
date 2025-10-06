@@ -1,84 +1,131 @@
-import { ClockWidget } from "./clock-widget";
-import { GettingStartedCard } from "./getting-started-card";
-import { GitHubContribution } from "./github-contribution";
-import { IntegrationCard } from "./integration-card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import Link from "next/link"
 
-export default function DashboardPage() {
+export default function DashboardPage({
+  params,
+}: {
+  params: { locale: string; company: string }
+}) {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">
-          Getting Started
-        </h1>
-        <p className="text-muted-foreground">
-          Take few minutes to discover about new feature!
-        </p>
+    <div className="w-full max-w-full space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center space-y-2">
+              <div className="text-5xl font-bold text-foreground">28</div>
+              <p className="text-sm text-muted-foreground">Active Employee</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center space-y-2">
+              <div className="text-5xl font-bold text-foreground">2</div>
+              <p className="text-sm text-muted-foreground">New Employee</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center space-y-2">
+              <div className="text-5xl font-bold text-foreground">5</div>
+              <p className="text-sm text-muted-foreground">Department Group</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center space-y-2">
+              <div className="text-5xl font-bold text-foreground">5</div>
+              <p className="text-sm text-muted-foreground">Department</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Clock Widget */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-        <div className="lg:col-span-1">
-          <ClockWidget />
-        </div>
-        <div className="lg:col-span-2">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <GettingStartedCard
-              title="Easy Manage Task"
-              description="With this new feature, it is very easy for users to manage tasks and easily collaborate with all departmental lines in your company"
-              icon="task"
-            />
-            <GettingStartedCard
-              title="Easy Request Time-off"
-              description="Simplify your vacation leave with just one click, and you can customize it however you like, let's plan your vacation right now"
-              icon="clock"
-            />
+      <Card>
+        <CardHeader>
+          <CardTitle>Employee Distribution</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Department Group A</span>
+              <span className="font-medium">75%</span>
+            </div>
+            <div className="h-3 bg-muted rounded-full overflow-hidden">
+              <div className="h-full bg-gray-600 rounded-full" style={{ width: "75%" }} />
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <GettingStartedCard
-          title="Easy Manage Task"
-          description="With this new feature, it is very easy for users to manage tasks and easily collaborate with all departmental lines in your company"
-          icon="task"
-        />
-        <GettingStartedCard
-          title="Easy Request Time-off"
-          description="Simplify your vacation leave with just one click, and you can customize it however you like, let's plan your vacation right now"
-          icon="clock"
-        />
-        <GettingStartedCard
-          title="Payroll History"
-          description="Your payroll report now has a fresher look and makes it easier for users to see all your achievements in your company"
-          icon="document"
-        />
-      </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Department Group B</span>
+              <span className="font-medium">90%</span>
+            </div>
+            <div className="h-3 bg-muted rounded-full overflow-hidden">
+              <div className="h-full bg-gray-600 rounded-full" style={{ width: "90%" }} />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <IntegrationCard
-          title="Community Sharing"
-          description="With easy access between platforms you can use it at the same time it's very easy to be able to share successful moments while working, be the first to try!"
-          buttonText="Connect LinkedIn Account"
-          buttonIcon="linkedin"
-          image="https://user-images.githubusercontent.com/6633808/160689302-3fe5e5d4-ba24-4525-8ed1-a8351ccbc0ef.png"
-        />
-        <IntegrationCard
-          title="Slack Integration"
-          description="Quick features now makes it easy to collaborate using the Slack platform, to increase your productivity between departments in your team"
-          buttonText="Connect Slack Account"
-          buttonIcon="slack"
-        />
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Attendance Rate</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="text-6xl font-bold text-foreground">90%</div>
+              <p className="text-sm text-muted-foreground">Today</p>
+            </div>
+          </CardContent>
+        </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <GitHubContribution />
-        <IntegrationCard
-          title="Github Integration"
-          description="Easy access to log your work activity properly easy to handle all about development with your Github account, suitable for your profile as developer or engineer"
-          buttonText="Connect Github Account"
-          buttonIcon="github"
-        />
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Requested Edit Attendance</CardTitle>
+            <Link
+              href={`/${params.locale}/${params.company}/employees/attendance-requests`}
+              className="text-sm text-primary hover:underline"
+            >
+              See more
+            </Link>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarFallback>UN</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">User Name</p>
+                  <p className="text-xs text-muted-foreground">Role</p>
+                </div>
+              </div>
+              <span className="text-xs px-2 py-1 bg-muted rounded-md">Pending</span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarFallback>UN</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">User Name</p>
+                  <p className="text-xs text-muted-foreground">Role</p>
+                </div>
+              </div>
+              <span className="text-xs px-2 py-1 bg-muted rounded-md">Pending</span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
-  );
+  )
 }

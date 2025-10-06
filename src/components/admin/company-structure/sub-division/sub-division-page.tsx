@@ -23,8 +23,8 @@ import {
 import { useCompanyStore } from "@/stores/company-store";
 import { decrypt } from "@/lib/encrypt";
 import { api } from "@/lib/api/api";
-import { SubDivisionDialog } from "@/components/company-structure/subdivision-form";
-import DeleteConfirmDialog from "@/components/company-structure/delete-confirm-dialog";
+import { SubDivisionDialog } from "@/components/admin/company-structure/subdivision-form";
+import DeleteConfirmDialog from "@/components/admin/company-structure/delete-confirm-dialog";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 

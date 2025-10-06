@@ -8,7 +8,7 @@ import { useEmployeeStore } from "@/stores/employee-store"
 import { decrypt } from "@/lib/encrypt"
 import { api } from "@/lib/api/api"
 import { useTranslations } from "next-intl"
-import { AssignEmployeeDialog } from "@/components/employees/assign-employees"
+import { AssignEmployeeDialog } from "@/components/admin/employee-assign/assignDialog"
 
 export default function AssignEmployeePage() {
     const [searchTerm, setSearchTerm] = useState("")
