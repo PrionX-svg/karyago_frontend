@@ -29,6 +29,24 @@ import {
 import { RoleType } from "../types/role-type";
 import { GetRoleByCompanyUuidResponse } from "../interfaces/role-interface";
 
+function formatDate(dateString?: string | null): string | null {
+  if (!dateString) return null
+  const date = new Date(dateString)
+  if (isNaN(date.getTime())) return null
+  return date.toISOString().split("T")[0] // YYYY-MM-DD
+}
+
+function formatTime(dateString?: string | null): string | null {
+  if (!dateString) return null
+  const date = new Date(dateString)
+  if (isNaN(date.getTime())) return null
+  return date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  })
+}
+
 export const responseFormatter = {
   formatUserData(response: GetMeResponse): UserType {
     return {
@@ -425,4 +443,118 @@ export const responseFormatter = {
       name: role?.name ?? "",
     }));
   },
+  formatGetEmployeeDashboard(response: any) {
+    const data = response.data?.data ?? {}
+    return {
+      attendance_rate: data.attendance_rate ?? 0,
+      total_hours: data.total_hours ?? 0,
+      recent_requests: data.recent_requests ?? [],
+      // upcoming_events: data.upcoming_events ?? [],
+    }
+  },
+  formatAttendance(att: any) {
+    if (!att) return null
+    const status: "OPEN" | "PRESENT" | "ABSENT" =
+      att.clock_in_at && att.clock_out_at
+        ? "PRESENT"
+        : att.clock_in_at
+          ? "OPEN"
+          : "ABSENT"
+
+    return {
+      uuid: att.uuid,
+      work_date: att.work_date ? att.work_date.split("T")[0] : null,
+      clock_in_at: att.clock_in_at ? formatTime(att.clock_in_at) : null,
+      clock_out_at: att.clock_out_at ? formatTime(att.clock_out_at) : null,
+      is_home_office: att.is_home_office ?? false,
+      notes: att.notes ?? "",
+      status, // ✅ sekarang type-nya literal union, bukan string biasa
+    }
+  },
+
+  formatAttendanceList(data: any): any[] {
+    // Kalau bukan array, return kosong tapi kasih warning
+    if (!Array.isArray(data)) {
+      console.warn("⚠️ formatAttendanceList got invalid data:", data)
+      return []
+    }
+
+    // Map data attendance agar UI dapat nilai konsisten
+    return data.map((a: any) => ({
+      uuid: a.uuid || "",
+      work_date: a.work_date
+        ? a.work_date.split("T")[0] // potong jadi YYYY-MM-DD
+        : "",
+      clock_in_at: a.clock_in_at ? new Date(a.clock_in_at).toLocaleTimeString() : null,
+      clock_out_at: a.clock_out_at ? new Date(a.clock_out_at).toLocaleTimeString() : null,
+      is_home_office: !!a.is_home_office,
+      notes: a.notes || "",
+      status:
+        a.status && typeof a.status === "string"
+          ? a.status.toUpperCase()
+          : a.clock_in_at && a.clock_out_at
+            ? "PRESENT"
+            : a.clock_in_at
+              ? "OPEN"
+              : "ABSENT",
+    }))
+  },
+  /** Format single edit attendance request (view or detail) */
+  formatAttendanceEdit(att: any) {
+    if (!att) return null
+    return {
+      id: att.id,
+      uuid: att.uuid,
+      employee_uuid: att.employee_uuid,
+      employee_name: att.employee?.user?.first_name
+        ? `${att.employee.user.first_name} ${att.employee.user.last_name ?? ""}`.trim()
+        : att.employee_name ?? "Unknown",
+
+      company_uuid: att.company_uuid,
+      company_name: att.company?.name ?? null,
+
+      work_date: att.work_date ? att.work_date.split("T")[0] : null,
+      edit_type: att.edit_type ?? "", // "clock_in", "clock_out", "full_day"
+      original_time: att.original_time ? new Date(att.original_time).toLocaleTimeString("en-US", { hour12: false }) : null,
+      requested_time: att.requested_time ? new Date(att.requested_time).toLocaleTimeString("en-US", { hour12: false }) : null,
+      reason: att.reason ?? "",
+      status: att.status ?? "PENDING", // default value
+      reviewed_by: att.reviewed_by_user
+        ? `${att.reviewed_by_user.first_name} ${att.reviewed_by_user.last_name ?? ""}`.trim()
+        : null,
+      reviewed_at: att.reviewed_at
+        ? new Date(att.reviewed_at).toLocaleString("en-US")
+        : null,
+      created_at: att.created_at
+        ? new Date(att.created_at).toLocaleString("en-US")
+        : null,
+    }
+  },
+
+  /** Format list of edit attendance requests (for employee or HR view) */
+  formatAttendanceEditList(res: any) {
+    const list = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
+    return list.map((att: any) => ({
+      id: att.id,
+      uuid: att.uuid,
+      work_date: att.work_date ? att.work_date.split("T")[0] : null,
+      edit_type: att.edit_type ?? "",
+      original_time: att.original_time
+        ? new Date(att.original_time).toLocaleTimeString("en-US", { hour12: false })
+        : null,
+      requested_time: att.requested_time
+        ? new Date(att.requested_time).toLocaleTimeString("en-US", { hour12: false })
+        : null,
+      reason: att.reason ?? "",
+      status: att.status ?? "PENDING",
+      employee_name: att.employee?.user
+        ? `${att.employee.user.first_name} ${att.employee.user.last_name ?? ""}`.trim()
+        : att.employee_name ?? "-",
+      reviewed_by: att.reviewed_by_user
+        ? `${att.reviewed_by_user.first_name} ${att.reviewed_by_user.last_name ?? ""}`.trim()
+        : null,
+    }))
+  }
+
+
 };

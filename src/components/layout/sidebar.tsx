@@ -16,7 +16,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Home, User, Users, Building2, MapPin, ChevronDown, Search, PanelLeftClose, PanelLeftOpen } from "lucide-react"
+import { Home, User, Users, Building2, MapPin, ChevronDown, Search, PanelLeftClose, PanelLeftOpen, TimerIcon} from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
@@ -52,8 +52,8 @@ const navigationItemsOwner = [
 const navigationItemsEmployee = [
   { name: "Dashboard", icon: Home, path: "" },
   { name: "Profile", icon: User, path: "/my/profile" },
-  { name: "Attendance", icon: Users, path: "/my/attendance" },
-  { name: "Department Group", icon: Users, path: "/my/department" },
+  { name: "Attendance", icon: TimerIcon, path: "/my/attendance" },
+  { name: "Department", icon: Users, path: "/my/department" },
 ]
 
 // keep backwards-compatibility default if needed

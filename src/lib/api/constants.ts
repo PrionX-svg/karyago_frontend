@@ -29,4 +29,20 @@ export const API_URL = {
   createBranchByCompanyUuid: "/branches/create",
   updateBranchByUuid: "/branches/update/",
   deleteBranchByUuid: "/branches/delete/",
+
+  // for employee (self)
+  attendanceClockIn: "/attendance/clock-in",
+  attendanceClockOut: "/attendance/clock-out",
+  attendanceToggleHomeOffice: "/attendance/toggle-homeOffice",
+  attendanceSaveNotes: "/attendance/notes",
+  attendanceGetByDate: "/attendance",
+  attendanceListRange: "/attendance/range",
+  attendanceListCalendar: "/attendance/calendar",
+  attendanceEditRequests: "/attendance/edit-requests",
+  attendanceEditRequestsMy: "/attendance/edit-requests/my",
+
+  employeeProfileSelf: "/employee/me",
+
+  departmentList: "/department",
+  departmentGroupList: "/department-groups",
 };

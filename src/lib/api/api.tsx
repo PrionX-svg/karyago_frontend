@@ -435,8 +435,12 @@ export const api = {
       return Promise.reject(error);
     }
   },
-  async getEmployeeByCompanyUuid(companyUuid: string) {
+  async getEmployeeByCompanyUuid(companyUuid: string, role?:string) {
     try {
+      if (role === "employee") {
+      console.log("🟡 Skipping employee list fetch — role: employee")
+      return
+    }
       const setEmployees = useEmployeeStore.getState().setEmployees;
       const setTerminatedEmployees =
         useEmployeeStore.getState().setTerminatedEmployees;
