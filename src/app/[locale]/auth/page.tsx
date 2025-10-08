@@ -42,13 +42,15 @@ export default function AuthPage() {
         });
         return;
       }
-
-      document.cookie = "authOK=true; path=/";
-      toast.success(ap("loginSuccess"));
-
       const userData = result.data.data;
 
-      if (userData.is_onboarding) return router.push("/onboarding");
+      document.cookie = "authOK=true; path=/";
+      document.cookie = `role=${userData.role_name.toLowerCase()}; path=/`;
+      toast.success(ap("loginSuccess"));
+
+      const role = userData.role_name.toLowerCase();
+
+      if (role === "owner" && userData.is_onboarding) return router.push("/onboarding");
 
       const userUuid = userData.uuid;
       await api.getCompaniesByUserUuid(userUuid);

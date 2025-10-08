@@ -68,7 +68,7 @@
   },
   "auth": {
     "title": "Welcome",
-    "description": "Sign in to access your dashboard and available HRIS features.",
+    "description": "Sign in to access your dashboard and available ArbeitsHub features.",
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "signOut": "Sign Out",
@@ -328,14 +328,14 @@
     "title": "Add New Employee"
   },
   "brand": {
-    "brandingTitle": "HRIS Portal",
-    "brandingSubtitle": "Human Resource Information System",
+    "brandingTitle": "ArbeitsHub",
+    "brandingSubtitle": "Employee Managament System",
     "brand1": "Manage Employee Data",
     "brand1Description": "Integrated system to manage all employee data and information across the company.",
     "brand2": "Centralized Access",
     "brand2Description": "Centralized access to all HR services and information.",
     "welcomeMessage": "Welcome!",
-    "welcomeDescription": "Sign in to access your dashboard and available HRIS features."
+    "welcomeDescription": "Sign in to access your dashboard and available ArbeitsHub features."
   },
   "import-excel": {
     "downloadTemplate": "Download Template",

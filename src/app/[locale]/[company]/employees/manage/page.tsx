@@ -1,4 +1,4 @@
-import ManageEmployeePage from "@/components/admin/employee-manage/manage-employee";
+import EmployeePage from "@/components/admin/employee-manage/employee";
 
 function formatSlugToTitle(slug: string): string {
   return slug
@@ -16,5 +16,5 @@ export function generateMetadata({ params }: { params: { company: string } }) {
 }
 
 export default function Page() {
-  return <ManageEmployeePage />;
+  return <EmployeePage />;
 }

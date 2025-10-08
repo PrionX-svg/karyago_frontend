@@ -40,7 +40,7 @@ import {
   AlertCircle,
 } from "lucide-react"
 
-export default function EmployeeDashboard() {
+export default function EmployeeDashboard({}) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
   const [isClocked, setIsClocked] = useState(false)
