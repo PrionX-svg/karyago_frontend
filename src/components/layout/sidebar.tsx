@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useParams, usePathname } from "next/navigation"
 
-const navigationItemsAdmin = [
+const navigationItemsOwner = [
   { name: "Dashboard", icon: Home, path: "" },
   { name: "Profile", icon: User, path: "/profile" },
   {
@@ -57,10 +57,10 @@ const navigationItemsEmployee = [
 ]
 
 // keep backwards-compatibility default if needed
-const defaultNavigationItems = navigationItemsAdmin
+const defaultNavigationItems = navigationItemsOwner
 
 // Desktop Sidebar Component (Regular Div with Sticky)
-function DesktopSidebar({ navigationItems = defaultNavigationItems }: { navigationItems?: typeof navigationItemsAdmin }) {
+function DesktopSidebar({ navigationItems = defaultNavigationItems }: { navigationItems?: typeof navigationItemsOwner }) {
   const [expandedItems, setExpandedItems] = useState<string[]>([])
   const [isCollapsed, setIsCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
@@ -221,7 +221,7 @@ function DesktopSidebar({ navigationItems = defaultNavigationItems }: { navigati
 }
 
 // Mobile Sidebar Component (Using Sidebar Component)
-function MobileSidebar({ navigationItems = defaultNavigationItems }: { navigationItems?: typeof navigationItemsAdmin }) {
+function MobileSidebar({ navigationItems = defaultNavigationItems }: { navigationItems?: typeof navigationItemsOwner }) {
   const [expandedItems, setExpandedItems] = useState<string[]>([])
   const params = useParams()
   const pathname = usePathname()
@@ -325,9 +325,9 @@ function MobileSidebar({ navigationItems = defaultNavigationItems }: { navigatio
 }
 
 // Main AppSidebar Component
-export function AppSidebar({ role = "admin" }: { role?: "admin" | "employee" }) {
+export function AppSidebar({ role = "owner" }: { role?: "owner" | "employee" }) {
   const isMobile = useIsMobile()
-  const items = role === "employee" ? navigationItemsEmployee : navigationItemsAdmin
+  const items = role === "employee" ? navigationItemsEmployee : navigationItemsOwner
 
   return (
     <>
