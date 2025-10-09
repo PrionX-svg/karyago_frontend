@@ -7,8 +7,9 @@ export type AttendanceEdit = {
   uuid: string
   work_date: string
   edit_type: string
-  original_time?: string | null
-  requested_time?: string | null
+  proposed_clock_in_at?: string | null
+  proposed_clock_out_at?: string | null
+  proposed_is_home_office?: boolean | null
   reason: string
   status: "PENDING" | "APPROVED" | "REJECTED"
   employee_name?: string

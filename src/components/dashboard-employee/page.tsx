@@ -26,6 +26,7 @@ import {
   Briefcase,
   Home,
 } from "lucide-react"
+import { any } from "zod"
 
 export default function EmployeeDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -37,6 +38,7 @@ export default function EmployeeDashboard() {
   const {
     attendanceToday,
     fetchAttendanceToday,
+    fetchAttendanceRange,
     clockIn,
     clockOut,
     toggleHomeOffice,
@@ -45,6 +47,10 @@ export default function EmployeeDashboard() {
     notes,
     resetForNewDay,
   } = useEmployeeSelfStore()
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 3
 
   /** Realtime clock display */
   useEffect(() => {
@@ -96,6 +102,67 @@ export default function EmployeeDashboard() {
       hour12: false,
     })
 
+  const [attendanceRate, setAttendanceRate] = useState<number | null>(null)
+  const [totalHours, setTotalHours] = useState<number | null>(null)
+
+  /** Pagination logic */
+  const totalPages = Math.ceil(myEditRequests.length / ITEMS_PER_PAGE)
+  const paginatedRequests = myEditRequests.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  )
+
+  useEffect(() => {
+    const fetchMonthlyStats = async () => {
+      if (!currentCompany?.uuid) return
+
+      try {
+        // ambil range tanggal bulan ini
+        const now = new Date()
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+
+        const res: any = await fetchAttendanceRange(startOfMonth, endOfMonth, currentCompany.uuid)
+        const attendances = res?.data ?? []
+
+        if (attendances.length === 0) return
+
+        const workingDays = attendances.filter((a: any) => {
+          const day = new Date(a.work_date).getDay()
+          return day !== 0 && day !== 6 // exclude Sunday (0) & Saturday (6)
+        }).length
+
+        // hitung jumlah hadir (status = "PRESENT")
+        const presentDays = workingDays.filter((a: any) => a.status === "PRESENT").length
+
+        // hitung total hari kerja (anggap semua record adalah hari kerja)
+        const totalDays = workingDays.length
+
+        // hitung attendance rate
+        const rate = (presentDays / totalDays) * 100
+
+        // hitung total jam kerja (jam keluar - jam masuk)
+        let totalMs = 0
+        workingDays.forEach((a: any) => {
+          if (a.clock_in_at && a.clock_out_at) {
+            const inTime = new Date(`1970-01-01T${a.clock_in_at}Z`)
+            const outTime = new Date(`1970-01-01T${a.clock_out_at}Z`)
+            totalMs += outTime.getTime() - inTime.getTime()
+          }
+        })
+        const totalHoursCalc = totalMs / (1000 * 60 * 60) // ms → jam
+
+        setAttendanceRate(rate)
+        setTotalHours(totalHoursCalc)
+      } catch (err) {
+        console.error("❌ Failed to calculate monthly stats:", err)
+      }
+    }
+
+    fetchMonthlyStats()
+  }, [currentCompany?.uuid])
+
+
   return (
     <main className="p-4 md:p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-auto">
@@ -124,10 +191,10 @@ export default function EmployeeDashboard() {
                     Status:{" "}
                     <span
                       className={`font-semibold ${attendanceToday.status === "OPEN"
-                          ? "text-orange-600"
-                          : attendanceToday.status === "PRESENT"
-                            ? "text-green-600"
-                            : "text-gray-500"
+                        ? "text-orange-600"
+                        : attendanceToday.status === "PRESENT"
+                          ? "text-green-600"
+                          : "text-gray-500"
                         }`}
                     >
                       {attendanceToday.status}
@@ -148,8 +215,8 @@ export default function EmployeeDashboard() {
                       onClick={() => toggleHomeOffice(false, currentCompany?.uuid)}
                       disabled={attendanceToday?.status === "PRESENT"}
                       className={`px-4 py-2 rounded-xl text-sm font-medium flex items-center space-x-2 transition-all duration-200 ${!isHomeOffice
-                          ? "bg-white text-gray-900 shadow-sm"
-                          : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-gray-600 hover:text-gray-900"
                         } ${attendanceToday?.status === "PRESENT"
                           ? "opacity-50 cursor-not-allowed"
                           : ""
@@ -162,8 +229,8 @@ export default function EmployeeDashboard() {
                       onClick={() => toggleHomeOffice(true, currentCompany?.uuid)}
                       disabled={attendanceToday?.status === "PRESENT"}
                       className={`px-4 py-2 rounded-xl text-sm font-medium flex items-center space-x-2 transition-all duration-200 ${isHomeOffice
-                          ? "bg-white text-gray-900 shadow-sm"
-                          : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-gray-600 hover:text-gray-900"
                         } ${attendanceToday?.status === "PRESENT"
                           ? "opacity-50 cursor-not-allowed"
                           : ""
@@ -190,7 +257,7 @@ export default function EmployeeDashboard() {
                 {/* Clock In / Out Buttons */}
                 <div className="flex justify-center space-x-3">
                   <Button
-                    onClick={() => clockIn(currentCompany?.uuid)}
+                    onClick={() => clockIn(new Date(), currentCompany?.uuid)}
                     disabled={
                       attendanceToday?.status === "OPEN" ||
                       attendanceToday?.status === "PRESENT"
@@ -201,7 +268,7 @@ export default function EmployeeDashboard() {
                     Clock In
                   </Button>
                   <Button
-                    onClick={() => clockOut(currentCompany?.uuid)}
+                    onClick={() => clockOut(new Date(), currentCompany?.uuid)}
                     disabled={attendanceToday?.status !== "OPEN"}
                     className="bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-6 py-3 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                   >
@@ -222,7 +289,9 @@ export default function EmployeeDashboard() {
               Attendance Rate
             </CardTitle>
             <div>
-              <div className="text-5xl font-bold mb-2">95%</div>
+              <div className="text-5xl font-bold mb-2">
+                {attendanceRate !== null ? `${attendanceRate.toFixed(0)}%` : "--"}
+              </div>
               <p className="text-sm text-blue-100 flex items-center">
                 <Heart className="w-3 h-3 mr-1" />
                 This month
@@ -239,7 +308,9 @@ export default function EmployeeDashboard() {
               Total Hours
             </CardTitle>
             <div>
-              <div className="text-4xl font-bold mb-2">160h</div>
+              <div className="text-4xl font-bold mb-2">
+                {totalHours !== null ? `${totalHours.toFixed(0)}h` : "--"}
+              </div>
               <p className="text-sm text-purple-100 flex items-center">
                 <Smile className="w-3 h-3 mr-1" />
                 This month
@@ -257,44 +328,82 @@ export default function EmployeeDashboard() {
                 My Edit Requests
               </CardTitle>
             </CardHeader>
+
             <CardContent>
-              <div className="space-y-3">
-                {myEditRequests.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">There's no edit request</p>
-                ) : (
-                  myEditRequests.map((req) => (
-                    <div
-                      key={req.id}
-                      className={`group p-4 rounded-2xl border transition-all duration-300 ${req.status === "PENDING"
-                          ? "bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-100"
-                          : req.status === "APPROVED"
-                            ? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-100"
-                            : "bg-gradient-to-br from-red-50 to-rose-50 border-red-100"
-                        }`}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h4 className="font-semibold text-gray-900 text-sm">
-                            {req.edit_type.replace("_", " ").toUpperCase()}
-                          </h4>
-                          <p className="text-xs text-gray-600 mt-1">{req.work_date}</p>
+              {myEditRequests.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  There's no edit request
+                </p>
+              ) : (
+                <>
+                  <div className="space-y-3 mb-4">
+                    {paginatedRequests.map((req) => (
+                      <div
+                        key={req.id}
+                        className={`group p-4 rounded-2xl border transition-all duration-300 ${req.status === "PENDING"
+                            ? "bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-100"
+                            : req.status === "APPROVED"
+                              ? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-100"
+                              : "bg-gradient-to-br from-red-50 to-rose-50 border-red-100"
+                          }`}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h4 className="font-semibold text-gray-900 text-sm">
+                              {req.edit_type.replace("_", " ").toUpperCase()}
+                            </h4>
+                            <p className="text-xs text-gray-600 mt-1">
+                              {req.work_date}
+                            </p>
+                          </div>
+                          <Badge
+                            className={`rounded-full ${req.status === "PENDING"
+                                ? "bg-yellow-500"
+                                : req.status === "APPROVED"
+                                  ? "bg-green-500"
+                                  : "bg-red-500"
+                              } text-white`}
+                          >
+                            {req.status}
+                          </Badge>
                         </div>
-                        <Badge
-                          className={`rounded-full ${req.status === "PENDING"
-                              ? "bg-yellow-500"
-                              : req.status === "APPROVED"
-                                ? "bg-green-500"
-                                : "bg-red-500"
-                            } text-white`}
-                        >
-                          {req.status}
-                        </Badge>
+                        <p className="text-xs text-gray-500">
+                          {req.reason || "-"}
+                        </p>
                       </div>
-                      <p className="text-xs text-gray-500">{req.reason || "-"}</p>
+                    ))}
+                  </div>
+
+                  {/* Pagination controls */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center space-x-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl"
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      >
+                        Prev
+                      </Button>
+                      <span className="text-sm text-gray-600">
+                        Page {currentPage} of {totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl"
+                        disabled={currentPage === totalPages}
+                        onClick={() =>
+                          setCurrentPage((p) => Math.min(totalPages, p + 1))
+                        }
+                      >
+                        Next
+                      </Button>
                     </div>
-                  ))
-                )}
-              </div>
+                  )}
+                </>
+              )}
             </CardContent>
           </Card>
         </div>

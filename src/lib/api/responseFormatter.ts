@@ -539,12 +539,15 @@ export const responseFormatter = {
       uuid: att.uuid,
       work_date: att.work_date ? att.work_date.split("T")[0] : null,
       edit_type: att.edit_type ?? "",
-      original_time: att.original_time
-        ? new Date(att.original_time).toLocaleTimeString("en-US", { hour12: false })
-        : null,
-      requested_time: att.requested_time
-        ? new Date(att.requested_time).toLocaleTimeString("en-US", { hour12: false })
-        : null,
+      proposed_clock_in_at: (att.proposed_clock_in_at).toLocaleString("en-US", { hour12: false }),
+      proposed_clock_out_at: (att.proposed_clock_out_at).toLocaleString("en-US", { hour12: false }),
+      // proposed_clock_in_at: att.proposed_clock_in_at
+      //   ? new Date(att.proposed_clock_in_at).toLocaleTimeString("en-US", { hour12: false })
+      //   : null,
+      // proposed_clock_out_at: att.proposed_clock_out_at
+      //   ? new Date(att.proposed_clock_out_at).toLocaleTimeString("en-US", { hour12: false })
+      //   : null,
+      proposed_is_home_office: att.proposed_is_home_office ?? null,
       reason: att.reason ?? "",
       status: att.status ?? "PENDING",
       employee_name: att.employee?.user

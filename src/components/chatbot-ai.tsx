@@ -1,170 +1,191 @@
-"use client"
+"use client";
 
-import type React from "react"
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Send, MessageCircle, X, Loader2, Settings } from "lucide-react";
+import { useCompanyStore } from "@/stores/company-store";
+import { askChatbot, ChatTurn } from "@/lib/api/chabot-ai";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
-import { useState, useRef, useEffect } from "react"
-import { MessageCircle, X, Send } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-
-interface Message {
-  id: string
-  text: string
-  sender: "user" | "ai"
-  timestamp: Date
-}
+// ---- util kecil
+const now = () => Date.now();
+const nid = () => Math.random().toString(36).slice(2);
 
 export function ChatbotAI() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      text: "Hello! I'm your Assistant. How can I help you today?",
-      sender: "ai",
-      timestamp: new Date(),
-    },
-  ])
-  const [inputValue, setInputValue] = useState("")
-  const scrollAreaRef = useRef<HTMLDivElement>(null)
+  const { currentCompany } = useCompanyStore();
+  const companyKey = currentCompany?.uuid ?? "no-company";
 
-  // Auto-scroll to bottom when new messages arrive
+  // UI state
+  const [open, setOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // history per company
+  const storageKey = useMemo(() => `chatbot_history::${companyKey}`, [companyKey]);
+  const modelKey = "chatbot_model";
+
+  const [history, setHistory] = useState<ChatTurn[]>([]);
+
+  // load persisted
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      const scrollContainer = scrollAreaRef.current.querySelector("[data-radix-scroll-area-viewport]")
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight
-      }
+    try {
+      const savedHist = localStorage.getItem(storageKey);
+      if (savedHist) setHistory(JSON.parse(savedHist));
+    } catch {}
+  }, [storageKey]);
+
+  // persist on change
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(history));
+    } catch {}
+  }, [history, storageKey]);
+
+
+  // autoscroll
+  const endRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [history, open]);
+
+  const send = async () => {
+    const msg = input.trim();
+    if (!msg || loading) return;
+    setInput("");
+
+    // push user turn
+    const userTurn: ChatTurn = { id: nid(), role: "user", content: msg, ts: now() };
+    setHistory((h) => [...h, userTurn]);
+
+    setLoading(true);
+    try {
+      const reply = await askChatbot({ message: msg});
+      const botTurn: ChatTurn = { id: nid(), role: "assistant", content: reply || "(no reply)", ts: now() };
+      setHistory((h) => [...h, botTurn]);
+    } catch (e: any) {
+      toast.error(e?.message || "Chat failed");
+      // rollback input so user can edit
+      setInput(msg);
+      // add system error bubble (optional)
+      setHistory((h) => [
+        ...h,
+        { id: nid(), role: "assistant", content: "⚠️ Sorry, I couldn’t process that request.", ts: now() },
+      ]);
+    } finally {
+      setLoading(false);
     }
-  }, [messages])
+  };
 
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return
+  const clearChat = () => {
+    setHistory([]);
+    try { localStorage.removeItem(storageKey); } catch {}
+  };
 
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: inputValue,
-      sender: "user",
-      timestamp: new Date(),
-    }
-    setMessages((prev) => [...prev, userMessage])
-    setInputValue("")
-
-    // Simulate AI response after a short delay
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: getAIResponse(inputValue),
-        sender: "ai",
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, aiMessage])
-    }, 1000)
-  }
-
-  const getAIResponse = (userInput: string): string => {
-    const input = userInput.toLowerCase()
-
-    if (input.includes("leave") || input.includes("time off")) {
-      return "You can request time off by going to the Time Off section. Your remaining leave balance will be displayed there."
-    } else if (input.includes("employee") || input.includes("staff")) {
-      return "You can manage employees in the Employees section. From there, you can view, add, or edit employee information."
-    } else if (input.includes("attendance")) {
-      return "Attendance records can be viewed on the dashboard. You can also edit attendance requests from there."
-    } else if (input.includes("department")) {
-      return "Department management is available under Organization > Department. You can create and manage departments there."
-    } else if (input.includes("profile")) {
-      return "You can update your profile information in the Profile section. This includes personal details and preferences."
-    } else {
-      return "I can help you with employee management, time off requests, attendance tracking, and more. What would you like to know?"
-    }
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
+      e.preventDefault();
+      send();
     }
-  }
+  };
 
   return (
     <>
-      {/* Chat Window */}
-      {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-background border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 bg-primary text-primary-foreground rounded-t-2xl">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                <MessageCircle className="w-5 h-5" />
+      {/* Floating button */}
+      <div className="fixed bottom-6 right-6 z-40">
+        {!open ? (
+          <Button
+            size="lg"
+            className="rounded-full shadow-lg h-14 w-14 p-0 bg-gradient-to-br from-orange-500 to-red-500"
+            onClick={() => setOpen(true)}
+            aria-label="Open Chatbot"
+          >
+            <MessageCircle className="h-6 w-6 text-white" />
+          </Button>
+        ) : null}
+      </div>
+
+      {/* Panel */}
+      {open && (
+        <div className="fixed bottom-6 right-6 z-50 w-[min(88vw,420px)]">
+          <div className="bg-white/95 backdrop-blur-xl border border-gray-200 rounded-3xl shadow-2xl overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b">
+              <div className="flex items-center gap-2">
+                <MessageCircle className="h-5 w-5 text-orange-600" />
+                <div className="font-semibold">Chatbot</div>
+                <span className="text-xs text-muted-foreground ml-2">
+                  {currentCompany?.name ? `• ${currentCompany.name}` : ""}
+                </span>
               </div>
-              <div>
-                <h3 className="font-semibold">Salmon Assistant</h3>
-                <p className="text-xs opacity-90">Always here to help</p>
+              <div className="flex items-center gap-2">
+                {/* Model picker
+                <Select value={model} onValueChange={(v) => setModel(v as ChatModel)}>
+                  <SelectTrigger className="h-8 w-[150px] rounded-xl text-xs">
+                    <SelectValue placeholder="Model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="gpt-4o-mini">gpt-4o-mini</SelectItem>
+                    <SelectItem value="gpt-4o">gpt-4o</SelectItem>
+                    <SelectItem value="claude-3-haiku">claude-3-haiku</SelectItem>
+                    <SelectItem value="local-dev">local-dev</SelectItem>
+                  </SelectContent>
+                </Select> */}
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={clearChat} title="Clear">
+                  <Settings className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => setOpen(false)}>
+                  <X className="h-5 w-5" />
+                </Button>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsOpen(false)}
-              className="hover:bg-white/20 text-primary-foreground"
-            >
-              <X className="w-5 h-5" />
-            </Button>
-          </div>
 
-          {/* Messages */}
-          <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div key={message.id} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
+            {/* Messages */}
+            <div className="max-h-[50vh] overflow-y-auto p-4 space-y-3">
+              {history.length === 0 && (
+                <div className="text-sm text-muted-foreground text-center py-6">
+                  Ask anything about company policies, attendance, or HR workflows.
+                </div>
+              )}
+              {history.map((t) => (
+                <div key={t.id} className={`flex ${t.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-                      message.sender === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-gray-100 dark:bg-gray-800 text-foreground"
+                    className={`px-3 py-2 rounded-2xl max-w-[85%] text-sm leading-relaxed shadow-sm ${
+                      t.role === "user"
+                        ? "bg-gradient-to-br from-orange-500 to-red-500 text-white"
+                        : "bg-gray-50 border"
                     }`}
                   >
-                    <p className="text-sm">{message.text}</p>
-                    <p className="text-xs opacity-70 mt-1">
-                      {message.timestamp.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
+                    {t.content}
                   </div>
                 </div>
               ))}
+              <div ref={endRef} />
             </div>
-          </ScrollArea>
 
-          {/* Input */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex gap-2">
-              <Input
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
-                className="flex-1 rounded-xl"
+            {/* Composer */}
+            <div className="p-3 border-t bg-white flex items-end gap-2">
+              <Textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={onKeyDown}
+                placeholder="Type a message… (Enter to send, Shift+Enter for newline)"
+                className="min-h-[44px] max-h-[160px] rounded-2xl resize-y"
               />
-              <Button onClick={handleSendMessage} size="icon" className="rounded-xl" disabled={!inputValue.trim()}>
-                <Send className="w-4 h-4" />
+              <Button
+                onClick={send}
+                disabled={!input.trim() || loading}
+                className="rounded-2xl h-10 px-4 bg-gradient-to-br from-orange-500 to-red-500"
+              >
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Floating Button */}
-      <Button
-        onClick={() => setIsOpen(!isOpen)}
-        size="icon"
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-2xl hover:scale-110 transition-transform z-50"
-      >
-        {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
-      </Button>
     </>
-  )
+  );
 }
+
+export default ChatbotAI;

@@ -3,6 +3,7 @@ import postAPI from "./postAPI"
 import patchAPI from "./patchAPI"
 import { API_URL } from "./constants"
 import { responseFormatter } from "./responseFormatter"
+import { useUserStore } from "@/stores/user-store"
 
 // Format tanggal "YYYY-MM-DD"
 const formatDate = (date: Date) => date.toISOString().split("T")[0]
@@ -153,17 +154,18 @@ export const employeeAPI = {
     },
 
     async getSelfProfile() {
-        const res = await getAPI(API_URL.getMe ?? "/api/employee/me")
-        return { ...res, data: res.data?.data ?? res.data } // fleksibel sama bentuk backend
+        const res = await getAPI("/employee/me")
+        return res.data
     },
 
+
     async updateSelfProfile(payload: any) {
-        const res = await postAPI(payload, API_URL.updateUser ?? "/api/employee/me")
+        const res = await postAPI(payload, API_URL.updateUser ?? "/employee/me")
         return { ...res, data: res.data?.data ?? res.data }
     },
 
     async getDepartments(companyUuid: string) {
-        const res = await getAPI(`/department?company_uuid=${companyUuid}`)
+        const res = await getAPI(`/departments?company_uuid=${companyUuid}`)
         return { ...res, data: res.data?.data ?? res.data }
     },
 

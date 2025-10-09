@@ -28,16 +28,11 @@ type SelfProfile = {
   name?: string
   email?: string
   phone?: string
-  address?: string
+  gender?: string
   birth_date?: string | null
-  join_date?: string | null
-  position_name?: string | null
-  department_name?: string | null
+  company?: string | null
   employee_id?: string | null
-  manager_name?: string | null
-  bio?: string | null
-  avatar_url?: string | null
-  work_schedule?: string | null
+  department?: string | null
 }
 
 /* ---------- STORE INTERFACE ---------- */
@@ -54,6 +49,9 @@ interface EmployeeSelfStore {
   fetchMyEditRequests: (companyUUID: string) => Promise<void>
   clockIn: (workDate: Date, companyUUID?: string, at?: string) => Promise<void>
   clockOut: (workDate: Date, companyUUID?: string, at?: string) => Promise<void>
+  toggleHomeOffice: (isHome: boolean, companyUUID?: string) => Promise<void>
+  saveNotes: (note: string, companyUUID?: string) => Promise<void>
+  resetForNewDay: () => void
 
   fetchSelfProfile: () => Promise<void>
   updateSelfProfile: (payload: Partial<SelfProfile>) => Promise<void>
@@ -82,16 +80,18 @@ export const useEmployeeSelfStore = create<EmployeeSelfStore>()(
           set({ attendanceToday: null })
         }
       },
-      
+
 
       /** Fetch attendance range */
       async fetchAttendanceRange(from: Date, to: Date, companyUUID: string) {
         try {
           const res = await employeeAPI.listRange(from, to, companyUUID)
           set({ attendanceList: res.data || [] })
+          return res
         } catch (err) {
           console.error("❌ fetchAttendanceRange error:", err)
           set({ attendanceList: [] })
+          return null
         }
       },
 
@@ -130,17 +130,74 @@ export const useEmployeeSelfStore = create<EmployeeSelfStore>()(
         }
       },
 
-      /** Fetch current user's profile */
-      async fetchSelfProfile() {
+      async toggleHomeOffice(isHome: boolean, companyUUID?: string) {
         try {
-          const res = await employeeAPI.getSelfProfile()
-          set({ selfProfile: res.data as SelfProfile })
-        } catch (e) {
-          console.error("❌ fetchSelfProfile error:", e)
+          const today = new Date()
+          set((state) => ({
+            isHomeOffice: isHome,
+            attendanceToday: state.attendanceToday
+              ? { ...state.attendanceToday, is_home_office: isHome }
+              : state.attendanceToday,
+          }))
+
+          const res = await employeeAPI.toggleHomeOffice(today, isHome, companyUUID)
+          set({
+            attendanceToday: res ?? null,
+            isHomeOffice: res?.is_home_office ?? isHome,
+          })
+          toast.success(isHome ? "Home Office enabled" : "Office mode enabled")
+        } catch (err) {
+          set((state) => ({
+            isHomeOffice: !isHome,
+            attendanceToday: state.attendanceToday
+              ? { ...state.attendanceToday, is_home_office: !isHome }
+              : state.attendanceToday,
+          }))
+          toast.error("Failed to toggle work mode")
+          console.error("toggleHomeOffice error:", err)
         }
       },
 
-      /** Update current user's profile */
+      /** Save Notes */
+      async saveNotes(notes: string, companyUUID?: string) {
+        try {
+          const today = new Date()
+          set((state) => ({
+            notes,
+            attendanceToday: state.attendanceToday
+              ? { ...state.attendanceToday, notes }
+              : state.attendanceToday,
+          }))
+
+          const res = await employeeAPI.saveNotes(today, notes, companyUUID)
+          set({
+            notes: res?.notes ?? notes,
+            attendanceToday: res ?? null,
+          })
+          toast.success("Notes saved")
+        } catch (err) {
+          toast.error("Failed to save notes")
+          console.error("saveNotes error:", err)
+        }
+      },
+
+      resetForNewDay() {
+        set({
+          attendanceToday: null,
+          isHomeOffice: false,
+          notes: "",
+        })
+      },
+
+      async fetchSelfProfile() {
+        try {
+          const res = await employeeAPI.getSelfProfile()
+          set({ selfProfile: res })
+        } catch (e) {
+          console.error("fetchSelfProfile error:", e)
+        }
+      },
+
       async updateSelfProfile(payload) {
         const prev = get().selfProfile
         try {

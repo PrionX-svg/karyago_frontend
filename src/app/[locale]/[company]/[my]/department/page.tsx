@@ -118,7 +118,7 @@ export default function OrganizationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-red-50 p-6">
+    <div className="min-h-screen p-6">
       {/* Header */}
       <div className="max-w-5xl mx-auto mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -128,7 +128,7 @@ export default function OrganizationPage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                Organization Structure
+                Department
               </h1>
               <p className="text-gray-600 text-sm">
                 Explore your company structure and team hierarchy

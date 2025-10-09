@@ -67,13 +67,13 @@ export default function AttendancePage() {
     const summaryStats = useMemo(() => {
         const present = attendanceList.filter((a) => a.status === "PRESENT").length
         const absent = attendanceList.filter((a) => a.status === "ABSENT").length
-        const late = attendanceList.filter((a) => (a as any)?.is_late)?.length || 0
+        const open = attendanceList.filter((a) => a.status === "OPEN").length
 
-        // Hitung total jam kerja
+        // Hitung total jam kerja hanya untuk yang sudah clock in & out
         const totalMs = attendanceList.reduce((acc, a) => {
             if (a.clock_in_at && a.clock_out_at) {
-                const inTime = new Date(a.clock_in_at).getTime()
-                const outTime = new Date(a.clock_out_at).getTime()
+                const inTime = new Date(`${a.work_date}T${a.clock_in_at}`).getTime()
+                const outTime = new Date(`${a.work_date}T${a.clock_out_at}`).getTime()
                 if (!isNaN(inTime) && !isNaN(outTime) && outTime > inTime) {
                     return acc + (outTime - inTime)
                 }
@@ -82,8 +82,16 @@ export default function AttendancePage() {
         }, 0)
 
         const totalHours = Math.floor(totalMs / 1000 / 60 / 60)
-        return { present, absent, late, totalHours }
+
+        return {
+            present,
+            absent,
+            open,
+            totalHours,
+            totalDays: attendanceList.length,
+        }
     }, [attendanceList])
+
 
     const [editType, setEditType] = useState<
         "CLOCK_IN" | "CLOCK_OUT" | "BOTH" | "HOME_FLAG" | "BOTH_PLUS_FLAG"
@@ -104,36 +112,61 @@ export default function AttendancePage() {
     }
 
     const handleSubmitEditRequest = async () => {
-        if (!selectedAttendance || !currentCompany?.uuid) return
+        if (!selectedAttendance) {
+            toast.error("Please select an attendance record first.")
+            return
+        }
 
         try {
+            // Validasi dasar
+            if (!reason.trim()) {
+                toast.error("Please provide a reason for your request.")
+                return
+            }
+
+            // Tentukan request_type otomatis
+            const requestType = (() => {
+                if (editType === "BOTH_PLUS_FLAG") return "BOTH_PLUS_FLAG"
+                if (editType === "HOME_FLAG") return "HOME_FLAG"
+                if (editType === "BOTH") return "BOTH"
+                if (editType === "CLOCK_IN") return "CLOCK_IN"
+                if (editType === "CLOCK_OUT") return "CLOCK_OUT"
+                return null
+            })()
+
             const payload: any = {
                 work_date: selectedAttendance.work_date,
-                edit_type: editType,
+                request_type: requestType,
                 reason,
-                company_uuid: currentCompany.uuid,
             }
 
-            if (requestedClockIn) {
-                payload.proposed_clock_in_at = `${selectedAttendance.work_date}T${requestedClockIn}:00`
-            }
-            if (requestedClockOut) {
-                payload.proposed_clock_out_at = `${selectedAttendance.work_date}T${requestedClockOut}:00`
-            }
-            if (["HOME_FLAG", "BOTH_PLUS_FLAG"].includes(editType)) {
+            // Clock In / Out proposal times
+            const workDate = selectedAttendance.work_date
+            if (requestedClockIn)
+                payload.proposed_clock_in_at = `${workDate}T${requestedClockIn}:00Z`
+            if (requestedClockOut)
+                payload.proposed_clock_out_at = `${workDate}T${requestedClockOut}:00Z`
+
+            // Home flag
+            if (["HOME_FLAG", "BOTH_PLUS_FLAG"].includes(requestType!))
                 payload.proposed_is_home_office = isHomeOffice
-            }
 
             console.log("📤 Submitting edit request:", payload)
+
             await employeeAPI.createEditRequest(payload)
 
-            toast.success("Edit request submitted!")
+            toast.success("Edit request submitted successfully!")
             setShowEditModal(false)
-            fetchMyEditRequests(currentCompany.uuid)
+
+            if (currentCompany?.uuid) {
+                await fetchMyEditRequests(currentCompany.uuid)
+            }
         } catch (error) {
+            console.error("❌ Error submitting edit request:", error)
             toast.error("Failed to submit edit request.")
         }
     }
+
 
 
 
@@ -147,7 +180,7 @@ export default function AttendancePage() {
                     </div>
                     <div>
                         <h1 className="text-3xl font-bold bg-gradient-to-br from-orange-500 to-red-500 bg-clip-text text-transparent">
-                            Attendance
+                            My Attendance
                         </h1>
                         <p className="text-gray-600 text-sm">Your attendance records and summary</p>
                     </div>
@@ -292,6 +325,7 @@ export default function AttendancePage() {
 
                     {/* ✅ Summary Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {/* Present Days */}
                         <Card className="bg-gradient-to-br from-green-500 to-emerald-500 border-0 shadow-xl rounded-3xl overflow-hidden">
                             <CardContent className="p-6 text-white">
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
@@ -302,16 +336,18 @@ export default function AttendancePage() {
                             </CardContent>
                         </Card>
 
+                        {/* Still Open */}
                         <Card className="bg-gradient-to-br from-yellow-500 to-orange-500 border-0 shadow-xl rounded-3xl overflow-hidden">
                             <CardContent className="p-6 text-white">
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
                                     <Clock className="w-6 h-6" />
                                 </div>
-                                <p className="text-yellow-100 text-sm font-medium mb-2">Late Days</p>
-                                <p className="text-4xl font-bold">{summaryStats.late}</p>
+                                <p className="text-yellow-100 text-sm font-medium mb-2">Still Open</p>
+                                <p className="text-4xl font-bold">{summaryStats.open}</p>
                             </CardContent>
                         </Card>
 
+                        {/* Absent Days */}
                         <Card className="bg-gradient-to-br from-red-500 to-pink-500 border-0 shadow-xl rounded-3xl overflow-hidden">
                             <CardContent className="p-6 text-white">
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
@@ -322,6 +358,7 @@ export default function AttendancePage() {
                             </CardContent>
                         </Card>
 
+                        {/* Total Hours */}
                         <Card className="bg-gradient-to-br from-blue-500 to-cyan-500 border-0 shadow-xl rounded-3xl overflow-hidden">
                             <CardContent className="p-6 text-white">
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
@@ -354,7 +391,16 @@ export default function AttendancePage() {
                                     className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-all"
                                 >
                                     <span className="font-medium text-gray-900">{r.work_date}</span>
-                                    <span className="text-gray-700">{r.edit_type}</span>
+                                    <span className="text-gray-700"> {r.proposed_is_home_office !== null && (
+                                        <Badge
+                                            className={`ml-2 rounded-full ${r.proposed_is_home_office
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-blue-100 text-blue-700"
+                                                } border-0`}
+                                        >
+                                            {r.proposed_is_home_office ? "Home Office" : "In Office"}
+                                        </Badge>
+                                    )}</span>
                                     <span className="text-sm text-gray-600">{r.reason || "-"}</span>
                                     <span>
                                         <Badge
@@ -369,7 +415,14 @@ export default function AttendancePage() {
                                         </Badge>
                                     </span>
                                     <span className="text-sm text-gray-600">
-                                        {r.requested_time || "-"} → {r.requested_time || "-"}
+                                        {r.proposed_clock_in_at
+                                            ? new Date(r.proposed_clock_in_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })
+                                            : "-"}{" "}
+                                        →{" "}
+                                        {r.proposed_clock_out_at
+                                            ? new Date(r.proposed_clock_out_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })
+                                            : "-"}
+
                                     </span>
                                 </div>
                             ))}
