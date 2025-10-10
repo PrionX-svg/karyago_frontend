@@ -27,11 +27,8 @@ import Image from "next/image";
 
 export function Header() {
   const currentCompany = useCompanyStore((state) => state.currentCompany);
-
   const userInfo = useUserStore.getState().user;
   const isMobile = useIsMobile();
-  const isSidebarCollapsed = useGeneralStore((s) => s.isSidebarCollapsed);
-  const toggleSidebarCollapse = useGeneralStore((s) => s.toggleSidebarCollapse);
   const { isFetchingGetMe } = user.useGetMe();
 
   company.useGetCurrentCompanyByUserUuid(userInfo.userUuid ?? "");
@@ -101,11 +98,11 @@ export function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuSeparator />
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Support</DropdownMenuItem>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator /> */}
             <DropdownMenuItem>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

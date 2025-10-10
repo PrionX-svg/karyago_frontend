@@ -30,6 +30,8 @@ export const API_URL = {
   updateBranchByUuid: "/branches/update/",
   deleteBranchByUuid: "/branches/delete/",
 
+  attendanceListAll: "/attendance/list-all",
+
   // for employee (self)
   attendanceClockIn: "/attendance/clock-in",
   attendanceClockOut: "/attendance/clock-out",
@@ -40,9 +42,8 @@ export const API_URL = {
   attendanceListCalendar: "/attendance/calendar",
   attendanceEditRequests: "/attendance/edit-requests",
   attendanceEditRequestsMy: "/attendance/edit-requests/my",
-
   employeeProfileSelf: "/employee/me",
 
-  departmentList: "/department",
+  departmentList: "/departments",
   departmentGroupList: "/department-groups",
 };

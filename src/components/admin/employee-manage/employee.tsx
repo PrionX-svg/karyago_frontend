@@ -425,6 +425,11 @@ export default function EmployeePage() {
                                         </th>
                                         <th className="text-left py-4 px-6 font-bold text-gray-900 dark:text-gray-100">
                                             <div className="flex items-center gap-2">
+                                                Branch
+                                            </div>
+                                        </th>
+                                        <th className="text-left py-4 px-6 font-bold text-gray-900 dark:text-gray-100">
+                                            <div className="flex items-center gap-2">
                                                 {em("freelanceStatus")}
                                             </div>
                                         </th>
@@ -459,7 +464,12 @@ export default function EmployeePage() {
                                             </td>
                                             <td className="py-4 px-6">
                                                 <div className="text-gray-900 dark:text-gray-100">
-                                                    {employee.subDivision?.name || "NOT SET"}
+                                                    {employee.subDivision?.name || "-"}
+                                                </div>
+                                            </td>
+                                            <td className="py-4 px-6">
+                                                <div className="text-gray-900 dark:text-gray-100">
+                                                    {employee.branch?.name || "-"}
                                                 </div>
                                             </td>
                                             <td className="py-4 px-6">

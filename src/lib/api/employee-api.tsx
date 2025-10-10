@@ -60,6 +60,31 @@ export const employeeAPI = {
         return { ...res, data: responseFormatter.formatAttendance(attendance) }
     },
 
+    async listAllAttendance(from: Date, to: Date, companyUuid: string) {
+        const query = new URLSearchParams({
+            from: from.toISOString().split("T")[0],
+            to: to.toISOString().split("T")[0],
+            company_uuid: companyUuid,
+        }).toString()
+
+        const res = await getAPI(`${API_URL.attendanceListAll}?${query}`)
+
+        // Handle hybrid backend response
+        const list = Array.isArray(res.data)
+            ? res.data
+            : Array.isArray(res.data?.data)
+                ? res.data.data
+                : []
+
+        console.log("✅ Admin Attendance List (raw):", res.data)
+        console.log("📊 Extracted list length:", list.length)
+
+        return {
+            ...res,
+            data: responseFormatter.formatAttendanceList(list),
+        }
+    },
+
 
     async listRange(from: Date, to: Date, companyUuid?: string) {
         const query = new URLSearchParams({
@@ -111,16 +136,43 @@ export const employeeAPI = {
         }
     },
 
-    async getAllEditRequests(companyUuid?: string) {
-        const query = new URLSearchParams({
-            ...(companyUuid && { company_uuid: companyUuid }),
-        }).toString()
-        const res = await getAPI(`${API_URL.attendanceEditRequests}?${query}`)
+    async getAllEditRequests(companyUuid: string) {
+        const res = await getAPI(`${API_URL.attendanceEditRequests}?company_uuid=${companyUuid}`)
+
+        // handle both { items: [] } or { data: [] } backend formats
+        const list = res.data?.items ?? res.data?.data ?? res.data ?? []
+
+        console.log("🧩 Raw edit requests:", JSON.stringify(list, null, 2))
+        if (Array.isArray(list) && list.length > 0) {
+            console.log("🧾 One record:", list[0])
+        }
+
+        // return {
+        //     ...res,
+        //     data: list.map((r: any) => ({
+        //         id: r.id,
+        //         work_date: r.work_date?.split("T")[0] ?? "-",
+        //         edit_type: r.request_type?.replace(/_/g, " ") ?? "-",
+        //         reason: r.reason ?? "-",
+        //         status: r.status ?? "-",
+        //         proposed_clock_in_at: r.proposed_clock_in_at ?? null,
+        //         proposed_clock_out_at: r.proposed_clock_out_at ?? null,
+        //         proposed_is_home_office: r.proposed_is_home_office ?? null,
+        //         user_name: r.employee?.user
+        //             ? `${r.employee.user.first_name ?? ""} ${r.employee.user.last_name ?? ""}`.trim() || "Unknown"
+        //             : "Unknown",
+
+        //         department_name: r.employee?.user?.department?.name ?? "-",
+        //     })),
+        // }
+
         return {
             ...res,
-            data: responseFormatter.formatAttendanceEditList(res.data),
+            data: responseFormatter.formatAttendanceEditList(list),
         }
     },
+
+
 
     async createEditRequest(payload: {
         work_date: string
@@ -145,8 +197,8 @@ export const employeeAPI = {
         }
     },
 
-    async rejectEditRequest(id: string) {
-        const res = await postAPI({}, `${API_URL.attendanceEditRequests}/${id}/reject`)
+    async rejectEditRequest(id: string, note: string) {
+        const res = await postAPI({ note }, `${API_URL.attendanceEditRequests}/${id}/reject`)
         return {
             ...res,
             data: responseFormatter.formatAttendanceEdit(res.data?.data),

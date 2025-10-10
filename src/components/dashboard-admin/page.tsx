@@ -1,248 +1,175 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
-import Link from "next/link"
-import { toast } from "sonner"
+import { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { useCompanyStore } from "@/stores/company-store"
+import { api } from "@/lib/api/api"
 import { employeeAPI } from "@/lib/api/employee-api"
+import Link from "next/link"
+import { useCompanyStore } from "@/stores/company-store"
+import { useEmployeeStore } from "@/stores/employee-store"
+import { Building2, Users, Clock, Target, Briefcase } from "lucide-react"
 
-export default function AdminDashboardPage({
-  params,
-}: {
-  params: { locale: string; company: string }
-}) {
+export default function AdminDashboardPage({ params }: { params: { locale: string; company: string } }) {
   const { currentCompany } = useCompanyStore()
+  const { employees, terminatedEmployees } = useEmployeeStore()
 
-  const [departments, setDepartments] = useState<any[]>([])
-  const [employees, setEmployees] = useState<any[]>([])
+  const [divisions, setDivisions] = useState<any[]>([])
+  const [subDivisions, setSubDivisions] = useState<any[]>([])
   const [editRequests, setEditRequests] = useState<any[]>([])
-  const [attendanceRate, setAttendanceRate] = useState<number>(0)
-  const [loading, setLoading] = useState(true)
+  const [attendanceRate, setAttendanceRate] = useState<number | null>(null)
 
-  // Helper: format tanggal ke YYYY-MM-DD
-  const formatDate = (date: Date) => date.toISOString().split("T")[0]
-
+  // 🔹 Fetch all core data
   useEffect(() => {
-    const loadDashboardData = async () => {
+    const load = async () => {
       if (!currentCompany?.uuid) return
       try {
-        setLoading(true)
-
-        // 🏢 Fetch departments (gunakan plural sesuai route backend)
-        const deptRes = await employeeAPI.getDepartments(currentCompany.uuid)
-        const deptData = Array.isArray(deptRes.data?.items)
-          ? deptRes.data.items
-          : Array.isArray(deptRes.data)
-          ? deptRes.data
-          : []
-        setDepartments(deptData)
-
-        // 👥 Fetch attendance range (last 30 days)
-        const now = new Date()
-        const from = new Date(now)
-        from.setDate(now.getDate() - 30)
-        const empRes = await employeeAPI.listRange(from, now, currentCompany.uuid)
-        const empData = Array.isArray(empRes.data?.items)
-          ? empRes.data.items
-          : Array.isArray(empRes.data)
-          ? empRes.data
-          : []
-        setEmployees(empData)
-
-        // ✏️ Fetch edit attendance requests
-        const editRes = await employeeAPI.getAllEditRequests(currentCompany.uuid)
-        const editData = Array.isArray(editRes.data?.items)
-          ? editRes.data.items
-          : Array.isArray(editRes.data)
-          ? editRes.data
-          : []
-        setEditRequests(editData)
-
-        // 📊 Hitung attendance rate
-        const total = empData.length
-        const present = empData.filter((a) => a.status === "PRESENT").length
-        setAttendanceRate(total > 0 ? (present / total) * 100 : 0)
+        await api.getEmployeeByCompanyUuid(currentCompany.uuid)
+        await api.getDivisionsByCompanyUuid(currentCompany.uuid)
+        await api.getSubDivisionsByCompanyUuid(currentCompany.uuid)
+        const edits = await employeeAPI.getAllEditRequests(currentCompany.uuid)
+        setEditRequests(edits.data || [])
       } catch (err) {
-        console.error("❌ Error loading dashboard:", err)
-        toast.error("Failed to load admin dashboard data.")
-      } finally {
-        setLoading(false)
+        console.error("❌ Failed loading dashboard:", err)
       }
     }
-
-    loadDashboardData()
+    load()
   }, [currentCompany?.uuid])
 
-  /** 📈 Summary statistics */
-  const summary = useMemo(() => {
-    // Jumlah employee aktif (status PRESENT)
-    const activeEmployees = employees.filter((a) => a.status === "PRESENT").length
+  // 🔹 Ambil data divisions & sub-divisions langsung dari store
+  useEffect(() => {
+    setDivisions(useCompanyStore.getState().division || [])
+    setSubDivisions(useCompanyStore.getState().subDivision || [])
+  }, [useCompanyStore.getState().division, useCompanyStore.getState().subDivision])
 
-    // Employee baru (join bulan ini)
-    const newEmployees = employees.filter((a) => {
-      const date = new Date(a.work_date)
-      const now = new Date()
-      return (
-        date.getMonth() === now.getMonth() &&
-        date.getFullYear() === now.getFullYear()
-      )
-    }).length
+  // 🔹 Hitung attendance rate (dummy simple example)
+  useEffect(() => {
+    const calcRate = async () => {
+      if (!currentCompany?.uuid) return
+      try {
+        const now = new Date()
+        const from = new Date(now.getFullYear(), now.getMonth(), 1)
+        const to = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+        const range = await employeeAPI.listRange(from, to, currentCompany.uuid)
+        const records = range.data || []
+        const total = records.length
+        const present = records.filter((r: any) => r.status === "PRESENT").length
+        const rate = total > 0 ? (present / total) * 100 : 0
+        setAttendanceRate(rate)
+      } catch (err) {
+        console.error("⚠️ Failed to calc attendance rate:", err)
+      }
+    }
+    calcRate()
+  }, [currentCompany?.uuid])
 
-    // Kelompok department berdasarkan group_name
-    const deptGroups = [
-      ...new Set(departments.map((d: any) => d.group_name || "Ungrouped")),
-    ]
-
-    return { activeEmployees, newEmployees, deptGroups }
-  }, [employees, departments])
-
-  const recentRequests = editRequests.slice(0, 5)
+  // 🔹 Stats
+  const stats = useMemo(() => ({
+    activeEmployees: employees.length,
+    terminatedEmployees: terminatedEmployees.length,
+    divisions: divisions.length,
+    subDivisions: subDivisions.length,
+  }), [employees, terminatedEmployees, divisions, subDivisions])
 
   return (
     <div className="w-full max-w-full space-y-6">
-      {/* 🔹 Summary Cards */}
+      {/* 🔸 Stats Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6 text-center space-y-2">
-            <div className="text-5xl font-bold text-foreground">
-              {loading ? "-" : summary.activeEmployees}
-            </div>
-            <p className="text-sm text-muted-foreground">Active Employee</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6 text-center space-y-2">
-            <div className="text-5xl font-bold text-foreground">
-              {loading ? "-" : summary.newEmployees}
-            </div>
-            <p className="text-sm text-muted-foreground">New Employee</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6 text-center space-y-2">
-            <div className="text-5xl font-bold text-foreground">
-              {loading ? "-" : summary.deptGroups.length}
-            </div>
-            <p className="text-sm text-muted-foreground">Department Group</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6 text-center space-y-2">
-            <div className="text-5xl font-bold text-foreground">
-              {loading ? "-" : departments.length}
-            </div>
-            <p className="text-sm text-muted-foreground">Department</p>
-          </CardContent>
-        </Card>
+        <StatCard icon={<Users className="w-6 h-6 text-green-600" />} value={stats.activeEmployees} label="Active Employees" />
+        <StatCard icon={<Briefcase className="w-6 h-6 text-orange-600" />} value={stats.terminatedEmployees} label="Terminated Employees" />
+        <StatCard icon={<Building2 className="w-6 h-6 text-blue-600" />} value={stats.divisions} label="Division" />
+        <StatCard icon={<Target className="w-6 h-6 text-purple-600" />} value={stats.subDivisions} label="Sub-Division" />
       </div>
 
-      {/* 🔹 Employee Distribution */}
+      {/* 🔸 Employee Distribution */}
       <Card>
         <CardHeader>
           <CardTitle>Employee Distribution</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-5">
-          {summary.deptGroups.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No department group data available.
-            </p>
-          ) : (
-            summary.deptGroups.map((group) => {
-              const groupDepts = departments.filter((d) => d.group_name === group)
-              const count = groupDepts.length
-              const percent =
-                departments.length > 0
-                  ? Math.round((count / departments.length) * 100)
-                  : 0
+        <CardContent className="space-y-4">
+          {divisions.length > 0 ? (
+            divisions.map((subdiv) => {
+              const members = employees.filter((e) => e.subDivision?.uuid === subdiv.uuid).length
+              const percent = ((members / employees.length) * 100).toFixed(0)
               return (
-                <div key={group} className="space-y-2">
+                <div key={subdiv.uuid}>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{group}</span>
+                    <span className="text-muted-foreground">{subdiv.name}</span>
                     <span className="font-medium">{percent}%</span>
                   </div>
                   <div className="h-3 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gray-600 rounded-full transition-all"
-                      style={{ width: `${percent}%` }}
-                    />
+                    <div className="h-full bg-gray-600 rounded-full" style={{ width: `${percent}%` }} />
                   </div>
                 </div>
               )
             })
+          ) : (
+            <p className="text-sm text-muted-foreground">No divisions found</p>
           )}
         </CardContent>
       </Card>
 
-      {/* 🔹 Attendance Rate + Edit Requests */}
+      {/* 🔸 Attendance & Edit Requests */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Attendance Rate */}
         <Card>
           <CardHeader>
             <CardTitle>Attendance Rate</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="text-6xl font-bold text-foreground">
-                {loading ? "--" : `${attendanceRate.toFixed(0)}%`}
-              </div>
+              <div className="text-6xl font-bold text-foreground">{attendanceRate ? `${attendanceRate.toFixed(0)}%` : "--"}</div>
               <p className="text-sm text-muted-foreground">This Month</p>
             </div>
           </CardContent>
         </Card>
 
+        {/* Edit Requests */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Requested Edit Attendance</CardTitle>
-            <Link
-              href={`/${params.locale}/${params.company}/employees/attendance-requests`}
-              className="text-sm text-primary hover:underline"
-            >
+            <Link href={`/${params.locale}/${params.company}/employees/attendance-requests`} className="text-sm text-primary hover:underline">
               See more
             </Link>
           </CardHeader>
           <CardContent className="space-y-4">
-            {recentRequests.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No pending requests.</p>
-            ) : (
-              recentRequests.map((r) => (
-                <div
-                  key={r.id}
-                  className="flex items-center justify-between border-b pb-3 last:border-none"
-                >
+            {editRequests.length > 0 ? (
+              editRequests.slice(0, 5).map((req) => (
+                <div key={req.id} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Avatar>
-                      <AvatarFallback>
-                        {r.user_name?.substring(0, 2).toUpperCase() || "UN"}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar><AvatarFallback>{req.user_name?.slice(0, 2).toUpperCase() || "UN"}</AvatarFallback></Avatar>
                     <div>
-                      <p className="text-sm font-medium">{r.user_name || "Unknown"}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {r.edit_type?.replace("_", " ") || "-"}
-                      </p>
+                      <p className="text-sm font-medium">{req.user_name || "Unknown"}</p>
+                      <p className="text-xs text-muted-foreground">{req.edit_type}</p>
                     </div>
                   </div>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-md ${
-                      r.status === "PENDING"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : r.status === "APPROVED"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
-                    {r.status}
-                  </span>
+                  <span className={`text-xs px-2 py-1 rounded-md ${req.status === "PENDING" ? "bg-yellow-100 text-yellow-700" :
+                      req.status === "APPROVED" ? "bg-green-100 text-green-700" :
+                        "bg-red-100 text-red-700"
+                    }`}>{req.status}</span>
                 </div>
               ))
+            ) : (
+              <p className="text-sm text-muted-foreground">No recent requests</p>
             )}
           </CardContent>
         </Card>
       </div>
     </div>
+  )
+}
+
+/* ✅ Simple reusable stat card */
+function StatCard({ icon, value, label }: { icon: React.ReactNode, value: number | string, label: string }) {
+  return (
+    <Card>
+      <CardContent className="pt-6">
+        <div className="text-center space-y-2">
+          <div className="flex justify-center">{icon}</div>
+          <div className="text-4xl font-bold text-foreground">{value}</div>
+          <p className="text-sm text-muted-foreground">{label}</p>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

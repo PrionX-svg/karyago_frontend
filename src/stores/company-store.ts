@@ -13,6 +13,7 @@ type CompanyStore = {
   division: DivisionType[];
   subDivision: SubDivisionType[];
   setCompany: (company: CompanyType[]) => void;
+  clearCompany: () => void;
   setCurrentCompany: (company: CompanyType) => void;
   setAddCompany: (company: CompanyType) => void;
   setCompanyBranch: (branch: CompanyBranchType[]) => void;
@@ -47,6 +48,7 @@ export const useCompanyStore = create<CompanyStore>((set) => ({
   division: [],
   subDivision: [],
   setCompany: (company) => set({ company }),
+  clearCompany: () => set({ currentCompany: undefined }),
   setCurrentCompany: (company) => set({ currentCompany: company }),
   setAddCompany: (company) =>
     set((state) => ({ company: [...state.company, company] })),

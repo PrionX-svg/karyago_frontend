@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Send, MessageCircle, X, Loader2, Settings } from "lucide-react";
+import { Send, MessageCircle, X, Loader2, Settings, Trash } from "lucide-react";
 import { useCompanyStore } from "@/stores/company-store";
 import { askChatbot, ChatTurn } from "@/lib/api/chabot-ai";
 import { Button } from "@/components/ui/button";
@@ -133,7 +133,7 @@ export function ChatbotAI() {
                   </SelectContent>
                 </Select> */}
                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={clearChat} title="Clear">
-                  <Settings className="h-4 w-4" />
+                  <Trash className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => setOpen(false)}>
                   <X className="h-5 w-5" />
