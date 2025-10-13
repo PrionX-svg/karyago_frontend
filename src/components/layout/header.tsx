@@ -24,15 +24,33 @@ import { Skeleton } from "../ui/skeleton";
 import company from "@/lib/queries/company-queries";
 import { useCompanyStore } from "@/stores/company-store";
 import Image from "next/image";
+import { useCallback, useState } from "react";
+import { api } from "@/lib/api/api";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { API_URL } from "@/lib/api/constants";
 
 export function Header() {
   const currentCompany = useCompanyStore((state) => state.currentCompany);
   const userInfo = useUserStore.getState().user;
   const isMobile = useIsMobile();
   const { isFetchingGetMe } = user.useGetMe();
+  const router = useRouter();
+  const {userLogout} = user.useLogOut();
 
   company.useGetCurrentCompanyByUserUuid(userInfo.userUuid ?? "");
 
+  const handleLogout = ( () => {
+    userLogout().
+    then(() => {
+      toast.success("Logged out successfully");
+      router.push(`${API_URL.login}`);
+    })
+    .catch(() => {
+      toast.error("Failed to log out");
+    }); 
+  });
+  
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
       <div className="flex items-center gap-4">
@@ -103,7 +121,7 @@ export function Header() {
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Support</DropdownMenuItem>
             <DropdownMenuSeparator /> */}
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

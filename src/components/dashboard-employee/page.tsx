@@ -208,7 +208,7 @@ export default function EmployeeDashboard() {
                   </p>
                 )}
 
-                {/* Office/Home toggle */}
+                {/* Work Type */}
                 <div className="mb-6 flex justify-center">
                   <div className="inline-flex bg-gray-100 rounded-2xl p-1">
                     <button

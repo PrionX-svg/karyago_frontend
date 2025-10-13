@@ -81,11 +81,13 @@ export default function EmployeeAttendancePage() {
           <CardTitle>Attendance Records</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="hidden md:grid md:grid-cols-6 text-sm font-semibold text-gray-500 border-b pb-2 mb-2">
+          <div className="hidden md:grid md:grid-cols-8 text-sm font-semibold text-gray-500 border-b pb-2 mb-2">
             <span>Name</span>
             <span>Date</span>
             <span>Clock In</span>
             <span>Clock Out</span>
+            <span>Total Hours</span>
+            <span>Overtime</span>
             <span>Status</span>
             <span>Notes</span>
           </div>
@@ -93,7 +95,8 @@ export default function EmployeeAttendancePage() {
           {paginated.map((a) => (
             <div
               key={a.uuid}
-              className="grid md:grid-cols-6 gap-3 py-3 border-b last:border-0 items-center text-sm"
+              className={`grid md:grid-cols-8 gap-3 py-3 border-b last:border-0 items-center text-sm ${a.is_overtime ? "bg-orange-50" : "bg-white"
+                }`}
             >
               <span className="font-medium">{a.employee_name || "-"}</span>
               <span>{a.work_date}</span>
@@ -101,8 +104,7 @@ export default function EmployeeAttendancePage() {
                 ? new Date(a.clock_in_at).toLocaleTimeString("en-GB", {
                   hour: "2-digit",
                   minute: "2-digit",
-                  
-                  timeZone: "Asia/Jakarta", // ✅ convert UTC ke WIB
+                  timeZone: "Asia/Jakarta",
                 })
                 : "-"}
               </span>
@@ -110,10 +112,24 @@ export default function EmployeeAttendancePage() {
                 ? new Date(a.clock_out_at).toLocaleTimeString("en-GB", {
                   hour: "2-digit",
                   minute: "2-digit",
-                
                   timeZone: "Asia/Jakarta",
                 })
                 : "-"}
+              </span>
+              {/* Total Hours */}
+              <span className="text-center text-gray-800 font-medium">
+                {a.total_work_hours ? `${a.total_work_hours.toFixed(1)}h` : "-"}
+              </span>
+
+              {/* Overtime */}
+              <span className="text-center">
+                {a.is_overtime ? (
+                  <Badge className="bg-orange-100 text-orange-700 border-0 rounded-full text-xs px-2 py-1">
+                    {a.overtime_hours ? `${a.overtime_hours.toFixed(1)}h` : "OT"}
+                  </Badge>
+                ) : (
+                  <span className="text-gray-400 text-sm">-</span>
+                )}
               </span>
               <Badge
                 className={`${a.status === "PRESENT"

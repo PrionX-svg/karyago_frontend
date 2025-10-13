@@ -14,14 +14,14 @@ const poppins = Poppins({
 
 export const metadata = {
   title: {
-    default: "ArbeitsHub",
-    template: "%s | ArbeitsHub", // Jika halaman override title, akan ditambahkan template ini
+    default: "KARYAGO",
+    template: "%s | KARYAGO", // Jika halaman override title, akan ditambahkan template ini
   },
-  description: "Manage your HR processes with ease",
+  description: "Manage your employee with ease",
   icons: {
-    icon: "/helpernet-logo.png",
-    shortcut: "/helpernet-logo.png",
-    apple: "/helpernet-logo.png",
+    icon: "/KARYAGO-logo.png",
+    shortcut: "/KARYAGO-logo.png",
+    apple: "/KARYAGO-logo.png",
   },
 };
 

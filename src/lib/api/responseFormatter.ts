@@ -468,7 +468,11 @@ export const responseFormatter = {
       clock_out_at: att.clock_out_at ? formatTime(att.clock_out_at) : null,
       is_home_office: att.is_home_office ?? false,
       notes: att.notes ?? "",
-      status, // ✅ sekarang type-nya literal union, bukan string biasa
+      status, // OPEN, PRESENT, ABSENT
+      is_overtime: att.is_overtime ?? false,
+      overtime_hours: att.overtime_hours ?? null,
+      overtime_reason: att.overtime_reason ?? null,
+      total_work_hours: att.total_work_hours ?? null,
     }
   },
 
@@ -502,6 +506,10 @@ export const responseFormatter = {
             : a.clock_in_at
               ? "OPEN"
               : "ABSENT",
+      is_overtime: a.is_overtime ?? false,
+      overtime_hours: a.overtime_hours ?? null,
+      overtime_reason: a.overtime_reason ?? null,
+      total_work_hours: a.total_work_hours ?? null,
     }))
   },
   /** Format single edit attendance request (view or detail) */
@@ -557,37 +565,37 @@ export const responseFormatter = {
   //   }))
   // }
 
- formatAttendanceEditList(data: any): any[] {
-  if (!Array.isArray(data)) {
-    console.warn("⚠️ formatAttendanceEditList got invalid data:", data)
-    return []
+  formatAttendanceEditList(data: any): any[] {
+    if (!Array.isArray(data)) {
+      console.warn("⚠️ formatAttendanceEditList got invalid data:", data)
+      return []
+    }
+
+    return data.map((r: any) => ({
+      id: r.id,
+      // ✅ Fix name
+      user_name: r.employee?.user
+        ? `${r.employee.user.firstname ?? ""} ${r.employee.user.lastname ?? ""}`.trim() || "Unknown"
+        : "Unknown",
+
+      // ✅ Fix department
+      department_name: r.employee?.department?.name ?? "-",
+
+      // ✅ Date
+      work_date: r.work_date ? r.work_date.split("T")[0] : "",
+
+      // ✅ Type (with formatting)
+      edit_type: r.request_type?.replace(/_/g, " ") ?? "-",
+
+      reason: r.reason ?? "-",
+      status: r.status ?? "PENDING",
+
+      // ✅ Requested times
+      proposed_clock_in_at: r.proposed_clock_in_at ?? null,
+      proposed_clock_out_at: r.proposed_clock_out_at ?? null,
+      proposed_is_home_office: r.proposed_is_home_office ?? null,
+    }))
   }
-
-  return data.map((r: any) => ({
-    id: r.id,
-    // ✅ Fix name
-    user_name: r.employee?.user
-      ? `${r.employee.user.firstname ?? ""} ${r.employee.user.lastname ?? ""}`.trim() || "Unknown"
-      : "Unknown",
-
-    // ✅ Fix department
-    department_name: r.employee?.department?.name ?? "-",
-
-    // ✅ Date
-    work_date: r.work_date ? r.work_date.split("T")[0] : "",
-
-    // ✅ Type (with formatting)
-    edit_type: r.request_type?.replace(/_/g, " ") ?? "-",
-
-    reason: r.reason ?? "-",
-    status: r.status ?? "PENDING",
-
-    // ✅ Requested times
-    proposed_clock_in_at: r.proposed_clock_in_at ?? null,
-    proposed_clock_out_at: r.proposed_clock_out_at ?? null,
-    proposed_is_home_office: r.proposed_is_home_office ?? null,
-  }))
-}
 
 
 

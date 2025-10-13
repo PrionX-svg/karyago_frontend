@@ -13,6 +13,10 @@ type Attendance = {
   is_home_office?: boolean
   notes?: string | null
   status?: "OPEN" | "PRESENT" | "ABSENT"
+  is_overtime: boolean
+  overtime_hours?: number | null
+  overtime_reason?: string | null
+  total_work_hours?: number | null
 }
 
 type EditRequest = {

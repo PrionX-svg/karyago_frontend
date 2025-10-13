@@ -19,6 +19,8 @@ import {
 import patchAPI from "./patchAPI";
 import deleteAPI from "./deleteAPI";
 import { UpdateUserPayload } from "../interfaces/user-interface";
+import { nullable } from "zod";
+import user from "../queries/user-queries";
 
 export const api = {
   async getMe() {
@@ -516,6 +518,38 @@ export const api = {
         response.data
       );
       setRoles(formattedRoles);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  async logout() {
+    try {
+      const setUser = useUserStore.getState().setUser;
+      const setCompanies = useCompanyStore.getState().setCompany;
+      const response = await postAPI({}, `${API_URL.logout}`);
+      if (response.status === 200) {
+       setUser({
+          userUuid: "",
+          employeeUuid: "",
+          name: {
+            fullName: "",
+            firstName: "",
+            lastName: ""
+          },
+          email: "",
+          phone: "",
+          gender: "",
+          dob: "",
+          isFreelance: false,
+          role: {
+            name: "",
+            uuid: ""
+          }
+        });
+        setCompanies([]);
+      } else {
+        throw new Error("Failed to logout");
+      }
     } catch (error) {
       return Promise.reject(error);
     }

@@ -126,11 +126,11 @@ export default function AttendancePage() {
 
             // Tentukan request_type otomatis
             const requestType = (() => {
-                if (editType === "BOTH_PLUS_FLAG") return "BOTH_PLUS_FLAG"
-                if (editType === "HOME_FLAG") return "HOME_FLAG"
-                if (editType === "BOTH") return "BOTH"
                 if (editType === "CLOCK_IN") return "CLOCK_IN"
                 if (editType === "CLOCK_OUT") return "CLOCK_OUT"
+                if (editType === "BOTH") return "BOTH"
+                if (editType === "HOME_FLAG") return "HOME_FLAG"
+                if (editType === "BOTH_PLUS_FLAG") return "BOTH_PLUS_FLAG"
                 return null
             })()
 
@@ -230,11 +230,13 @@ export default function AttendancePage() {
                             <h2 className="text-2xl font-bold text-gray-800 mb-6">Attendance List</h2>
 
                             {/* Header */}
-                            <div className="hidden md:grid md:grid-cols-7 gap-4 pb-3 border-b border-gray-200 text-sm font-semibold text-gray-600">
+                            <div className="hidden md:grid md:grid-cols-9 gap-4 pb-3 border-b border-gray-200 text-sm font-semibold text-gray-600">
                                 <span>Date</span>
                                 <span>Clock In</span>
                                 <span>Clock Out</span>
                                 <span>Type</span>
+                                <span>Total Hours</span>
+                                <span>Overtime</span>
                                 <span>Notes</span>
                                 <span>Status</span>
                                 <span>Actions</span>
@@ -245,11 +247,25 @@ export default function AttendancePage() {
                                 {paginatedAttendance.map((a) => (
                                     <div
                                         key={a.uuid}
-                                        className="grid grid-cols-1 md:grid-cols-7 gap-4 p-4 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-all"
+                                        className="grid grid-cols-1 md:grid-cols-9 gap-4 pb-3 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-all"
                                     >
                                         <span className="font-medium text-gray-900">{a.work_date || "-"}</span>
-                                        <span className="text-gray-700">{a.clock_in_at || "-"}</span>
-                                        <span className="text-gray-700">{a.clock_out_at || "-"}</span>
+                                        <span className="text-gray-700 whitespace-nowrap">{a.clock_in_at
+                                            ? new Date(a.clock_in_at).toLocaleTimeString("id-ID", {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                                hour12: false,
+                                                timeZone: "Asia/Jakarta", // 🌍 penting: ubah ke WIB
+                                            })
+                                            : "-"}</span>
+                                        <span className="text-gray-700 whitespace-nowrap">{a.clock_out_at
+                                            ? new Date(a.clock_out_at).toLocaleTimeString("id-ID", {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                                hour12: false,
+                                                timeZone: "Asia/Jakarta",
+                                            })
+                                            : "-"}</span>
                                         <span>
                                             <Badge
                                                 className={`${a.is_home_office
@@ -260,7 +276,22 @@ export default function AttendancePage() {
                                                 {a.is_home_office ? "Home Office" : "In Office"}
                                             </Badge>
                                         </span>
-                                        <span className="text-gray-700 text-sm">{a.notes || "-"}</span>
+                                        {/* 🆕 Total Work Hours */}
+                                        <span className="text-center text-gray-800 font-medium text-sm">
+                                            {a.total_work_hours ? `${a.total_work_hours.toFixed(1)}h` : "-"}
+                                        </span>
+
+                                        {/* 🆕 Overtime */}
+                                        <span className="text-center">
+                                            {a.is_overtime ? (
+                                                <Badge className="bg-orange-100 text-orange-700 border-0 rounded-full">
+                                                    {a.overtime_hours ? `${a.overtime_hours.toFixed(1)}h` : "OT"}
+                                                </Badge>
+                                            ) : (
+                                                <span className="text-gray-400 text-sm">-</span>
+                                            )}
+                                        </span>
+                                        <span className="text-gray-400 text-sm">{a.notes || "-"}</span>
                                         <span>
                                             <Badge
                                                 className={`${a.status === "PRESENT"
@@ -324,7 +355,7 @@ export default function AttendancePage() {
                     </Card>
 
                     {/* ✅ Summary Stats */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
                         {/* Present Days */}
                         <Card className="bg-gradient-to-br from-green-500 to-emerald-500 border-0 shadow-xl rounded-3xl overflow-hidden">
                             <CardContent className="p-6 text-white">
@@ -366,6 +397,21 @@ export default function AttendancePage() {
                                 </div>
                                 <p className="text-blue-100 text-sm font-medium mb-2">Total Hours</p>
                                 <p className="text-4xl font-bold">{summaryStats.totalHours}h</p>
+                            </CardContent>
+                        </Card>
+
+                        {/* Total Overtime */}
+                        <Card className="bg-gradient-to-br from-orange-500 to-amber-600 border-0 shadow-xl rounded-3xl overflow-hidden">
+                            <CardContent className="p-6 text-white">
+                                <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
+                                    <Clock className="w-6 h-6" />
+                                </div>
+                                <p className="text-orange-100 text-sm font-medium mb-2">Total Overtime</p>
+                                <p className="text-4xl font-bold">
+                                    {
+                                        attendanceList.reduce((acc, a) => acc + (a.is_overtime ? a.overtime_hours ?? 0 : 0), 0).toFixed(1)
+                                    }h
+                                </p>
                             </CardContent>
                         </Card>
                     </div>
@@ -466,11 +512,11 @@ export default function AttendancePage() {
                                         <SelectValue placeholder="Select Type" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="CLOCK_IN">Check In Only</SelectItem>
-                                        <SelectItem value="CLOCK_OUT">Check Out Only</SelectItem>
-                                        <SelectItem value="BOTH">Check In & Out</SelectItem>
-                                        <SelectItem value="HOME_FLAG">Home Office Flag Only</SelectItem>
-                                        <SelectItem value="BOTH_PLUS_FLAG">Check In + Out + Home Flag</SelectItem>
+                                        <SelectItem value="CLOCK_IN">Clock In</SelectItem>
+                                        <SelectItem value="CLOCK_OUT">Clock Out</SelectItem>
+                                        <SelectItem value="BOTH">Clock In & Clock Out</SelectItem>
+                                        <SelectItem value="HOME_FLAG">Work Type Only</SelectItem>
+                                        <SelectItem value="BOTH_PLUS_FLAG">All</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
