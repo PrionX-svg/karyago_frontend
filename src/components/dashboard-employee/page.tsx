@@ -132,28 +132,33 @@ export default function EmployeeDashboard() {
           return day !== 0 && day !== 6 // exclude Sunday (0) & Saturday (6)
         }).length
 
-        // hitung jumlah hadir (status = "PRESENT")
-        const presentDays = workingDays.filter((a: any) => a.status === "PRESENT").length
+        if (Array.isArray(workingDays)) {
+          // hitung jumlah hadir (status = "PRESENT")
+          const presentDays = workingDays.filter((a: any) => a.status === "PRESENT").length
 
-        // hitung total hari kerja (anggap semua record adalah hari kerja)
-        const totalDays = workingDays.length
+          // hitung total hari kerja (anggap semua record adalah hari kerja)
+          const totalDays = workingDays.length
 
-        // hitung attendance rate
-        const rate = (presentDays / totalDays) * 100
+          // hitung attendance rate
+          const rate = (presentDays / totalDays) * 100
 
-        // hitung total jam kerja (jam keluar - jam masuk)
-        let totalMs = 0
-        workingDays.forEach((a: any) => {
-          if (a.clock_in_at && a.clock_out_at) {
-            const inTime = new Date(`1970-01-01T${a.clock_in_at}Z`)
-            const outTime = new Date(`1970-01-01T${a.clock_out_at}Z`)
-            totalMs += outTime.getTime() - inTime.getTime()
-          }
-        })
-        const totalHoursCalc = totalMs / (1000 * 60 * 60) // ms → jam
+          // hitung total jam kerja (jam keluar - jam masuk)
+          let totalMs = 0
+          workingDays.forEach((a: any) => {
+            if (a.clock_in_at && a.clock_out_at) {
+              const inTime = new Date(`1970-01-01T${a.clock_in_at}Z`)
+              const outTime = new Date(`1970-01-01T${a.clock_out_at}Z`)
+              totalMs += outTime.getTime() - inTime.getTime()
+            }
+          })
+          const totalHoursCalc = totalMs / (1000 * 60 * 60) // ms → jam
 
-        setAttendanceRate(rate)
-        setTotalHours(totalHoursCalc)
+          setAttendanceRate(rate)
+          setTotalHours(totalHoursCalc)
+        } else {
+          return null
+        }
+
       } catch (err) {
         console.error("❌ Failed to calculate monthly stats:", err)
       }
@@ -341,10 +346,10 @@ export default function EmployeeDashboard() {
                       <div
                         key={req.id}
                         className={`group p-4 rounded-2xl border transition-all duration-300 ${req.status === "PENDING"
-                            ? "bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-100"
-                            : req.status === "APPROVED"
-                              ? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-100"
-                              : "bg-gradient-to-br from-red-50 to-rose-50 border-red-100"
+                          ? "bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-100"
+                          : req.status === "APPROVED"
+                            ? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-100"
+                            : "bg-gradient-to-br from-red-50 to-rose-50 border-red-100"
                           }`}
                       >
                         <div className="flex justify-between items-start mb-2">
@@ -358,10 +363,10 @@ export default function EmployeeDashboard() {
                           </div>
                           <Badge
                             className={`rounded-full ${req.status === "PENDING"
-                                ? "bg-yellow-500"
-                                : req.status === "APPROVED"
-                                  ? "bg-green-500"
-                                  : "bg-red-500"
+                              ? "bg-yellow-500"
+                              : req.status === "APPROVED"
+                                ? "bg-green-500"
+                                : "bg-red-500"
                               } text-white`}
                           >
                             {req.status}
