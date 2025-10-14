@@ -21,7 +21,23 @@ const user = {
         }, [fetchGetMe])
 
         return { fetchGetMe, isFetchingGetMe };
-    }
+    },
+    useLogOut: () => {
+        const [isLoggingOut, setIsLoggingOut] = useState(false);
+        const userLogout = useCallback(async () => {
+            setIsLoggingOut(true);
+            try {
+                await api.logout();
+            } catch (error) {
+                console.error("Logout failed:", error);
+            } finally {
+                setIsLoggingOut(false);
+            }
+        }, []);
+
+        return { userLogout, isLoggingOut };
+    },
+
 }
 
 export default user;

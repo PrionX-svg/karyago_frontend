@@ -248,14 +248,14 @@
     "pngJpgMax": "PNG, JPG hingga 5MB"
   },
   "brand": {
-    "brandingTitle": "Portal HRIS",
-    "brandingSubtitle": "Sistem Informasi Sumber Daya Manusia",
+    "brandingTitle": "KARYAGO",
+    "brandingSubtitle": "Sistem Manajemen Karyawan",
     "brand1": "Kelola Data Karyawan",
     "brand1Description": "Sistem terintegrasi untuk mengelola semua data dan informasi karyawan di seluruh perusahaan.",
     "brand2": "Akses Terpusat",
     "brand2Description": "Akses terpusat ke semua layanan dan informasi HR.",
     "welcomeMessage": "Selamat Datang!",
-    "welcomeDescription": "Masuk untuk mengakses dashboard dan fitur HRIS yang tersedia."
+    "welcomeDescription": "Masuk untuk mengakses dashboard dan fitur KARYAGO yang tersedia."
   },
   "onboarding": {
     "loadingTitle": "Menyiapkan pengalaman Anda...",

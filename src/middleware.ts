@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { nanoid } from "nanoid";
+import * as jose from "jose";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -41,6 +42,8 @@ export default async function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
   const authOK = req.cookies.get("authOK")?.value;
   const refreshToken = req.cookies.get("refresh_token")?.value;
+  const accessToken = req.cookies.get("access_token")?.value;
+  const roleCookie = req.cookies.get("role")?.value;
 
   // Extract locale from pathname after intl middleware processing
   const localeMatch = pathname.match(/^\/(en|de|id)/);
@@ -55,6 +58,7 @@ export default async function middleware(req: NextRequest) {
   // Check if path is just the locale without any additional path
   const isLocaleOnly = /^\/(en|de|id)\/?$/.test(pathname);
   const isActivationPath = /^\/(en|de|id)\/activation\/?$/.test(pathname);
+  const isSelectCompanyPage = /^\/(en|de|id)\/select-company\/?$/.test(pathname);
 
   // Allow schedule paths, landing page, and activation path to bypass authentication
   if (isSchedulePath || isLandingPath || isActivationPath) {
@@ -160,7 +164,60 @@ export default async function middleware(req: NextRequest) {
     }
   }
 
-  // Generate nonce for content security policy (CSP) and add to intl response
+  if (authOK === "true" && accessToken) {
+    try {
+      const { payload } = await jose.jwtVerify(
+        accessToken,
+        new TextEncoder().encode(process.env.JWT_SECRET)
+      );
+
+      const role = (payload.role as string)?.toLowerCase() ?? roleCookie ?? "";
+      const company = (payload.company as string) ?? "default-company";
+
+      // ✅ Stop redirect if user is selecting company
+      if (isSelectCompanyPage) {
+        return addSecurityHeaders(intlResponse);
+      }
+
+      // ✅ Redirect user from /auth -> ke dashboard sesuai role
+      if (isAuthPage) {
+        if (["admin", "owner", "assistant"].includes(role)) {
+          url.pathname = `/${locale}/${company}`;
+        } else if (role === "employee") {
+          url.pathname = `/${locale}/my`;
+        } else {
+          url.pathname = `/${locale}/auth`;
+        }
+        return NextResponse.redirect(url);
+      }
+
+      // ✅ Optional: Proteksi akses antar-role
+      if (pathname.includes(`/${company}`) && role === "employee") {
+        url.pathname = `/${locale}/my`;
+        return NextResponse.redirect(url);
+      }
+
+      if (pathname.includes("/my") && ["admin", "owner", "assistant"].includes(role)) {
+        url.pathname = `/${locale}/${company}`;
+        return NextResponse.redirect(url);
+      }
+    } catch (err) {
+      console.error("JWT verification failed:", err);
+      url.pathname = `/${locale}/auth`;
+      url.searchParams.set("logout", "true");
+      const res = NextResponse.redirect(url);
+      res.cookies.delete("access_token");
+      res.cookies.set("authOK", "false");
+      return res;
+    }
+  }
+
+  // --- 🔟 Default: tambahkan security header & lanjutkan ---
+  return addSecurityHeaders(intlResponse);
+
+}
+
+function addSecurityHeaders(res: NextResponse) {
   const nonce = nanoid(16);
   const cspHeader = [
     "default-src 'self'",
@@ -173,12 +230,13 @@ export default async function middleware(req: NextRequest) {
     "base-uri 'self'",
     "form-action 'self'",
   ];
-
-  intlResponse.headers.set("Content-Security-Policy", cspHeader.join("; "));
-  intlResponse.headers.set("x-nonce", nonce);
-
-  return intlResponse;
+  res.headers.set("Content-Security-Policy", cspHeader.join("; "));
+  res.headers.set("x-nonce", nonce);
+  return res;
 }
+
+
+
 
 export const config = {
   // Match only internationalized pathnames

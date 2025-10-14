@@ -34,17 +34,32 @@ export default function ChooseCompanyPage() {
 
   useEffect(() => {
     if (!companyData || companyData.length === 0) {
-      const fetchCompanydata = async () => {
+      (async () => {
         try {
           await fetchCompaniesByUserUuid(userData.userUuid);
         } catch (error) {
           console.error("Failed to fetch company data:", error);
         }
-      };
-      fetchCompanydata();
+      })();
     }
+    // hanya jalan sekali
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [companyData, userData.userUuid]);
+  }, []);
+
+  // useEffect(() => {
+  //   if (!companyData || companyData.length === 0) {
+  //     const fetchCompanydata = async () => {
+  //       try {
+  //         await fetchCompaniesByUserUuid(userData.userUuid);
+  //       } catch (error) {
+  //         console.error("Failed to fetch company data:", error);
+  //       }
+  //     };
+  //     fetchCompanydata();
+  //   }
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [companyData, userData.userUuid]);
 
   if (isFetchingGetMe || isFetchingCompanies) {
     return <CompanySkeleton />;
@@ -137,18 +152,16 @@ export default function ChooseCompanyPage() {
               ) : (
                 companyData.map((comp, index) => (
                   <motion.button
-                    key={comp.uuid}
+                    key={`${comp.uuid}-${index}`}
                     className={`group w-full text-left p-4 rounded-lg border backdrop-blur-md transition-all duration-200 
-            ${
-              selectedCompany === comp.uuid
-                ? "bg-neutral-900 border-orange-700 text-white shadow-lg"
-                : "bg-white/90 border-orange-200 hover:bg-orange-50 hover:shadow-md"
-            } 
-            ${
-              selectedCompany !== null && selectedCompany !== comp.uuid
-                ? "opacity-40 cursor-not-allowed"
-                : "cursor-pointer"
-            }`}
+            ${selectedCompany === comp.uuid
+                        ? "bg-neutral-900 border-orange-700 text-white shadow-lg"
+                        : "bg-white/90 border-orange-200 hover:bg-orange-50 hover:shadow-md"
+                      } 
+            ${selectedCompany !== null && selectedCompany !== comp.uuid
+                        ? "opacity-40 cursor-not-allowed"
+                        : "cursor-pointer"
+                      }`}
                     onClick={() => handleCompanySelect(comp.name, comp.uuid)}
                     disabled={
                       selectedCompany !== null && selectedCompany !== comp.uuid
@@ -176,20 +189,18 @@ export default function ChooseCompanyPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p
-                            className={`font-medium text-sm truncate ${
-                              selectedCompany === comp.uuid
+                            className={`font-medium text-sm truncate ${selectedCompany === comp.uuid
                                 ? "text-white"
                                 : "text-gray-900"
-                            }`}
+                              }`}
                           >
                             {comp.name}
                           </p>
                           <p
-                            className={`text-xs mt-0.5 truncate ${
-                              selectedCompany === comp.uuid
+                            className={`text-xs mt-0.5 truncate ${selectedCompany === comp.uuid
                                 ? "text-white/70"
                                 : "text-gray-600"
-                            }`}
+                              }`}
                           >
                             {comp.user.role}
                           </p>

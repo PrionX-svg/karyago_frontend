@@ -24,18 +24,33 @@ import { Skeleton } from "../ui/skeleton";
 import company from "@/lib/queries/company-queries";
 import { useCompanyStore } from "@/stores/company-store";
 import Image from "next/image";
+import { useCallback, useState } from "react";
+import { api } from "@/lib/api/api";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { API_URL } from "@/lib/api/constants";
 
 export function Header() {
   const currentCompany = useCompanyStore((state) => state.currentCompany);
-
   const userInfo = useUserStore.getState().user;
   const isMobile = useIsMobile();
-  const isSidebarCollapsed = useGeneralStore((s) => s.isSidebarCollapsed);
-  const toggleSidebarCollapse = useGeneralStore((s) => s.toggleSidebarCollapse);
   const { isFetchingGetMe } = user.useGetMe();
+  const router = useRouter();
+  const {userLogout} = user.useLogOut();
 
   company.useGetCurrentCompanyByUserUuid(userInfo.userUuid ?? "");
 
+  const handleLogout = ( () => {
+    userLogout().
+    then(() => {
+      toast.success("Logged out successfully");
+      router.push(`${API_URL.login}`);
+    })
+    .catch(() => {
+      toast.error("Failed to log out");
+    }); 
+  });
+  
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
       <div className="flex items-center gap-4">
@@ -63,38 +78,12 @@ export function Header() {
             )}
           </div>
           <span className="font-semibold text-lg">{currentCompany?.name}</span>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Toggle sidebar collapse"
-            onClick={toggleSidebarCollapse}
-            className="ml-2"
-          >
-            <ChevronDown
-              className={
-                isSidebarCollapsed
-                  ? "w-5 h-5 rotate-90 transition-transform"
-                  : "w-5 h-5 -rotate-90 transition-transform"
-              }
-            />
-          </Button>
         </div>
       </div>
 
       <div className="flex items-center gap-4">
         <LanguageSwitcher />
         <ModeToggle />
-
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="w-5 h-5" />
-          <Badge
-            variant="destructive"
-            className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center p-0 text-xs"
-          >
-            1
-          </Badge>
-        </Button>
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2 p-4 px-2 py-7">
@@ -127,12 +116,12 @@ export function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuSeparator />
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Support</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuSeparator /> */}
+            <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

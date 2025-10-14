@@ -1,5 +1,8 @@
+import { log } from "console";
+
 export const API_URL = {
   login: "/auth/login",
+  logout: "/auth/logout",
   register: "/auth/register",
   getMe: "/users/@me",
   updateUser: "/users/update/",
@@ -29,4 +32,21 @@ export const API_URL = {
   createBranchByCompanyUuid: "/branches/create",
   updateBranchByUuid: "/branches/update/",
   deleteBranchByUuid: "/branches/delete/",
+
+  attendanceListAll: "/attendance/list-all",
+
+  // for employee (self)
+  attendanceClockIn: "/attendance/clock-in",
+  attendanceClockOut: "/attendance/clock-out",
+  attendanceToggleHomeOffice: "/attendance/toggle-homeOffice",
+  attendanceSaveNotes: "/attendance/notes",
+  attendanceGetByDate: "/attendance",
+  attendanceListRange: "/attendance/range",
+  attendanceListCalendar: "/attendance/calendar",
+  attendanceEditRequests: "/attendance/edit-requests",
+  attendanceEditRequestsMy: "/attendance/edit-requests/my",
+  employeeProfileSelf: "/employee/me",
+
+  departmentList: "/departments",
+  departmentGroupList: "/department-groups",
 };

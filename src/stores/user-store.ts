@@ -3,7 +3,9 @@ import { create } from "zustand";
 
 type UserStore = {
     user: UserType;
+    isAuthenticated: boolean;
     setUser: (user: UserType) => void;
+    clearUser: () => void;
     updateUser: (user: Partial<UserType>) => void;
     removeUser: (uuid: string) => void;
 }
@@ -27,7 +29,9 @@ export const useUserStore = create<UserStore>((set) => ({
             uuid: ""
         }
     },
+    isAuthenticated: false,
     setUser: (user) => set({ user }),
+    clearUser: () => set({ user: undefined }),
     updateUser: (user) => set((state) => ({
         user: {
             ...state.user,

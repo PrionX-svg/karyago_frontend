@@ -1,4 +1,4 @@
-import ProfilePage from "@/components/profile/profile-page";
+import ProfilePage from "@/components/admin/profile/profile-page";
 
 function formatSlugToTitle(slug: string): string {
   return slug

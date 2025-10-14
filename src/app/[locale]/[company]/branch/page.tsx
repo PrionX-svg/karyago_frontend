@@ -1,4 +1,4 @@
-import BranchPage from "@/components/branch/branch-page";
+import BranchPage from "@/components/admin/branch/branch-page";
 
 function formatSlugToTitle(slug: string): string {
   return slug

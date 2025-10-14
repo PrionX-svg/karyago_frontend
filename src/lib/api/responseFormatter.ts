@@ -29,6 +29,24 @@ import {
 import { RoleType } from "../types/role-type";
 import { GetRoleByCompanyUuidResponse } from "../interfaces/role-interface";
 
+function formatDate(dateString?: string | null): string | null {
+  if (!dateString) return null
+  const date = new Date(dateString)
+  if (isNaN(date.getTime())) return null
+  return date.toISOString().split("T")[0] // YYYY-MM-DD
+}
+
+function formatTime(dateString?: string | null): string | null {
+  if (!dateString) return null
+  const date = new Date(dateString)
+  if (isNaN(date.getTime())) return null
+  return date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  })
+}
+
 export const responseFormatter = {
   formatUserData(response: GetMeResponse): UserType {
     return {
@@ -425,4 +443,161 @@ export const responseFormatter = {
       name: role?.name ?? "",
     }));
   },
+  formatGetEmployeeDashboard(response: any) {
+    const data = response.data?.data ?? {}
+    return {
+      attendance_rate: data.attendance_rate ?? 0,
+      total_hours: data.total_hours ?? 0,
+      recent_requests: data.recent_requests ?? [],
+      // upcoming_events: data.upcoming_events ?? [],
+    }
+  },
+  formatAttendance(att: any) {
+    if (!att) return null
+    const status: "OPEN" | "PRESENT" | "ABSENT" =
+      att.clock_in_at && att.clock_out_at
+        ? "PRESENT"
+        : att.clock_in_at
+          ? "OPEN"
+          : "ABSENT"
+
+    return {
+      uuid: att.uuid,
+      work_date: att.work_date ? att.work_date.split("T")[0] : null,
+      clock_in_at: att.clock_in_at ? formatTime(att.clock_in_at) : null,
+      clock_out_at: att.clock_out_at ? formatTime(att.clock_out_at) : null,
+      is_home_office: att.is_home_office ?? false,
+      notes: att.notes ?? "",
+      status, // OPEN, PRESENT, ABSENT
+      is_overtime: att.is_overtime ?? false,
+      overtime_hours: att.overtime_hours ?? null,
+      overtime_reason: att.overtime_reason ?? null,
+      total_work_hours: att.total_work_hours ?? null,
+    }
+  },
+
+  formatAttendanceList(data: any): any[] {
+    // Kalau bukan array, return kosong tapi kasih warning
+    if (!Array.isArray(data)) {
+      console.warn("⚠️ formatAttendanceList got invalid data:", data)
+      return []
+    }
+
+    // Map data attendance agar UI dapat nilai konsisten
+    return data.map((a: any) => ({
+      uuid: a.uuid || "",
+      employee_name:
+        a.employee?.user
+          ? `${a.employee.user.firstname ?? ""} ${a.employee.user.lastname ?? ""}`.trim() || "Unknown"
+          : "Unknown",
+
+      work_date: a.work_date
+        ? a.work_date.split("T")[0] // potong jadi YYYY-MM-DD
+        : "",
+      clock_in_at: a.clock_in_at ?? null,
+      clock_out_at: a.clock_out_at ?? null,
+      is_home_office: !!a.is_home_office,
+      notes: a.notes || "",
+      status:
+        a.status && typeof a.status === "string"
+          ? a.status.toUpperCase()
+          : a.clock_in_at && a.clock_out_at
+            ? "PRESENT"
+            : a.clock_in_at
+              ? "OPEN"
+              : "ABSENT",
+      is_overtime: a.is_overtime ?? false,
+      overtime_hours: a.overtime_hours ?? null,
+      overtime_reason: a.overtime_reason ?? null,
+      total_work_hours: a.total_work_hours ?? null,
+    }))
+  },
+  /** Format single edit attendance request (view or detail) */
+  formatAttendanceEdit(att: any) {
+    if (!att) return null
+    return {
+      id: att.id,
+      uuid: att.uuid,
+      user_name: att.employee?.user
+        ? `${att.employee.user.firstname ?? ""} ${att.employee.user.lastname ?? ""}`.trim() || "Unknown"
+        : "Unknown",
+      employee_uuid: att.employee_uuid,
+      company_uuid: att.company_uuid,
+      company_name: att.company?.name ?? null,
+      work_date: att.work_date ? att.work_date.split("T")[0] : null,
+      edit_type: att.edit_type ?? "", // "clock_in", "clock_out", "full_day"
+      original_time: att.original_time ? new Date(att.original_time).toLocaleTimeString("en-US", { hour12: false }) : null,
+      requested_time: att.requested_time ? new Date(att.requested_time).toLocaleTimeString("en-US", { hour12: false }) : null,
+      reason: att.reason ?? "",
+      status: att.status ?? "PENDING", // default value
+      reviewed_by: att.reviewed_by_user
+        ? `${att.reviewed_by_user.first_name} ${att.reviewed_by_user.last_name ?? ""}`.trim()
+        : null,
+      reviewed_at: att.reviewed_at
+        ? new Date(att.reviewed_at).toLocaleString("en-US")
+        : null,
+      created_at: att.created_at
+        ? new Date(att.created_at).toLocaleString("en-US")
+        : null,
+    }
+  },
+
+  /** Format list of edit attendance requests (for employee or HR view) */
+  // formatAttendanceEditList(data: any): any[] {
+  //   if (!Array.isArray(data)) {
+  //     console.warn("⚠️ formatAttendanceEditList got invalid data:", data)
+  //     return []
+  //   }
+
+  //   return data.map((r: any) => ({
+  //     id: r.id,
+  //     user_name: r.employee?.user
+  //       ? `${r.employee.user.firstname ?? ""} ${r.employee.user.lastname ?? ""}`.trim() || "Unknown"
+  //       : "Unknown",
+  //     department_name: r.employee?.user?.department?.name ?? "-",
+  //     work_date: r.work_date ? r.work_date.split("T")[0] : "",
+  //     edit_type: r.request_type?.replace(/_/g, " ") ?? "-",
+  //     reason: r.reason ?? "-",
+  //     status: r.status ?? "PENDING",
+  //     proposed_clock_in_at: r.proposed_clock_in_at ?? null,
+  //     proposed_clock_out_at: r.proposed_clock_out_at ?? null,
+  //     proposed_is_home_office: r.proposed_is_home_office ?? null,
+  //   }))
+  // }
+
+  formatAttendanceEditList(data: any): any[] {
+    if (!Array.isArray(data)) {
+      console.warn("⚠️ formatAttendanceEditList got invalid data:", data)
+      return []
+    }
+
+    return data.map((r: any) => ({
+      id: r.id,
+      // ✅ Fix name
+      user_name: r.employee?.user
+        ? `${r.employee.user.firstname ?? ""} ${r.employee.user.lastname ?? ""}`.trim() || "Unknown"
+        : "Unknown",
+
+      // ✅ Fix department
+      department_name: r.employee?.department?.name ?? "-",
+
+      // ✅ Date
+      work_date: r.work_date ? r.work_date.split("T")[0] : "",
+
+      // ✅ Type (with formatting)
+      edit_type: r.request_type?.replace(/_/g, " ") ?? "-",
+
+      reason: r.reason ?? "-",
+      status: r.status ?? "PENDING",
+
+      // ✅ Requested times
+      proposed_clock_in_at: r.proposed_clock_in_at ?? null,
+      proposed_clock_out_at: r.proposed_clock_out_at ?? null,
+      proposed_is_home_office: r.proposed_is_home_office ?? null,
+    }))
+  }
+
+
+
+
 };
