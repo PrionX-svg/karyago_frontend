@@ -127,7 +127,7 @@ export function DivisionForm({ mode, division, trigger }: DivisionDialogProps) {
             {mode === "create" ? (
                 <>
                     <Plus className="w-4 h-4" />
-                    Add Division
+                    Add Department Group
                 </>
             ) : (
                 <Pencil className="w-4 h-4 text-gray-600" />
@@ -138,64 +138,86 @@ export function DivisionForm({ mode, division, trigger }: DivisionDialogProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <div className="p-2 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
-                            <Building2 className="w-5 h-5 text-orange-600" />
+            <DialogContent
+                className="
+                w-[92vw] sm:w-[440px] max-w-[95vw] 
+                rounded-2xl px-5 py-6 sm:px-8 sm:py-8 
+                shadow-lg overflow-y-auto max-h-[90vh]
+                transition-all duration-200
+            "
+            >
+
+                {/* Header */}
+                <DialogHeader className="mb-4 space-y-3 text-center">
+                    <div className="flex justify-center">
+                        <div className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200">
+                            <Building2 className="w-6 h-6 text-orange-600" />
                         </div>
+                    </div>
+                    <DialogTitle className="text-base font-semibold text-gray-900">
                         {mode === "create" ? "Create New Department Group" : "Edit Department Group"}
                     </DialogTitle>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="flex flex-col sm:flex-row space gap-4">
-                        <div className="space-y-2 w-full">
-                            <Label htmlFor="name">Department Group Name *</Label>
-                            <Input
-                                id="name"
-                                value={formData.name}
-                                onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                                placeholder="Enter department group name"
-                                required
-                                className="rounded-lg"
-                            />
-                        </div>
-
-                        <div className="space-y-2 w-full">
-                            <Label htmlFor="responsible">Responsible Person</Label>
-                            <Select
-                                value={formData.responsibleUuid}
-                                onValueChange={(value) => setFormData((prev) => ({ ...prev, responsibleUuid: value }))}
-                            >
-                                <SelectTrigger className="rounded-lg">
-                                    <SelectValue placeholder="Select responsible person" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="none">No one assigned</SelectItem>
-                                    {employees.map((employee) => (
-                                        <SelectItem key={employee.user_uuid} value={employee.user_uuid}>
-                                            {employee.name.fullname}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="space-y-5 mt-4 px-1 sm:px-2">
+                    {/* Department Name */}
+                    <div className="space-y-2">
+                        <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                            Department Group Name <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                            id="name"
+                            value={formData.name}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                            placeholder="Enter department group name"
+                            required
+                            className="h-10 w-[97%] sm:w-full mx-auto rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
+                        />
                     </div>
 
+                    {/* Responsible */}
                     <div className="space-y-2">
-                        <Label htmlFor="desc">Description</Label>
+                        <Label htmlFor="responsible" className="text-sm font-medium text-gray-700">
+                            Responsible Person
+                        </Label>
+                        <Select
+                            value={formData.responsibleUuid}
+                            onValueChange={(value) =>
+                                setFormData((prev) => ({ ...prev, responsibleUuid: value === "none" ? "" : value }))
+                            }
+                        >
+                            <SelectTrigger className="h-10 w-[97%] sm:w-full mx-auto rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-400 focus:border-orange-400">
+                                <SelectValue placeholder="Select responsible person" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="none">No one assigned</SelectItem>
+                                {employees.map((employee) => (
+                                    <SelectItem key={employee.user_uuid} value={employee.user_uuid}>
+                                        {employee.name.fullname}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Description */}
+                    <div className="space-y-2">
+                        <Label htmlFor="desc" className="text-sm font-medium text-gray-700">
+                            Description
+                        </Label>
                         <Textarea
                             id="desc"
                             value={formData.desc}
                             onChange={(e) => setFormData((prev) => ({ ...prev, desc: e.target.value }))}
                             placeholder="Enter department group description"
                             rows={3}
-                            className="rounded-lg resize-none"
+                            className="rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 resize-none"
                         />
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4">
+                    {/* Buttons */}
+                    <div className="flex justify-end gap-3 pt-5 border-t border-gray-100 mt-6">
                         <Button
                             type="button"
                             variant="outline"
@@ -208,7 +230,7 @@ export function DivisionForm({ mode, division, trigger }: DivisionDialogProps) {
                         <Button
                             type="submit"
                             disabled={loading || !formData.name.trim()}
-                            className="bg-orange-500 hover:bg-orange-600 rounded-lg"
+                            className="rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700"
                         >
                             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                             {mode === "create" ? "Create Department Group" : "Update Department Group"}
@@ -216,6 +238,8 @@ export function DivisionForm({ mode, division, trigger }: DivisionDialogProps) {
                     </div>
                 </form>
             </DialogContent>
+
+
         </Dialog>
     )
 }

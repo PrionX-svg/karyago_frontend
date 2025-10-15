@@ -221,7 +221,24 @@ export default function SubDivisionsRoundedTable() {
               </Button>
             </div>
 
-            <SubDivisionDialog mode="create" />
+            <SubDivisionDialog
+              mode="create"
+              trigger={
+                <Button
+                  className="
+                bg-orange-500 hover:bg-orange-600 
+                text-white font-medium 
+                rounded-lg 
+                h-9 sm:h-10 px-3 sm:px-4 
+                text-xs sm:text-sm 
+                transition-all duration-150
+                "
+                >
+                  + Add
+                </Button>
+              }
+            />
+
           </div>
         </div>
 

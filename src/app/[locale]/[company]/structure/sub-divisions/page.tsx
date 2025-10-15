@@ -10,8 +10,8 @@ function formatSlugToTitle(slug: string): string {
 export function generateMetadata({ params }: { params: { company: string } }) {
   const formattedTitle = formatSlugToTitle(params.company);
   return {
-    title: `Sub Divisions - ${formattedTitle}`,
-    description: `Sub Divisions for ${formattedTitle}`,
+    title: `Department Group - ${formattedTitle}`,
+    description: `Department Group for ${formattedTitle}`,
   };
 }
 

@@ -30,15 +30,10 @@ import {
 } from "@/components/ui/dialog";
 
 export default function BranchPage() {
-  // Delete Branch Dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [branchToDelete, setBranchToDelete] =
-    useState<CompanyBranchType | null>(null);
-  const { deleteBranch, isDeletingBranch } = company.useDeleteBranch(
-    branchToDelete?.uuid || ""
-  );
+  const [branchToDelete, setBranchToDelete] = useState<CompanyBranchType | null>(null);
+  const { deleteBranch, isDeletingBranch } = company.useDeleteBranch(branchToDelete?.uuid || "");
 
-  // Handle delete branch
   const handleDeleteBranch = async () => {
     if (!branchToDelete) return;
     try {
@@ -49,10 +44,14 @@ export default function BranchPage() {
       console.error(error);
     }
   };
+
   const [decryptedUuid, setDecryptedUuid] = useState("");
   const [hasMounted, setHasMounted] = useState(false);
-  // Dialog state for Add Branch
+
+  // Dialog states
   const [open, setOpen] = useState(false);
+  const [updateOpen, setUpdateOpen] = useState(false);
+
   const [form, setForm] = useState({
     name: "",
     address: "",
@@ -60,9 +59,6 @@ export default function BranchPage() {
     phone: "",
     image: null as string | null,
   });
-
-  // Update Branch Dialog state
-  const [updateOpen, setUpdateOpen] = useState(false);
   const [updateForm, setUpdateForm] = useState({
     branchUuid: "",
     companyUuid: "",
@@ -72,75 +68,7 @@ export default function BranchPage() {
     phone: "",
     image: null as string | null,
   });
-  const [selectedBranchUuid, setSelectedBranchUuid] = useState<string | null>(
-    null
-  );
 
-  // useUpdateBranch hook
-  const { updateBranch, isUpdatingBranch } = company.useUpdateBranch(
-    updateForm.branchUuid
-  );
-
-  // Open update dialog and fill form
-  const handleEditBranch = (branch: CompanyBranchType) => {
-    setUpdateForm({
-      branchUuid: branch.uuid,
-      companyUuid: branch.company.uuid,
-      name: branch.name,
-      address: branch.address,
-      email: branch.email,
-      phone: branch.phone,
-      image: branch.image || null,
-    });
-    setSelectedBranchUuid(branch.uuid);
-    setUpdateOpen(true);
-  };
-
-  // Handle update form input
-  const handleUpdateInput = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setUpdateForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-
-  // Handle update submit (accepts image from dialog)
-  const handleUpdateSubmit = async (
-    e: React.FormEvent<HTMLFormElement>,
-    image: string
-  ) => {
-    e.preventDefault();
-    try {
-      await updateBranch({
-        company_uuid: updateForm.companyUuid,
-        name: updateForm.name,
-        address: updateForm.address,
-        email: updateForm.email,
-        phone: updateForm.phone,
-        image: image || "",
-      });
-      setUpdateOpen(false);
-      setUpdateForm({
-        branchUuid: "",
-        companyUuid: "",
-        name: "",
-        address: "",
-        email: "",
-        phone: "",
-        image: null,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // Reset form when dialog closes
-  const handleDialogOpenChange = (isOpen: boolean) => {
-    setOpen(isOpen);
-    if (!isOpen) {
-      setForm({ name: "", address: "", email: "", phone: "", image: null });
-    }
-  };
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-
-  // For now, only send image name or empty string; adapt as needed for backend
   const { createBranch, isCreatingBranch } = company.useCreateBranch({
     company_uuid: decryptedUuid,
     name: form.name,
@@ -149,6 +77,18 @@ export default function BranchPage() {
     phone: form.phone,
     image: form.image || "",
   });
+
+  const { updateBranch, isUpdatingBranch } = company.useUpdateBranch(updateForm.branchUuid);
+  const { isFetchingBranches } = company.useGetBranchesByCompanyUuid(decryptedUuid);
+  const companyBranches = useCompanyStore((state) => state.companyBranch);
+
+  const handleDialogOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) setForm({ name: "", address: "", email: "", phone: "", image: null });
+  };
+
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -161,9 +101,38 @@ export default function BranchPage() {
     }
   };
 
-  const { isFetchingBranches } =
-    company.useGetBranchesByCompanyUuid(decryptedUuid);
-  const companyBranches = useCompanyStore((state) => state.companyBranch);
+  const handleEditBranch = (branch: CompanyBranchType) => {
+    setUpdateForm({
+      branchUuid: branch.uuid,
+      companyUuid: branch.company.uuid,
+      name: branch.name,
+      address: branch.address,
+      email: branch.email,
+      phone: branch.phone,
+      image: branch.image || null,
+    });
+    setUpdateOpen(true);
+  };
+
+  const handleUpdateInput = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setUpdateForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleUpdateSubmit = async (e: React.FormEvent<HTMLFormElement>, image: string) => {
+    e.preventDefault();
+    try {
+      await updateBranch({
+        company_uuid: updateForm.companyUuid,
+        name: updateForm.name,
+        address: updateForm.address,
+        email: updateForm.email,
+        phone: updateForm.phone,
+        image: image || "",
+      });
+      setUpdateOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -177,60 +146,56 @@ export default function BranchPage() {
     fetchData();
   }, []);
 
-  if (!hasMounted) {
-    return null;
-  }
+  if (!hasMounted) return null;
 
   return (
     <>
-      <div className="p-6 mx-auto">
-        {/* Enhanced Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex flex-col space-y-2">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Building2 className="h-6 w-6 text-primary" />
+      <div className="p-4 sm:p-6 lg:p-8 mx-auto max-w-7xl">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-10 gap-4 sm:gap-6">
+          <div className="space-y-2 sm:space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                <Building2 className="h-6 w-6 text-orange-600 dark:text-orange-400" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                 Branch Management
               </h1>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">
-              Manage and organize your company locations efficiently
+            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
+              Manage and organize your company locations efficiently.
             </p>
             {companyBranches.length > 0 && (
-              <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-                <span className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  {companyBranches.length} active{" "}
-                  {companyBranches.length === 1 ? "branch" : "branches"}
-                </span>
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                {companyBranches.length} active{" "}
+                {companyBranches.length === 1 ? "branch" : "branches"}
               </div>
             )}
           </div>
-          <AddBranchDialog
-            open={open}
-            setOpen={handleDialogOpenChange}
-            form={form}
-            setForm={setForm}
-            handleInput={handleInput}
-            handleSubmit={handleSubmit}
-          />
+
+          <div className="w-full sm:w-auto flex justify-end">
+            <AddBranchDialog
+              open={open}
+              setOpen={handleDialogOpenChange}
+              form={form}
+              setForm={setForm}
+              handleInput={handleInput}
+              handleSubmit={handleSubmit}
+            />
+          </div>
         </div>
-        {/* Enhanced Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
+        {/* Grid Layout */}
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {isFetchingBranches ? (
             Array.from({ length: 8 }).map((_, i) => (
-              <Card
-                key={i}
-                className="overflow-hidden shadow-lg border-0 bg-white dark:bg-slate-800"
-              >
+              <Card key={i} className="overflow-hidden shadow-md border-0 bg-white dark:bg-slate-800">
                 <Skeleton className="h-48 w-full" />
-                <div className="p-6 space-y-3">
+                <div className="p-5 space-y-3">
                   <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
                   <Skeleton className="h-4 w-2/3" />
-                  <Skeleton className="h-4 w-1/2" />
                   <div className="flex gap-2 pt-2">
                     <Skeleton className="h-8 w-16" />
                     <Skeleton className="h-8 w-16" />
@@ -242,125 +207,133 @@ export default function BranchPage() {
             companyBranches.map((branch) => (
               <Card
                 key={branch.uuid}
-                className="p-0 group overflow-hidden bg-card rounded-xl border border-gray-200 dark:border-stone-700"
+                className="group overflow-hidden bg-card rounded-xl border border-gray-200 dark:border-stone-700 transition-all hover:shadow-lg"
               >
-                {/* Enhanced Image Section */}
-                <div className="relative overflow-hidden">
+                {/* Image */}
+                <div className="relative">
                   {branch.image ? (
                     <img
                       src={branch.image}
                       alt={branch.name}
-                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-44 sm:h-48 object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="w-full h-48 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center">
-                      <div className="text-center">
-                        <ImageIcon className="h-12 w-12 text-slate-400 mx-auto mb-2" />
-                        <span className="text-sm text-slate-500 dark:text-slate-400">
-                          No image available
-                        </span>
-                      </div>
+                    <div className="w-full h-44 sm:h-48 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800">
+                      <ImageIcon className="h-10 w-10 text-slate-400" />
                     </div>
                   )}
 
-                  {/* Action Buttons Overlay */}
-                  <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  {/* Action Buttons */}
+                  {/* Desktop: overlay on hover */}
+                  <div
+                    className="
+                        hidden sm:flex absolute top-3 right-3 gap-2 
+                        opacity-0 group-hover:opacity-100 
+                        transition-opacity duration-200
+                      "
+                  >
                     <Button
                       variant="secondary"
-                      size="sm"
+                      size="icon"
                       onClick={() => handleEditBranch(branch)}
-                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-lg dark:bg-slate-800/90 dark:hover:bg-slate-700 transition-colors duration-200"
+                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white dark:bg-stone-800 dark:hover:bg-stone-700 shadow-sm"
                     >
-                      <Edit3 className="h-4 w-4" />
+                      <Edit3 className="h-4 w-4 text-gray-600" />
                     </Button>
+
                     <Button
                       variant="destructive"
-                      size="sm"
+                      size="icon"
                       onClick={() => {
                         setBranchToDelete(branch);
                         setDeleteDialogOpen(true);
                       }}
-                      className="h-8 w-8 p-0 shadow-lg"
+                      className="h-8 w-8 p-0 shadow-sm"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
+
+                  {/* Mobile: always visible below image */}
+                  <div className="flex sm:hidden justify-end gap-2 px-4 py-3 border-t border-gray-100 dark:border-stone-700 bg-white dark:bg-stone-900">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEditBranch(branch)}
+                      className="flex-1 text-sm"
+                    >
+                      <Edit3 className="w-4 h-4 mr-1" /> Edit
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => {
+                        setBranchToDelete(branch);
+                        setDeleteDialogOpen(true);
+                      }}
+                      className="flex-1 text-sm"
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" /> Delete
+                    </Button>
+                  </div>
+
                 </div>
 
-                {/* Enhanced Content Section */}
-                <div className="p-6 pt-0 space-y-4">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1 line-clamp-1">
-                      {branch.name}
-                    </h3>
-                  </div>
-
-                  <div className="space-y-3 text-sm">
-                    <div className="flex items-start space-x-3">
-                      <MapPin className="h-4 w-4 text-slate-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-slate-600 dark:text-slate-300 line-clamp-2">
+                {/* Content */}
+                <div className="p-5 space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
+                    {branch.name}
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="h-4 w-4 text-slate-500 mt-0.5" />
+                      <p className="text-slate-600 dark:text-slate-300 line-clamp-2">
                         {branch.address}
-                      </span>
+                      </p>
                     </div>
-
-                    <div className="flex items-center space-x-3">
-                      <Mail className="h-4 w-4 text-slate-500 flex-shrink-0" />
-                      <span className="text-slate-600 dark:text-slate-300 truncate">
-                        {branch.email}
-                      </span>
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-slate-500" />
+                      <p className="truncate text-slate-600 dark:text-slate-300">{branch.email}</p>
                     </div>
-
-                    <div className="flex items-center space-x-3">
-                      <Phone className="h-4 w-4 text-slate-500 flex-shrink-0" />
-                      <span className="text-slate-600 dark:text-slate-300">
-                        {branch.phone}
-                      </span>
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-slate-500" />
+                      <p className="text-slate-600 dark:text-slate-300">{branch.phone}</p>
                     </div>
                   </div>
 
-                  {/* Enhanced Map Link */}
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
+                  <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
                     <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                        branch.address
-                      )}`}
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(branch.address)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors duration-200 group/link"
+                      className="inline-flex items-center gap-2 text-orange-600 dark:text-orange-400 text-sm font-medium hover:text-orange-700 transition-colors"
                     >
-                      <span className="text-sm font-medium">View on Maps</span>
-                      <ExternalLink className="h-3 w-3 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform duration-200" />
+                      View on Maps
+                      <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </div>
               </Card>
             ))
           ) : (
-            <div className="col-span-full flex justify-center items-center">
-              <Card className="w-full max-w-md p-12 text-center bg-white dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-600 shadow-lg">
-                <div className="space-y-6">
-                  <div className="flex justify-center">
-                    <div className="p-4 bg-slate-100 dark:bg-slate-700 rounded-full">
-                      <Building2 className="h-12 w-12 text-slate-400" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <div className="col-span-full">
+              <Card className="p-10 text-center border-2 border-dashed border-slate-300 dark:border-slate-600">
+                <div className="space-y-5">
+                  <Building2 className="h-12 w-12 mx-auto text-slate-400" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       No branches yet
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Start building your business presence by adding your first
-                      branch location.
+                    <p className="text-slate-600 dark:text-slate-400 mt-1">
+                      Start building your presence by adding your first branch.
                     </p>
                   </div>
-
                   <Button
                     onClick={() => setOpen(true)}
-                    size="lg"
-                    className="bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="bg-orange-500 hover:bg-orange-600 text-white"
                   >
-                    <Plus className="h-5 w-5 mr-2" />
+                    <Plus className="h-4 w-4 mr-2" />
                     Create First Branch
                   </Button>
                 </div>
@@ -369,28 +342,24 @@ export default function BranchPage() {
           )}
         </div>
       </div>
-      {/* Enhanced Delete Dialog */}
+
+      {/* Delete Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader className="space-y-3">
+        <DialogContent className="max-w-sm sm:max-w-md">
+          <DialogHeader className="space-y-3 text-center">
             <div className="flex justify-center">
               <div className="p-3 bg-red-100 dark:bg-red-900/20 rounded-full">
                 <Trash2 className="h-6 w-6 text-red-600 dark:text-red-400" />
               </div>
             </div>
-            <DialogTitle className="text-center text-xl">
-              Delete Branch
-            </DialogTitle>
-            <DialogDescription className="text-center text-base">
+            <DialogTitle>Delete Branch</DialogTitle>
+            <DialogDescription>
               Are you sure you want to delete{" "}
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {branchToDelete?.name}
-              </span>
-              ? This action cannot be undone and will permanently remove all
-              branch data.
+              <span className="font-semibold text-gray-900 dark:text-white">{branchToDelete?.name}</span>
+              ? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex gap-3 sm:gap-3">
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
             <Button
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
@@ -405,11 +374,13 @@ export default function BranchPage() {
               disabled={isDeletingBranch}
               className="flex-1"
             >
-              {isDeletingBranch ? "Deleting..." : "Delete Branch"}
+              {isDeletingBranch ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Update Dialog */}
       <UpdateBranchDialog
         open={updateOpen}
         setOpen={setUpdateOpen}

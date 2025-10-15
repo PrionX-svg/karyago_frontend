@@ -21,6 +21,7 @@ import {
     TowerControl,
     Group,
     UserRound,
+    UsersIcon,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useEmployeeStore } from "@/stores/employee-store";
@@ -44,6 +45,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion } from "framer-motion";
 import employee from "@/lib/queries/employee-queries";
 import { useUserStore } from "@/stores/user-store";
+import { Badge } from "@/components/ui/badge";
 
 export default function EmployeePage() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -211,55 +213,57 @@ export default function EmployeePage() {
     }, [storedUuid]);
 
     return (
-        <div>
+        <div className="px-3 sm:px-6 py-4 w-full max-w-7xl mx-auto">
             <div>
                 <div className="pb-3">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-xl bg-gradient-to-br from-orange-50 via-orange-100 to-orange-200 border">
-                                <Users className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                            <div
+                                className={`p-3 rounded-xl border ${"border-orange-200 " +
+                                    "bg-gradient-to-br from-orange-50 via-orange-100 to-orange-200 dark:bg-card dark:border-stone-700"
+                                    }`}
+                            >
+                                <UsersIcon className="w-6 h-6 text-orange-600 dark:text-orange-500" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">
                                     {em("title")}
                                 </h1>
-                                <p className="text-gray-600 dark:text-gray-400 mt-1">
+                                <p className="text-gray-600 dark:text-muted-foreground mt-1">
                                     {em("description")}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-8">
-                            <div className="text-center">
-                                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                                    {employeesData.length}
-                                </p>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    {em("totalEmployees")}
-                                </p>
-                            </div>
+                        <div className="text-center">
+                            <p className="text-2xl font-bold text-gray-900 dark:text-foreground">
+                                {employeesData.length}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-muted-foreground">
+                                {em("totalEmployees")}
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* BODY SECTION */}
-            <div className="pt-3">
+            <div className="pt-3 w-full">
                 {/* Toolbar */}
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 p-4 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                    <div className="flex flex-col sm:flex-row gap-3 flex-1">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4 mb-5 sm:mb-6 p-3 sm:p-4 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
                         <div className="relative flex-1 max-w-md">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                             <Input
                                 placeholder={em("searchPlaceholder")}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100"
+                                className="pl-10 h-11 w-full border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100"
                             />
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap gap-2 justify-between sm:justify-end w-full lg:w-auto">
                         {terminatedEmployees.length > 0 && (
                             <Button
                                 onClick={() => setShowTerminated((prev) => !prev)}
@@ -277,7 +281,7 @@ export default function EmployeePage() {
                             className="gap-2 dark:bg-neutral-900 dark:text-gray-100 border-orange-300 text-orange-700 hover:bg-orange-50"
                         >
                             <Upload className="w-4 h-4" />
-                            Import Employees
+                            Import
                         </Button>
 
                         <div className="flex bg-gray-100 dark:bg-neutral-800 rounded-lg p-1">
@@ -286,14 +290,14 @@ export default function EmployeePage() {
                                 size="sm"
                                 onClick={() => setViewType("table")}
                                 className={`gap-2 rounded-md ${viewType === "table"
-                                        ? "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:text-white dark:hover:bg-orange-700"
-                                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-gray-300 dark:hover:bg-neutral-700"
+                                    ? "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:text-white dark:hover:bg-orange-700"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-gray-300 dark:hover:bg-neutral-700"
                                     }`}
                             >
                                 <List
                                     className={`w-4 h-4 ${viewType === "table"
-                                            ? "text-white"
-                                            : "text-gray-500 dark:text-gray-400"
+                                        ? "text-white"
+                                        : "text-gray-500 dark:text-gray-400"
                                         }`}
                                 />
                             </Button>
@@ -302,14 +306,14 @@ export default function EmployeePage() {
                                 size="sm"
                                 onClick={() => setViewType("card")}
                                 className={`gap-2 rounded-md ${viewType === "card"
-                                        ? "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:text-white dark:hover:bg-orange-700"
-                                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-gray-300 dark:hover:bg-neutral-700"
+                                    ? "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:text-white dark:hover:bg-orange-700"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-gray-300 dark:hover:bg-neutral-700"
                                     }`}
                             >
                                 <LayoutGrid
                                     className={`w-4 h-4 ${viewType === "card"
-                                            ? "text-white"
-                                            : "text-gray-500 dark:text-gray-400"
+                                        ? "text-white"
+                                        : "text-gray-500 dark:text-gray-400"
                                         }`}
                                 />
                             </Button>
@@ -337,103 +341,97 @@ export default function EmployeePage() {
                         </Button>
                     </div>
                 ) : viewType === "card" ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-5">
                         {filteredEmployees.map((employee) => (
                             <Card
                                 key={employee.employee_uuid}
-                                className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-xl hover:border-orange-200 dark:hover:border-orange-600 transition-all duration-300 group overflow-hidden"
+                                className="w-full max-w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-3 sm:p-4"
                             >
-                                <CardHeader className="pb-4 relative">
-                                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-50 to-transparent dark:from-orange-900 dark:to-transparent rounded-full opacity-60 -mr-12 -mt-12"></div>
-                                    <div className="flex justify-between items-start relative z-10">
-                                        <div className="flex items-start gap-4">
-                                            <div className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900 dark:to-orange-950 rounded-xl border border-orange-200 dark:border-orange-800 group-hover:from-orange-100 group-hover:to-orange-200 dark:group-hover:from-orange-800 dark:group-hover:to-orange-900 transition-colors">
-                                                <User className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                                            </div>
-                                            <div>
-                                                <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-100 group-hover:text-orange-900 dark:group-hover:text-orange-300 transition-colors">
-                                                    {employee.name.fullname}
-                                                </CardTitle>
-                                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                                    {employee.email}
-                                                </p>
+                                <div className="flex items-start justify-between w-full gap-3">
+                                    {/* Left Side */}
+                                    <div className="flex flex-1 items-start gap-3 min-w-0">
+                                        <div className="flex-shrink-0 p-2 bg-orange-50 dark:bg-orange-950 rounded-xl border border-orange-100 dark:border-orange-800">
+                                            <User className="w-4 h-4 text-orange-500 dark:text-orange-400" />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
+                                                {employee.name.fullname}
+                                            </h3>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                                {employee.email}
+                                            </p>
+                                            <div className="flex items-center gap-1 mt-1 text-xs text-gray-600 dark:text-gray-300">
+                                                <Phone className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
+                                                <span className="truncate">{employee.phone || "-"}</span>
                                             </div>
                                         </div>
-                                        <div className="flex justify-end gap-2">
+                                    </div>
+
+                                    {/* Right Side */}
+                                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                                        <div className="flex items-center gap-1">
                                             <EmployeesDialog mode="edit" employeeData={employee} />
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
+                                                className="h-6 w-6"
                                                 onClick={() => handleDeleteClick(employee)}
-                                                className="h-8 w-8 rounded-lg"
                                             >
-                                                <Trash className="w-4 h-4 text-red-500 dark:text-red-400" />
+                                                <Trash className="w-3.5 h-3.5 text-red-500 dark:text-red-400" />
                                             </Button>
                                         </div>
+                                        <Badge
+                                            className={`rounded-full text-[10px] px-2 py-0.5 ${employee.is_freelance
+                                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+                                                : "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
+                                                }`}
+                                        >
+                                            {employee.is_freelance ? em("freelance") : em("employee")}
+                                        </Badge>
                                     </div>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="flex items-center justify-between p-2 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-neutral-800 dark:to-neutral-900 rounded-lg border border-gray-200 dark:border-gray-700">
-                                        <div className="flex items-center gap-2">
-                                            <Phone className="w-4 h-4 text-blue-500 dark:text-blue-400" />
-                                            <span className="text-sm text-neutral-400 dark:text-neutral-300">
-                                                {employee.phone || (
-                                                    <span className="italic text-neutral-400 dark:text-neutral-500">
-                                                        No phone
-                                                    </span>
-                                                )}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Briefcase className="w-4 h-4 text-green-500 dark:text-green-400" />
-                                            <span className="text-sm text-gray-900 dark:text-gray-100">
-                                                {employee.is_freelance
-                                                    ? em("freelance")
-                                                    : em("employee")}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </CardContent>
+                                </div>
+
                             </Card>
+
                         ))}
                     </div>
                 ) : (
                     <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                             <table className="w-full">
                                 <thead>
                                     <tr className="text-sm bg-gradient-to-r from-gray-50 to-gray-100 dark:from-neutral-800 dark:to-neutral-900 border-b border-gray-200 dark:border-gray-700">
-                                        <th className="text-left py-4 px-6 font-bold text-gray-900 dark:text-gray-100 first:rounded-tl-xl">
+                                        <th className="text-left py-4 px-4 sm:px-6 font-bold text-gray-900 dark:text-gray-100 first:rounded-tl-xl">
                                             <div className="flex items-center gap-2">
                                                 {em("employeeName")}
                                             </div>
                                         </th>
-                                        <th className="text-left py-4 px-6 font-bold text-gray-900 dark:text-gray-100">
+                                        <th className="text-left py-4 px-4 sm:px-6 font-bold text-gray-900 dark:text-gray-100">
                                             <div className="flex items-center gap-2">
                                                 {em("employeeEmail")}
                                             </div>
                                         </th>
-                                        <th className="text-left py-4 px-6 font-bold text-gray-900 dark:text-gray-100">
+                                        <th className="text-left py-4 px-4 sm:px-6 font-bold text-gray-900 dark:text-gray-100">
                                             <div className="flex items-center gap-2">
                                                 {em("employeePhone")}
                                             </div>
                                         </th>
-                                         <th className="text-left py-4 px-6 font-bold text-gray-900 dark:text-gray-100">
+                                        <th className="text-left py-4 px-4 sm:px-6 font-bold text-gray-900 dark:text-gray-100">
                                             <div className="flex items-center gap-2">
                                                 {em("employeeDepartment")}
                                             </div>
                                         </th>
-                                        <th className="text-left py-4 px-6 font-bold text-gray-900 dark:text-gray-100">
+                                        <th className="text-left py-4 px-4 sm:px-6 font-bold text-gray-900 dark:text-gray-100">
                                             <div className="flex items-center gap-2">
                                                 Branch
                                             </div>
                                         </th>
-                                        <th className="text-left py-4 px-6 font-bold text-gray-900 dark:text-gray-100">
+                                        <th className="text-left py-4 px-4 sm:px-6 font-bold text-gray-900 dark:text-gray-100">
                                             <div className="flex items-center gap-2">
                                                 {em("freelanceStatus")}
                                             </div>
                                         </th>
-                                        <th className="text-right py-4 px-6 font-bold text-gray-900 dark:text-gray-100 last:rounded-tr-xl">
+                                        <th className="text-right py-4 px-4 sm:px-6 font-bold text-gray-900 dark:text-gray-100 last:rounded-tr-xl">
                                             {em("actions")}
                                         </th>
                                     </tr>
@@ -443,43 +441,43 @@ export default function EmployeePage() {
                                         <tr
                                             key={employee.employee_uuid}
                                             className={`border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors ${index % 2 === 0
-                                                    ? "bg-white dark:bg-neutral-900"
-                                                    : "bg-gray-50/30 dark:bg-neutral-800/30"
+                                                ? "bg-white dark:bg-neutral-900"
+                                                : "bg-gray-50/30 dark:bg-neutral-800/30"
                                                 }`}
                                         >
-                                            <td className="py-4 px-6">
+                                            <td className="py-4 px-4 sm:px-6">
                                                 <div className="font-medium text-gray-900 dark:text-gray-100">
                                                     {employee.name.fullname}
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="py-4 px-4 sm:px-6">
                                                 <div className="text-gray-900 dark:text-gray-100">
                                                     {employee.email}
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="py-4 px-4 sm:px-6">
                                                 <div className="text-gray-900 dark:text-gray-100">
                                                     {employee.phone}
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="py-4 px-4 sm:px-6">
                                                 <div className="text-gray-900 dark:text-gray-100">
                                                     {employee.subDivision?.name || "-"}
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="py-4 px-4 sm:px-6">
                                                 <div className="text-gray-900 dark:text-gray-100">
-                                                    {employee.branch?.name || "-"}
+                                                    {employee.branch?.name|| "-"}
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="py-4 px-4 sm:px-6">
                                                 <div className="text-gray-900 dark:text-gray-100">
                                                     {employee.is_freelance
                                                         ? em("freelance")
                                                         : em("employee")}
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="py-4 px-4 sm:px-6">
                                                 <div className="flex justify-end gap-2">
                                                     <EmployeesDialog
                                                         mode="edit"
@@ -523,49 +521,79 @@ export default function EmployeePage() {
                         </div>
                         {viewType === "table" ? (
                             <div className="bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden shadow-inner opacity-75">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full">
+                                <div className="hidden md:block overflow-x-auto rounded-xl">
+                                    <table className="min-w-full border-collapse">
                                         <thead>
-                                            <tr className="bg-gray-100 dark:bg-neutral-800 border-b border-gray-300 dark:border-gray-700">
-                                                <th className="text-left py-3 px-5 font-bold text-gray-800 dark:text-gray-100">
+                                            <tr className="text-sm bg-gray-50 dark:bg-neutral-800 border-b border-gray-200 dark:border-gray-700">
+                                                <th className="text-left py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">
                                                     {em("employeeName")}
                                                 </th>
-                                                <th className="text-left py-3 px-5 font-bold text-gray-800 dark:text-gray-100">
+                                                <th className="text-left py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">
                                                     {em("employeeEmail")}
                                                 </th>
-                                                <th className="text-left py-3 px-5 font-bold text-gray-800 dark:text-gray-100">
-                                                    {em("terminationDate")}
+                                                <th className="text-left py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">
+                                                    {em("employeePhone")}
                                                 </th>
-                                                <th className="text-left py-3 px-5 font-bold text-gray-800 dark:text-gray-100">
-                                                    {em("reason")}
+                                                <th className="text-left py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">
+                                                    {em("employeeDepartment")}
                                                 </th>
-                                                <th className="text-left py-3 px-5 font-bold text-gray-800 dark:text-gray-100">
+                                                <th className="text-left py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">
+                                                    Branch
+                                                </th>
+                                                <th className="text-left py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">
+                                                    {em("freelanceStatus")}
+                                                </th>
+                                                <th className="text-right py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">
                                                     {em("actions")}
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {terminatedEmployees.map((employee) => (
+                                            {filteredEmployees.map((employee, index) => (
                                                 <tr
                                                     key={employee.employee_uuid}
-                                                    className="border-t border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-neutral-800"
+                                                    className={`border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors ${index % 2 === 0
+                                                        ? "bg-white dark:bg-neutral-900"
+                                                        : "bg-gray-50/30 dark:bg-neutral-800/30"
+                                                        }`}
                                                 >
-                                                    <td className="py-3 px-5 text-gray-600 dark:text-gray-300">
+                                                    <td className="py-4 px-6 font-medium text-gray-900 dark:text-gray-100">
                                                         {employee.name.fullname}
                                                     </td>
-                                                    <td className="py-3 px-5 text-gray-600 dark:text-gray-300">
+                                                    <td className="py-4 px-6 text-gray-800 dark:text-gray-100">
                                                         {employee.email}
                                                     </td>
-                                                    <td className="py-3 px-5 text-gray-600 dark:text-gray-300">
-                                                        {new Date(
-                                                            employee.termination?.date || ""
-                                                        ).toLocaleDateString()}
+                                                    <td className="py-4 px-6 text-gray-800 dark:text-gray-100">
+                                                        {employee.phone}
                                                     </td>
-                                                    <td className="py-3 px-5 text-gray-600 dark:text-gray-300 italic">
-                                                        {employee.termination?.reason}
+                                                    <td className="py-4 px-6 text-gray-800 dark:text-gray-100">
+                                                        {employee.subDivision?.name || "-"}
                                                     </td>
-                                                    <td className="py-3 px-5">
-                                                        <RehireEmployeeDialog employeeData={employee} />
+                                                    <td className="py-4 px-6 text-gray-800 dark:text-gray-100">
+                                                        {employee.branch?.name || "-"}
+                                                    </td>
+                                                    <td className="py-4 px-6">
+                                                        <Badge
+                                                            className={`rounded-full text-[11px] px-2 py-0.5 ${employee.is_freelance
+                                                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+                                                                : "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
+                                                                }`}
+                                                        >
+                                                            {employee.is_freelance ? em("freelance") : em("employee")}
+                                                        </Badge>
+                                                    </td>
+                                                    <td className="py-4 px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <EmployeesDialog mode="edit" employeeData={employee} />
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => handleDeleteClick(employee)}
+                                                                className="h-8 w-8 rounded-lg"
+                                                            >
+                                                                <Trash className="w-4 h-4 text-red-500 dark:text-red-400" />
+                                                            </Button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -632,46 +660,49 @@ export default function EmployeePage() {
 
             {/* Import Dialog */}
             <Dialog open={showImportDialog} onOpenChange={setShowImportDialog}>
-                <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
+                <DialogContent
+                    className="w-[90%] sm:max-w-xl max-h-[85vh] overflow-y-auto rounded-2xl p-5 sm:p-6 bg-white dark:bg-neutral-900"
+                >
+                    <DialogHeader className="space-y-1">
+                        <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
                             <Upload className="w-5 h-5 text-orange-600" />
-                            Import Employees from Excel
+                            Import Employees
                         </DialogTitle>
-                        <DialogDescription>
-                            Upload an Excel file to import multiple employees at once
+                        <DialogDescription className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                            Upload an Excel file to import multiple employees at once.
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-6">
-                        {/* Download Template Section */}
-                        <div className="flex items-center justify-between p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
-                            <div>
-                                <h4 className="font-semibold text-gray-900 dark:text-gray-100">
-                                    Download Template
-                                </h4>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    Get the Excel template with the correct format
-                                </p>
+                    <div className="space-y-4 sm:space-y-6">
+                        {/* Download Template */}
+                        <div className="p-3 sm:p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                <div>
+                                    <h4 className="font-semibold text-gray-800 dark:text-gray-100 text-sm sm:text-base">
+                                        Download Template
+                                    </h4>
+                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                                        Get the Excel template with the correct format.
+                                    </p>
+                                </div>
+                                <Button
+                                    onClick={downloadTemplate}
+                                    variant="outline"
+                                    className="border-orange-300 text-orange-700 hover:bg-orange-50 text-xs sm:text-sm"
+                                >
+                                    <Download className="w-4 h-4 mr-1" />
+                                    Template
+                                </Button>
                             </div>
-                            <Button
-                                variant="outline"
-                                onClick={downloadTemplate}
-                                disabled={isExportingExcel}
-                                className="border-orange-300 text-orange-700 hover:bg-orange-50 bg-transparent"
-                            >
-                                <Download className="h-4 w-4 mr-2" />
-                                Download Template
-                            </Button>
                         </div>
 
-                        {/* File Upload Area */}
+                        {/* Upload Area */}
                         <div
-                            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive
-                                    ? "border-orange-400 bg-orange-50 dark:bg-orange-900/20"
-                                    : file
-                                        ? "border-green-400 bg-green-50 dark:bg-green-900/20"
-                                        : "border-gray-300 hover:border-gray-400 dark:border-gray-700"
+                            className={`border-2 border-dashed rounded-xl p-6 text-center text-sm sm:text-base transition-colors ${dragActive
+                                ? "border-orange-400 bg-orange-50 dark:bg-orange-900/20"
+                                : file
+                                    ? "border-green-400 bg-green-50 dark:bg-green-900/20"
+                                    : "border-gray-300 hover:border-gray-400 dark:border-gray-700"
                                 }`}
                             onDragEnter={handleDrag}
                             onDragLeave={handleDrag}
@@ -679,23 +710,11 @@ export default function EmployeePage() {
                             onDrop={handleDrop}
                         >
                             {file ? (
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    className="space-y-4"
-                                >
-                                    <CheckCircle className="h-12 w-12 text-green-600 mx-auto" />
-                                    <div>
-                                        <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                            {file.name}
-                                        </p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                                            {(file.size / (1024 * 1024)).toLocaleString(undefined, {
-                                                maximumFractionDigits: 2,
-                                            })}{" "}
-                                            MB
-                                        </p>
-                                    </div>
+                                <div className="space-y-3">
+                                    <CheckCircle className="h-10 w-10 text-green-600 mx-auto" />
+                                    <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
+                                        {file.name}
+                                    </p>
                                     <Button
                                         variant="ghost"
                                         size="sm"
@@ -705,85 +724,55 @@ export default function EmployeePage() {
                                         <X className="h-4 w-4 mr-1" />
                                         Remove
                                     </Button>
-                                </motion.div>
-                            ) : (
-                                <div className="space-y-4">
-                                    <Upload className="h-12 w-12 text-gray-400 mx-auto" />
-                                    <div>
-                                        <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                            Drop your Excel file here
-                                        </p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                            Supports .xlsx and .xls files
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <input
-                                            ref={fileInputRef}
-                                            type="file"
-                                            accept=".xlsx,.xls"
-                                            onChange={handleFileInput}
-                                            className="hidden"
-                                        />
-                                        <Button variant="outline" onClick={openFileExplorer}>
-                                            Browse Files
-                                        </Button>
-                                    </div>
                                 </div>
+                            ) : (
+                                <>
+                                    <Upload className="h-10 w-10 text-gray-400 mx-auto" />
+                                    <p className="font-semibold text-gray-800 dark:text-gray-100">
+                                        Drop your Excel file here
+                                    </p>
+                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                                        Supports .xlsx and .xls files
+                                    </p>
+                                    <Button variant="outline" onClick={openFileExplorer} size="sm" className="mt-2">
+                                        Browse Files
+                                    </Button>
+                                </>
                             )}
                         </div>
 
-                        {/* Import Rules */}
-                        <div className="bg-gray-50 dark:bg-neutral-800 rounded-lg p-4">
-                            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                        {/* Rules */}
+                        <div className="bg-gray-50 dark:bg-neutral-800 rounded-xl p-3 sm:p-4">
+                            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1 text-sm sm:text-base">
                                 Import Rules
                             </h4>
-                            <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc pl-4">
-                                <li>Make sure all required fields are filled</li>
-                                <li>Email addresses must be unique and valid</li>
-                                <li>Phone numbers should be in correct format</li>
-                                <li>Date of birth should be in YYYY-MM-DD format</li>
+                            <ul className="list-disc pl-5 text-xs sm:text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                                <li>All required fields must be filled</li>
+                                <li>Email must be unique and valid</li>
+                                <li>Phone must use correct format</li>
+                                <li>Date format: YYYY-MM-DD</li>
                             </ul>
                         </div>
                     </div>
 
-                    <DialogFooter>
+                    <DialogFooter className="mt-5 flex flex-col sm:flex-row gap-2 sm:gap-3">
                         <Button
                             variant="outline"
                             onClick={() => setShowImportDialog(false)}
-                            disabled={importing}
+                            className="w-full sm:w-auto"
                         >
                             Cancel
                         </Button>
                         <Button
                             onClick={handleImport}
-                            disabled={!file || importing || isImportingEmployee}
-                            className="bg-orange-600 hover:bg-orange-700 text-white"
+                            disabled={!file || importing}
+                            className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white"
                         >
-                            {importing ? (
-                                <>
-                                    <motion.div
-                                        animate={{ rotate: 360 }}
-                                        transition={{
-                                            duration: 1,
-                                            repeat: Number.POSITIVE_INFINITY,
-                                            ease: "linear",
-                                        }}
-                                        className="mr-2"
-                                    >
-                                        <Upload className="h-4 w-4" />
-                                    </motion.div>
-                                    Importing...
-                                </>
-                            ) : (
-                                <>
-                                    <Upload className="h-4 w-4 mr-2" />
-                                    Import Employees
-                                </>
-                            )}
+                            Import Employees
                         </Button>
                     </DialogFooter>
                 </DialogContent>
+
             </Dialog>
 
             {/* Imported Data Success Dialog */}

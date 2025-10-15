@@ -27,8 +27,8 @@ export default function ProfilePage() {
   const loading = !selfProfile && !draft
 
   useEffect(() => {
-  fetchSelfProfile()
-}, [])
+    fetchSelfProfile()
+  }, [])
 
   useEffect(() => {
     if (selfProfile) setDraft(selfProfile)
@@ -64,32 +64,45 @@ export default function ProfilePage() {
 
   return (
     <main className="p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+      <div className="mb-8 flex flex-col items-center text-center sm:text-left sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
+        {/* Left section (Title + Subtitle) */}
+        <div className="flex flex-col items-center sm:items-start space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent leading-tight">
             My Profile
           </h1>
-          <p className="text-gray-600 mt-1">Manage your personal information and settings</p>
+          <p className="text-gray-600 text-xs sm:text-sm">
+            Manage your personal information and settings
+          </p>
         </div>
 
+        {/* Right section (Buttons) */}
         {!isEditing ? (
           <Button
             onClick={() => setIsEditing(true)}
-            className="bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-2xl"
+            className="w-full sm:w-auto bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-2xl px-5 py-2 shadow-md hover:shadow-lg transition-all"
           >
             <Edit className="w-4 h-4 mr-2" /> Edit Profile
           </Button>
         ) : (
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={onCancel} className="rounded-2xl">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button
+              variant="outline"
+              onClick={onCancel}
+              className="rounded-2xl w-full sm:w-auto"
+            >
               <X className="w-4 h-4 mr-2" /> Cancel
             </Button>
-            <Button disabled={!canSave} onClick={onSave} className="rounded-2xl bg-emerald-600 text-white">
+            <Button
+              disabled={!canSave}
+              onClick={onSave}
+              className="rounded-2xl w-full sm:w-auto bg-emerald-600 text-white"
+            >
               <Save className="w-4 h-4 mr-2" /> Save Changes
             </Button>
           </div>
         )}
       </div>
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-auto">
         {/* Avatar + About */}

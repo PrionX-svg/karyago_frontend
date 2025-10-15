@@ -61,7 +61,7 @@ export function SubDivisionDialog({ mode, subDivision, trigger }: SubDivisionDia
                 const decryptedUuid = decrypt(storedUuid)
                 await api.getDivisionsByCompanyUuid(await decryptedUuid)
             } catch (error) {
-                console.error("Failed to fetch divisions:", error)
+                console.error("Failed to fetch department:", error)
             }
         }
 
@@ -84,17 +84,17 @@ export function SubDivisionDialog({ mode, subDivision, trigger }: SubDivisionDia
 
             if (mode === "create") {
                 await api.createSubDivision(payload)
-                    .then(() => toast.success("Sub-Division created successfully!"))
-                    .catch(() => toast.error("Failed to create sub-division"))
+                    .then(() => toast.success("Department created successfully!"))
+                    .catch(() => toast.error("Failed to create department"))
             } else if (subDivision) {
                 await api.updateSubDivision(subDivision.uuid, payload)
-                    .then(() => toast.success("Sub-Division updated successfully!"))
-                    .catch(() => toast.error("Failed to update sub-division"))
+                    .then(() => toast.success("Department updated successfully!"))
+                    .catch(() => toast.error("Failed to update sdepartment"))
             }
 
             setOpen(false)
         } catch (error) {
-            console.error(`Failed to ${mode} sub-division:`, error)
+            console.error(`Failed to ${mode} department:`, error)
         } finally {
             setLoading(false)
         }
@@ -110,7 +110,7 @@ export function SubDivisionDialog({ mode, subDivision, trigger }: SubDivisionDia
             {mode === "create" ? (
             <>
                 <Plus className="w-4 h-4" />
-                Add Sub-Division
+                Add Departmnet
             </>
             ) : (
             <Pencil className="w-4 h-4 text-gray-600" />
@@ -127,33 +127,33 @@ export function SubDivisionDialog({ mode, subDivision, trigger }: SubDivisionDia
                         <div className="p-2 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
                             <Target className="w-5 h-5 text-orange-600" />
                         </div>
-                        {mode === "create" ? "Create New Sub-Division" : "Edit Sub-Division"}
+                        {mode === "create" ? "Create New Department" : "Edit Department"}
                     </DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="flex flex-col sm:flex-row space gap-4">
                         <div className="space-y-2 w-full">
-                            <Label htmlFor="name">Sub-Division Name *</Label>
+                            <Label htmlFor="name">Department Name *</Label>
                             <Input
                                 id="name"
                                 value={formData.name}
                                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                                placeholder="Enter sub-division name"
+                                placeholder="Enter department name"
                                 required
                                 className="rounded-lg"
                             />
                         </div>
 
                         <div className="space-y-2 min-w-fit">
-                            <Label htmlFor="departmentGroup">Parent Division *</Label>
+                            <Label htmlFor="departmentGroup">Department Group *</Label>
                             <Select
                                 value={formData.department_group_uuid}
                                 onValueChange={(value) => setFormData((prev) => ({ ...prev, department_group_uuid: value }))}
                                 required
                             >
                                 <SelectTrigger className="rounded-lg">
-                                    <SelectValue placeholder="Select parent division" />
+                                    <SelectValue placeholder="Select department group" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {divisionsData.map((division) => (
@@ -172,7 +172,7 @@ export function SubDivisionDialog({ mode, subDivision, trigger }: SubDivisionDia
                             id="desc"
                             value={formData.desc}
                             onChange={(e) => setFormData((prev) => ({ ...prev, desc: e.target.value }))}
-                            placeholder="Enter sub-division description"
+                            placeholder="Enter department description"
                             rows={3}
                             className="rounded-lg resize-none"
                         />
@@ -194,7 +194,7 @@ export function SubDivisionDialog({ mode, subDivision, trigger }: SubDivisionDia
                             className="bg-orange-500 hover:bg-orange-600 rounded-lg"
                         >
                             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                            {mode === "create" ? "Create Sub-Division" : "Update Sub-Division"}
+                            {mode === "create" ? "Create Department" : "Update Department"}
                         </Button>
                     </div>
                 </form>

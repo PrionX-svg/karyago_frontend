@@ -76,8 +76,8 @@ export const employeeAPI = {
                 ? res.data.data
                 : []
 
-        console.log("✅ Admin Attendance List (raw):", res.data)
-        console.log("📊 Extracted list length:", list.length)
+        // console.log("✅ Admin Attendance List (raw):", res.data)
+        // console.log("📊 Extracted list length:", list.length)
 
         return {
             ...res,
@@ -102,8 +102,8 @@ export const employeeAPI = {
                 ? res.data.data
                 : []
 
-        console.log("✅ Attendance range raw:", res.data)
-        console.log("✅ Extracted attendance list:", list)
+        // console.log("✅ Attendance range raw:", res.data)
+        // console.log("✅ Extracted attendance list:", list)
 
         return {
             ...res,
@@ -142,10 +142,10 @@ export const employeeAPI = {
         // handle both { items: [] } or { data: [] } backend formats
         const list = res.data?.items ?? res.data?.data ?? res.data ?? []
 
-        console.log("🧩 Raw edit requests:", JSON.stringify(list, null, 2))
-        if (Array.isArray(list) && list.length > 0) {
-            console.log("🧾 One record:", list[0])
-        }
+        // console.log("🧩 Raw edit requests:", JSON.stringify(list, null, 2))
+        // if (Array.isArray(list) && list.length > 0) {
+        //     console.log("🧾 One record:", list[0])
+        // }
 
         // return {
         //     ...res,

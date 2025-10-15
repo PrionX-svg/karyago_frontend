@@ -39,7 +39,7 @@ type AttendanceEditStore = {
     company_uuid?: string
   }) => Promise<void>
   approveEditRequest: (id: string) => Promise<void>
-  rejectEditRequest: (id: string) => Promise<void>
+  rejectEditRequest: (id: string, note: string) => Promise<void>
 }
 
 export const useAttendanceEditStore = create<AttendanceEditStore>((set, get) => ({
@@ -62,7 +62,7 @@ export const useAttendanceEditStore = create<AttendanceEditStore>((set, get) => 
     try {
       set({ isLoading: true })
       const res = await employeeAPI.getMyEditRequests(companyUuid)
-      console.log("📦 fetchMyEditRequests response:", res.data)
+      // console.log("📦 fetchMyEditRequests response:", res.data)
       set({ myEditRequests: res.data || [] })
     } catch (error) {
       console.error(error)
@@ -125,9 +125,9 @@ export const useAttendanceEditStore = create<AttendanceEditStore>((set, get) => 
   },
 
   /** Reject edit request (untuk HR/Admin) */
-  rejectEditRequest: async (id) => {
+  rejectEditRequest: async (id, note) => {
     try {
-      const res = await employeeAPI.rejectEditRequest(id)
+      const res = await employeeAPI.rejectEditRequest(id, note)
       if (res?.data) {
         const updated = res.data as AttendanceEdit
         set((state) => ({

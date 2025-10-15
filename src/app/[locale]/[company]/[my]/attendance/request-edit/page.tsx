@@ -85,53 +85,60 @@ export default function RequestEditAttendancePage() {
   }
 
   return (
-    <main className="min-h-screen b p-6">
+    <main className="min-h-screen p-4 sm:p-6">
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+        <div className="flex flex-col items-center text-center sm:text-left sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
+          {/* Left Section (Icon + Title) */}
+          <div className="flex flex-col sm:flex-row items-center sm:items-start sm:space-x-3 space-y-2 sm:space-y-0">
             <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
               <CalendarDays className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent leading-tight">
                 Request Edit Attendance
               </h1>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-600 text-xs sm:text-sm mt-1">
                 Submit a correction request for your attendance record
               </p>
             </div>
           </div>
 
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-2xl px-5 py-2 shadow-lg hover:shadow-xl transition-all"
-          >
-            <Send className="w-4 h-4 mr-2" />
-            {isSubmitting ? "Submitting..." : "Send Request"}
-          </Button>
+          {/* Right Section (Button) */}
+          <div className="w-full sm:w-auto">
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-2xl px-5 py-2 shadow-lg hover:shadow-xl transition-all"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              {isSubmitting ? "Submitting..." : "Send Request"}
+            </Button>
+          </div>
         </div>
+
 
         {/* Card */}
         <Card className="bg-white/95 backdrop-blur-xl border-0 shadow-xl rounded-3xl">
-          <CardContent className="p-8 grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <CardContent className="p-5 sm:p-8 grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">
             {/* Calendar Section */}
             <div className="flex flex-col space-y-6">
               <Label className="text-gray-700 font-semibold">Select Date</Label>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                className="rounded-2xl bg-white border border-gray-100 shadow-sm"
-              />
+              <div className="flex justify-center sm:justify-start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  className="rounded-2xl bg-white border border-gray-100 shadow-sm scale-95 sm:scale-100"
+                />
+              </div>
 
               <div>
                 <Label className="text-gray-700 font-semibold mb-2 block">Work Location</Label>
                 <RadioGroup
                   value={locationType}
                   onValueChange={setLocationType}
-                  className="flex space-x-6 mt-2"
+                  className="flex flex-col sm:flex-row sm:space-x-6 mt-2 space-y-2 sm:space-y-0"
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="office" id="office" />
@@ -170,7 +177,7 @@ export default function RequestEditAttendancePage() {
                       type="time"
                       value={clockInTime}
                       onChange={(e) => setClockInTime(e.target.value)}
-                      className="border-gray-200 rounded-xl"
+                      className="border-gray-200 rounded-xl h-11 sm:h-12"
                     />
                   </div>
                 )}
@@ -195,7 +202,7 @@ export default function RequestEditAttendancePage() {
                       type="time"
                       value={clockOutTime}
                       onChange={(e) => setClockOutTime(e.target.value)}
-                      className="border-gray-200 rounded-xl"
+                      className="border-gray-200 rounded-xl h-11 sm:h-12"
                     />
                   </div>
                 )}
@@ -208,7 +215,7 @@ export default function RequestEditAttendancePage() {
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="Explain why you need this attendance correction..."
-                  className="border-gray-200 rounded-xl min-h-[120px] resize-none"
+                  className="border-gray-200 rounded-xl min-h-[100px] sm:min-h-[120px] resize-none text-sm sm:text-base"
                 />
               </div>
             </form>
@@ -216,5 +223,6 @@ export default function RequestEditAttendancePage() {
         </Card>
       </div>
     </main>
+
   )
 }

@@ -78,7 +78,7 @@ export const useEmployeeSelfStore = create<EmployeeSelfStore>()(
           const res = await employeeAPI.getByDate(new Date(), companyUUID)
           // Karena employeeAPI.getByDate() sudah return { data: attendanceObj }
           set({ attendanceToday: res.data || null })
-          console.log("✅ Attendance Today:", res.data)
+          // console.log("✅ Attendance Today:", res.data)
         } catch (err) {
           console.error("❌ fetchAttendanceToday error:", err)
           set({ attendanceToday: null })

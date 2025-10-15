@@ -16,7 +16,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Home, User, Users, Building2, MapPin, ChevronDown, Search, PanelLeftClose, PanelLeftOpen, TimerIcon, FolderTree, Calendar} from "lucide-react"
+import { Home, User, Users, Building2, MapPin, ChevronDown, Search, PanelLeftClose, PanelLeftOpen, TimerIcon, FolderTree, Calendar } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
@@ -52,7 +52,8 @@ const navigationItemsOwner = [
 const navigationItemsEmployee = [
   { name: "Dashboard", icon: Home, path: "" },
   { name: "Profile", icon: User, path: "/my/profile" },
-  { name: "Attendance", icon: Calendar,
+  {
+    name: "Attendance", icon: Calendar,
     submenu: [
       { name: "My Attendance", path: "/my/attendance" },
       { name: "Request Edit Attendance", path: "/my/attendance/request-edit" },
@@ -66,23 +67,25 @@ const defaultNavigationItems = navigationItemsOwner
 
 // Desktop Sidebar Component (Regular Div with Sticky)
 function DesktopSidebar({ navigationItems = defaultNavigationItems }: { navigationItems?: typeof navigationItemsOwner }) {
+  const [mounted, setMounted] = useState(false)
   const [expandedItems, setExpandedItems] = useState<string[]>([])
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("sidebar-collapsed")
-      return saved === "true"
-    }
-    return false
-  })
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const params = useParams()
   const pathname = usePathname()
   const locale = params?.locale as string
   const company = params?.company as string
   const basePath = `/${locale}/${company}`
 
+  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    const saved = localStorage.getItem("sidebar-collapsed")
+    if (saved === "true") setIsCollapsed(true)
+  }, [])
   useEffect(() => {
     localStorage.setItem("sidebar-collapsed", String(isCollapsed))
   }, [isCollapsed])
+
+  if (!mounted) return null
 
   const toggleExpanded = (itemName: string) => {
     setExpandedItems((prev) =>
@@ -185,7 +188,7 @@ function DesktopSidebar({ navigationItems = defaultNavigationItems }: { navigati
                         "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
                         itemIsActive &&
-                          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
+                        "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
                         isCollapsed ? "justify-center" : "",
                       )}
                     >
@@ -280,7 +283,7 @@ function MobileSidebar({ navigationItems = defaultNavigationItems }: { navigatio
                             className={cn(
                               "sidebar-nav-item sidebar-transition",
                               itemIsActive &&
-                                "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
+                              "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
                             )}
                           >
                             <Link href={fullPath} className="flex items-center gap-3">
@@ -330,9 +333,15 @@ function MobileSidebar({ navigationItems = defaultNavigationItems }: { navigatio
 }
 
 // Main AppSidebar Component
-export function AppSidebar({ role = "owner" }: { role?: "owner" | "employee" }) {
+// Main AppSidebar Component
+export function AppSidebar({ role = "owner" }: { role?: "owner" | "employee" | "admin" }) {
   const isMobile = useIsMobile()
-  const items = role === "employee" ? navigationItemsEmployee : navigationItemsOwner
+
+  // Owner dan Admin pakai menu yang sama
+  const items =
+    role === "employee"
+      ? navigationItemsEmployee
+      : navigationItemsOwner
 
   return (
     <>
@@ -346,3 +355,4 @@ export function AppSidebar({ role = "owner" }: { role?: "owner" | "employee" }) 
     </>
   )
 }
+

@@ -232,40 +232,34 @@ export default function AttendancePage() {
 
 
     return (
-        <main className="p-6 min-h-screen">
+        <main className="p-4 sm:p-6 min-h-screen">
             {/* Header */}
-            <div className="mb-8">
-                <div className="flex items-center space-x-3 mb-2">
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="mb-8 text-center sm:text-left">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2 justify-center sm:justify-start">
+                    <div className="mx-auto sm:mx-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
                         <Calendar className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold bg-gradient-to-br from-orange-500 to-red-500 bg-clip-text text-transparent">
+                        <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-br from-orange-500 to-red-500 bg-clip-text text-transparent">
                             My Attendance
                         </h1>
-                        <p className="text-gray-600 text-sm">Your attendance records and summary</p>
+                        <p className="text-gray-600 text-xs sm:text-sm">Your attendance records and summary</p>
                     </div>
                 </div>
             </div>
 
             {/* Search & Filter */}
             <Card className="mb-8 bg-white/90 backdrop-blur-sm border-0 shadow-lg rounded-3xl">
-                <CardContent className="p-6">
-                    <div className="flex flex-wrap md:flex-nowrap items-center gap-3 justify-between">
-                        {/* 🔍 Search */}
+                <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col lg:flex-row flex-wrap gap-3 justify-between">
                         <Input
                             placeholder={`Search ${viewType === "attendance" ? "by date or notes" : "by reason"}`}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="h-12 w-full md:w-[260px] rounded-2xl border-gray-200 bg-white focus:border-orange-500 focus:ring-orange-500"
+                            className="h-11 sm:h-12 w-full lg:w-[260px] rounded-2xl border-gray-200 bg-white focus:border-orange-500 focus:ring-orange-500"
                         />
-
-                        {/* 📋 View Type */}
-                        <Select
-                            value={viewType}
-                            onValueChange={(val: "attendance" | "edit-request") => setViewType(val)}
-                        >
-                            <SelectTrigger className="h-12 w-full md:w-[180px] rounded-2xl border-gray-200 bg-white font-medium text-gray-700">
+                        <Select value={viewType} onValueChange={(val: "attendance" | "edit-request") => setViewType(val)}>
+                            <SelectTrigger className="h-11 sm:h-12 w-full lg:w-[180px] rounded-2xl border-gray-200 bg-white font-medium text-gray-700">
                                 <SelectValue placeholder="Select View" />
                             </SelectTrigger>
                             <SelectContent>
@@ -274,17 +268,17 @@ export default function AttendancePage() {
                             </SelectContent>
                         </Select>
 
-                        {/* 🗓️ Date Range */}
-                        <div className="flex items-center gap-2 w-full md:w-auto">
+                        {/* Date Range */}
+                        <div className="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto">
                             <DatePicker date={dateFrom} onDateChange={setDateFrom} placeholder="From" />
-                            <span className="text-gray-400">–</span>
+                            <span className="text-gray-400 hidden sm:block">–</span>
                             <DatePicker date={dateTo} onDateChange={setDateTo} placeholder="To" />
                         </div>
 
-                        {/* 📊 Status — taruh di kanan */}
-                        <div className="flex justify-end w-full md:w-[180px]">
+                        {/* Status Filter */}
+                        <div className="w-full lg:w-[180px]">
                             <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                <SelectTrigger className="h-12 w-full rounded-2xl border-gray-200 bg-white font-medium text-gray-700">
+                                <SelectTrigger className="h-11 sm:h-12 w-full rounded-2xl border-gray-200 bg-white font-medium text-gray-700">
                                     <SelectValue placeholder="Status" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -312,7 +306,7 @@ export default function AttendancePage() {
             {viewType === "attendance" ? (
                 <>
                     {/* Attendance Table */}
-                    <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-3xl overflow-hidden mb-6">
+                    <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-3xl overflow-hidden overflow-x-auto mb-6">
                         <CardContent className="p-6">
                             <h2 className="text-2xl font-bold text-gray-800 mb-6">Attendance List</h2>
 
@@ -334,66 +328,104 @@ export default function AttendancePage() {
                                 {paginatedAttendance.map((a) => (
                                     <div
                                         key={a.uuid}
-                                        className="grid grid-cols-1 md:grid-cols-9 gap-4 pb-3 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-all"
+                                        className="grid md:grid-cols-9 grid-cols-2 sm:grid-cols-4 gap-y-2 sm:gap-3 md:gap-4 p-4 sm:p-5 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-all"
                                     >
-                                        <span className="font-medium text-gray-900">{a.work_date
-                                            ? format(new Date(a.work_date), "dd/MMM/yyyy", { locale: id })
-                                            : "-"}</span>
-                                        <span className="text-gray-700 whitespace-nowrap">{a.clock_in_at
-                                            ? new Date(a.clock_in_at).toLocaleTimeString("id-ID", {
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                hour12: false,
-                                                timeZone: "Asia/Jakarta", // 🌍 penting: ubah ke WIB
-                                            })
-                                            : "-"}</span>
-                                        <span className="text-gray-700 whitespace-nowrap">{a.clock_out_at
-                                            ? new Date(a.clock_out_at).toLocaleTimeString("id-ID", {
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                hour12: false,
-                                                timeZone: "Asia/Jakarta",
-                                            })
-                                            : "-"}</span>
-                                        <span>
+                                        {/* ✅ Date */}
+                                        <div className="col-span-2 sm:col-span-1">
+                                            <p className="text-xs text-gray-400 md:hidden">Date</p>
+                                            <p className="font-medium text-gray-900">
+                                                {a.work_date
+                                                    ? format(new Date(a.work_date), "dd/MMM/yyyy", { locale: id })
+                                                    : "-"}
+                                            </p>
+                                        </div>
+
+                                        {/* ✅ Clock In */}
+                                        <div>
+                                            <p className="text-xs text-gray-400 md:hidden">Clock In</p>
+                                            <p className="text-gray-700 whitespace-nowrap">
+                                                {a.clock_in_at
+                                                    ? new Date(a.clock_in_at).toLocaleTimeString("id-ID", {
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                        hour12: false,
+                                                        timeZone: "Asia/Jakarta",
+                                                    })
+                                                    : "-"}
+                                            </p>
+                                        </div>
+
+                                        {/* ✅ Clock Out */}
+                                        <div>
+                                            <p className="text-xs text-gray-400 md:hidden">Clock Out</p>
+                                            <p className="text-gray-700 whitespace-nowrap">
+                                                {a.clock_out_at
+                                                    ? new Date(a.clock_out_at).toLocaleTimeString("id-ID", {
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                        hour12: false,
+                                                        timeZone: "Asia/Jakarta",
+                                                    })
+                                                    : "-"}
+                                            </p>
+                                        </div>
+
+                                        {/* ✅ Type */}
+                                        <div>
+                                            <p className="text-xs text-gray-400 md:hidden">Type</p>
                                             <Badge
                                                 className={`${a.is_home_office
                                                     ? "bg-green-100 text-green-700"
                                                     : "bg-blue-100 text-blue-700"
-                                                    } border-0 rounded-full`}
+                                                    } border-0 rounded-full text-xs sm:text-sm`}
                                             >
                                                 {a.is_home_office ? "Home Office" : "In Office"}
                                             </Badge>
-                                        </span>
-                                        {/* 🆕 Total Work Hours */}
-                                        <span className="text-center text-gray-800 font-medium text-sm">
-                                            {a.total_work_hours ? `${a.total_work_hours.toFixed(1)}h` : "-"}
-                                        </span>
+                                        </div>
 
-                                        {/* 🆕 Overtime */}
-                                        <span className="text-center">
+                                        {/* ✅ Total Hours */}
+                                        <div>
+                                            <p className="text-xs text-gray-400 md:hidden">Total</p>
+                                            <p className="text-gray-800 font-medium text-sm text-center">
+                                                {a.total_work_hours ? `${a.total_work_hours.toFixed(1)}h` : "-"}
+                                            </p>
+                                        </div>
+
+                                        {/* ✅ Overtime */}
+                                        <div>
+                                            <p className="text-xs text-gray-400 md:hidden">Overtime</p>
                                             {a.is_overtime ? (
-                                                <Badge className="bg-orange-100 text-orange-700 border-0 rounded-full">
+                                                <Badge className="bg-orange-100 text-orange-700 border-0 rounded-full text-xs sm:text-sm">
                                                     {a.overtime_hours ? `${a.overtime_hours.toFixed(1)}h` : "OT"}
                                                 </Badge>
                                             ) : (
                                                 <span className="text-gray-400 text-sm">-</span>
                                             )}
-                                        </span>
-                                        <span className="text-gray-400 text-sm">{a.notes || "-"}</span>
-                                        <span>
+                                        </div>
+
+                                        {/* ✅ Notes */}
+                                        <div className="col-span-2 sm:col-span-1">
+                                            <p className="text-xs text-gray-400 md:hidden">Notes</p>
+                                            <p className="text-gray-500 text-sm break-words">{a.notes || "-"}</p>
+                                        </div>
+
+                                        {/* ✅ Status */}
+                                        <div>
+                                            <p className="text-xs text-gray-400 md:hidden">Status</p>
                                             <Badge
                                                 className={`${a.status === "PRESENT"
                                                     ? "bg-green-100 text-green-700"
                                                     : a.status === "OPEN"
                                                         ? "bg-yellow-100 text-yellow-700"
                                                         : "bg-gray-100 text-gray-700"
-                                                    } border-0 rounded-full`}
+                                                    } border-0 rounded-full text-xs sm:text-sm`}
                                             >
                                                 {a.status}
                                             </Badge>
-                                        </span>
-                                        <span className="flex justify-center">
+                                        </div>
+
+                                        {/* ✅ Action */}
+                                        <div className="flex justify-center items-center">
                                             <Button
                                                 size="icon"
                                                 variant="ghost"
@@ -402,10 +434,10 @@ export default function AttendancePage() {
                                             >
                                                 <Edit className="w-4 h-4" />
                                             </Button>
-                                        </span>
+                                        </div>
                                     </div>
-
                                 ))}
+
 
                                 {paginatedAttendance.length === 0 && (
                                     <p className="text-center text-gray-500 text-sm py-4">
@@ -519,46 +551,80 @@ export default function AttendancePage() {
                             {sortedEditRequests.map((r) => (
                                 <div
                                     key={r.id}
-                                    className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-all"
+                                    className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-y-2 sm:gap-3 md:gap-4 p-4 sm:p-5 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-all"
                                 >
-                                    <span className="font-medium text-gray-900">{r.work_date
-                                        ? format(new Date(r.work_date), "dd/MMM/yyyy", { locale: id })
-                                        : "-"}</span>
-                                    <span className="text-gray-700"> {r.proposed_is_home_office !== null && (
-                                        <Badge
-                                            className={`${r.proposed_is_home_office
-                                                ? "bg-green-100 text-green-700"
-                                                : "bg-blue-100 text-blue-700"
-                                                } border-0 rounded-full`}
-                                        >
-                                            {r.proposed_is_home_office ? "Home Office" : "In Office"}
-                                        </Badge>
-                                    )}</span>
-                                    <span className="text-sm text-gray-600">{r.reason || "-"}</span>
-                                    <span>
+                                    {/* 🗓️ Date */}
+                                    <div>
+                                        <p className="text-xs text-gray-400 md:hidden">Date</p>
+                                        <p className="font-medium text-gray-900 text-sm sm:text-base">
+                                            {r.work_date
+                                                ? format(new Date(r.work_date), "dd/MMM/yyyy", { locale: id })
+                                                : "-"}
+                                        </p>
+                                    </div>
+
+                                    {/* 🧾 Type */}
+                                    <div>
+                                        <p className="text-xs text-gray-400 md:hidden">Type</p>
+                                        {r.proposed_is_home_office !== null && (
+                                            <Badge
+                                                className={`${r.proposed_is_home_office
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-blue-100 text-blue-700"
+                                                    } border-0 rounded-full text-[10px] sm:text-xs md:text-sm px-2 py-0.5`}
+                                            >
+                                                {r.proposed_is_home_office ? "Home Office" : "In Office"}
+                                            </Badge>
+                                        )}
+                                    </div>
+
+                                    {/* 💬 Reason */}
+                                    <div className="col-span-2 sm:col-span-1">
+                                        <p className="text-xs text-gray-400 md:hidden">Reason</p>
+                                        <p className="text-sm text-gray-600 break-words">{r.reason || "-"}</p>
+                                    </div>
+
+                                    {/* 🏷️ Status */}
+                                    <div>
+                                        <p className="text-xs text-gray-400 md:hidden">Status</p>
                                         <Badge
                                             className={`${r.status === "PENDING"
                                                 ? "bg-yellow-100 text-yellow-700"
                                                 : r.status === "APPROVED"
                                                     ? "bg-green-100 text-green-700"
                                                     : "bg-red-100 text-red-700"
-                                                } border-0 rounded-full`}
+                                                } border-0 rounded-full text-xs sm:text-sm`}
                                         >
                                             {r.status}
                                         </Badge>
-                                    </span>
-                                    <span className="text-sm text-gray-600">
-                                        {r.proposed_clock_in_at
-                                            ? new Date(r.proposed_clock_in_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })
-                                            : "-"}{" "}
-                                        →{" "}
-                                        {r.proposed_clock_out_at
-                                            ? new Date(r.proposed_clock_out_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })
-                                            : "-"}
+                                    </div>
 
-                                    </span>
+                                    {/* 🕒 Requested Time */}
+                                    <div>
+                                        <p className="text-xs text-gray-400 md:hidden">Requested Time</p>
+                                        <p className="text-sm text-gray-600">
+                                            {r.proposed_clock_in_at
+                                                ? new Date(r.proposed_clock_in_at).toLocaleTimeString("id-ID", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: false,
+                                                    timeZone: "Asia/Jakarta",
+                                                })
+                                                : "-"}{" "}
+                                            →{" "}
+                                            {r.proposed_clock_out_at
+                                                ? new Date(r.proposed_clock_out_at).toLocaleTimeString("id-ID", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: false,
+                                                    timeZone: "Asia/Jakarta",
+                                                })
+                                                : "-"}
+                                        </p>
+                                    </div>
                                 </div>
                             ))}
+
 
                             {myEditRequests.length === 0 && (
                                 <p className="text-center text-gray-500 text-sm py-4">
@@ -571,7 +637,7 @@ export default function AttendancePage() {
             )}
             {showEditModal && selectedAttendance && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-3xl shadow-xl w-full max-w-md p-6 relative animate-in fade-in-50">
+                    <div className="bg-white rounded-3xl shadow-xl w-[90%] sm:w-[420px] md:w-[480px] max-h-[90vh] overflow-y-auto p-5 sm:p-6 relative animate-in fade-in-50">
                         <button
                             className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
                             onClick={() => setShowEditModal(false)}

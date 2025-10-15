@@ -22,7 +22,15 @@ export default async function MyLayout({
       <div className="min-h-screen w-full flex flex-col">
         <Header />
         <div className="flex flex-1 w-full">
-          <AppSidebar role={role === "employee" ? "employee" : "owner"} />
+          <AppSidebar
+            role={
+              role === "employee"
+                ? "employee"
+                : role === "admin"
+                  ? "admin"
+                  : "owner"
+            }
+          />
           <main className="flex-1 w-full overflow-auto p-6 bg-background min-h-[calc(100vh-4rem)]">
             {children}
           </main>

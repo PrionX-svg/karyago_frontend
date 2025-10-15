@@ -127,6 +127,7 @@ export function AssignEmployeeDialog({ employee, mode, storedUuid }: EmployeeDia
                         onClick={handleAction}
                         variant={mode === "assign" ? "default" : "destructive"}
                         disabled={mode === "assign" && !selectedSubDivision}
+                        size = "sm"
                         className={
                             mode === "remove"
                                 ? "bg-red-600 hover:bg-red-700 text-white dark:bg-red-700 dark:hover:bg-red-800"
