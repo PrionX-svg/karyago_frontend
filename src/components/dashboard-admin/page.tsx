@@ -42,7 +42,7 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
     setSubDivisions(useCompanyStore.getState().subDivision || [])
   }, [useCompanyStore.getState().division, useCompanyStore.getState().subDivision])
 
-  // 🔹 Hitung attendance rate (dummy simple example)
+  // 🔹 Hitung attendance rate (akurat)
   useEffect(() => {
     const calcRate = async () => {
       if (!currentCompany?.uuid) return
@@ -50,18 +50,39 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
         const now = new Date()
         const from = new Date(now.getFullYear(), now.getMonth(), 1)
         const to = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-        const range = await employeeAPI.listRange(from, to, currentCompany.uuid)
+
+        const range = await employeeAPI.listAllAttendance(from, to, currentCompany.uuid)
+        console.log("📊 Attendance range result:", range)
         const records = range.data || []
-        const total = records.length
-        const present = records.filter((r: any) => r.status === "PRESENT").length
-        const rate = total > 0 ? (present / total) * 100 : 0
+
+        // hanya karyawan aktif
+        const activeCount = employees.filter((e) => !e.termination?.date).length
+
+
+        // total hari kerja (exclude sabtu & minggu)
+        const totalWorkDays = Array.from({ length: to.getDate() }, (_, i) => {
+          const d = new Date(from)
+          d.setDate(d.getDate() + i)
+          const day = d.getDay()
+          return day !== 0 && day !== 6 // exclude Sun & Sat
+        }).filter(Boolean).length
+
+        // total hadir
+        const totalPresent = records.filter((r: any) => r.status === "PRESENT").length
+
+        // rate
+        const totalPossible = activeCount * totalWorkDays
+        const rate = totalPossible > 0 ? (totalPresent / totalPossible) * 100 : 0
+
         setAttendanceRate(rate)
       } catch (err) {
         console.error("⚠️ Failed to calc attendance rate:", err)
       }
     }
+
     calcRate()
-  }, [currentCompany?.uuid])
+  }, [currentCompany?.uuid, employees])
+
 
   // 🔹 Stats
   const stats = useMemo(() => ({
@@ -70,6 +91,25 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
     divisions: divisions.length,
     subDivisions: subDivisions.length,
   }), [employees, terminatedEmployees, divisions, subDivisions])
+
+  const formatEditType = (type: string) => {
+    switch (type) {
+      case "CLOCK_IN":
+        return "Clock In"
+      case "CLOCK_OUT":
+        return "Clock Out"
+      case "BOTH":
+        return "Clock In & Out"
+      case "HOME_FLAG":
+        return "Work Type"
+      case "BOTH_PLUS_FLAG":
+        return "All Request Type"
+      case "BOTH PLUS FLAG":
+        return "All Request Type"
+      default:
+        return type || "-"
+    }
+  }
 
   return (
     <div className="w-full max-w-full space-y-6">
@@ -87,25 +127,35 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
           <CardTitle>Employee Distribution</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {divisions.length > 0 ? (
-            divisions.map((subdiv) => {
-              const members = employees.filter((e) => e.subDivision?.uuid === subdiv.uuid).length
-              const percent = ((members / employees.length) * 100).toFixed(0)
+          {subDivisions.length > 0 ? (
+            subDivisions.map((sub) => {
+              // hitung semua karyawan yang ada di sub-divisi ini
+              const members = employees.filter((e) => e.subDivision?.uuid === sub.uuid).length
+
+              const percent = employees.length > 0 ? ((members / employees.length) * 100).toFixed(0) : 0
+
               return (
-                <div key={subdiv.uuid}>
+                <div key={sub.uuid} className="space-y-1">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{subdiv.name}</span>
-                    <span className="font-medium">{percent}%</span>
+                    <span className="text-muted-foreground">{sub.name}</span>
+                    <span className="font-medium">
+                      {members} ({percent}%)
+                    </span>
                   </div>
                   <div className="h-3 bg-muted rounded-full overflow-hidden">
-                    <div className="h-full bg-gray-600 rounded-full" style={{ width: `${percent}%` }} />
+                    <div
+                      className="h-full bg-orange-500 rounded-full transition-all duration-300"
+                      style={{ width: `${percent}%` }}
+                    />
                   </div>
                 </div>
               )
             })
           ) : (
-            <p className="text-sm text-muted-foreground">No divisions found</p>
+            <p className="text-sm text-muted-foreground">No sub-division data found</p>
           )}
+
+
         </CardContent>
       </Card>
 
@@ -140,12 +190,12 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
                     <Avatar><AvatarFallback>{req.user_name?.slice(0, 2).toUpperCase() || "UN"}</AvatarFallback></Avatar>
                     <div>
                       <p className="text-sm font-medium">{req.user_name || "Unknown"}</p>
-                      <p className="text-xs text-muted-foreground">{req.edit_type}</p>
+                      <p className="text-xs text-muted-foreground">{formatEditType(req.edit_type)}</p>
                     </div>
                   </div>
                   <span className={`text-xs px-2 py-1 rounded-md ${req.status === "PENDING" ? "bg-yellow-100 text-yellow-700" :
-                      req.status === "APPROVED" ? "bg-green-100 text-green-700" :
-                        "bg-red-100 text-red-700"
+                    req.status === "APPROVED" ? "bg-green-100 text-green-700" :
+                      "bg-red-100 text-red-700"
                     }`}>{req.status}</span>
                 </div>
               ))

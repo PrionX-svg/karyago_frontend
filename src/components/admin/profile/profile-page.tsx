@@ -244,7 +244,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div>
+              {/* <div>
                 <div className="flex items-center p-3 rounded-lg bg-white/70 dark:bg-stone-900/50 border border-orange-200/60 dark:border-orange-800/60 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-orange-100 dark:bg-orange-900/40 rounded-lg">
@@ -268,7 +268,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </CardContent>
         </Card>

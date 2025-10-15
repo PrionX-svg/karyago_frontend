@@ -54,7 +54,7 @@ export default function DivisionsPage() {
       try {
         await api.getDivisionsByCompanyUuid(decryptedUuid);
       } catch (error) {
-        console.error("Error fetching divisions:", error);
+        console.error("Error fetching department groups:", error);
       }
     };
     fetchDivisions();
@@ -78,7 +78,7 @@ export default function DivisionsPage() {
         .then(() => toast.success(t("deleteSuccess")))
         .catch((error) => toast.error(`${t("deleteError")}: ${error.message}`));
     } catch (error) {
-      console.error("Failed to delete division", error);
+      console.error("Failed to delete department groups", error);
     } finally {
       setIsDeleteOpen(false);
       setSelectedDivision(null);

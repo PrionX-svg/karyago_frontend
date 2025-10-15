@@ -1,19 +1,26 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Calendar, Check, X } from "lucide-react"
+import { Calendar, Check, ListChecksIcon, X } from "lucide-react"
 import { toast } from "sonner"
 import { useCompanyStore } from "@/stores/company-store"
 import { employeeAPI } from "@/lib/api/employee-api"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DatePicker } from "@/components/ui/date-picker"
+import { format } from "date-fns"
+import { id } from "date-fns/locale"
 
 export default function EmployeeEditRequestsPage() {
   const { currentCompany } = useCompanyStore()
   const [requests, setRequests] = useState<any[]>([])
   const [search, setSearch] = useState("")
+  const [selectedStatus, setSelectedStatus] = useState("all")
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined)
+  const [dateTo, setDateTo] = useState<Date | undefined>(undefined)
 
   const fetchRequests = async () => {
     if (!currentCompany?.uuid) return
@@ -28,11 +35,52 @@ export default function EmployeeEditRequestsPage() {
     }
   }
 
-
-
   useEffect(() => {
     fetchRequests()
   }, [currentCompany?.uuid])
+
+  // For debugging purposes
+  useEffect(() => {
+    console.log("🔍 requests data sample:", requests)
+  }, [requests])
+
+  // unique employee names (filter dummy yg uuid kosong)
+  const employeeNames = useMemo(() => {
+    const unique = new Set(
+      requests
+        // hanya ambil yang punya user_name valid (hindari dummy)
+        .filter((r) => r.user_name && r.user_name.trim() !== "")
+        .map((r) => r.user_name.trim())
+    )
+
+    const sorted = Array.from(unique).sort((a, b) =>
+      a.localeCompare(b, "id", { sensitivity: "base" })
+    )
+
+    return ["all", ...sorted]
+  }, [requests])
+
+
+
+  const [selectedEmployee, setSelectedEmployee] = useState("all")
+
+  // ✅ Filtering logic
+  const filtered = requests.filter((r) => {
+    if (selectedEmployee !== "all" && r.user_name !== selectedEmployee) return false
+    if (selectedStatus !== "all" && r.status !== selectedStatus) return false
+    if (search && !r.user_name.toLowerCase().includes(search.toLowerCase())) return false
+    if (dateFrom && new Date(r.work_date) < dateFrom) return false
+    if (dateTo && new Date(r.work_date) > dateTo) return false
+    return true
+  })
+
+  // 🧭 Sort edit requests by work_date (newest first)
+  const sortedRequests = [...filtered].sort((a, b) => {
+    const dateA = new Date(a.work_date ?? 0).getTime()
+    const dateB = new Date(b.work_date ?? 0).getTime()
+    return dateB - dateA
+  })
+
 
   const handleApprove = async (id: string) => {
     try {
@@ -69,31 +117,79 @@ export default function EmployeeEditRequestsPage() {
     }
   }
 
-
-  const filtered = requests.filter((r) =>
-    r.user_name?.toLowerCase().includes(search.toLowerCase())
-  )
-
+  const formatEditType = (type: string) => {
+    switch (type) {
+      case "CLOCK_IN":
+        return "Clock In"
+      case "CLOCK_OUT":
+        return "Clock Out"
+      case "BOTH":
+        return "Clock In & Out"
+      case "HOME_FLAG":
+        return "Work Type"
+      case "BOTH_PLUS_FLAG":
+        return "All Request Type"
+      case "BOTH PLUS FLAG":
+        return "All Request Type"
+      default:
+        return type || "-"
+    }
+  }
 
 
   return (
     <main className="p-6 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold flex items-center gap-2">
-          <Calendar className="w-6 h-6 text-orange-500" /> Attendance Edit Requests
+          <div className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900 dark:to-orange-950 rounded-xl border border-orange-200 dark:border-orange-800 group-hover:from-orange-100 group-hover:to-orange-200 dark:group-hover:from-orange-800 dark:group-hover:to-orange-900 transition-colors">
+            <ListChecksIcon className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+          </div> Attendance Edit Requests
         </h1>
-        <Input
-          placeholder="Search employee..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-64"
-        />
+        <div className="flex flex-wrap gap-3 items-center">
+          <Input
+            placeholder="Search employee..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-48"
+          />
+
+          {/* Employee filter */}
+          <Select value={selectedEmployee} onValueChange={setSelectedEmployee}>
+            <SelectTrigger className="w-44">
+              <SelectValue placeholder="Employee" />
+            </SelectTrigger>
+            <SelectContent>
+              {employeeNames.map((name) => (
+                <SelectItem key={name} value={name}>
+                  {name === "all" ? "All Employees" : name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Date range */}
+          <div className="flex gap-2 items-center">
+            <DatePicker date={dateFrom} onDateChange={setDateFrom} placeholder="From" />
+            <span>–</span>
+            <DatePicker date={dateTo} onDateChange={setDateTo} placeholder="To" />
+          </div>
+
+          {/* Status */}
+          <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+            <SelectTrigger className="w-36">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="PENDING">Pending</SelectItem>
+              <SelectItem value="APPROVED">Approved</SelectItem>
+              <SelectItem value="REJECTED">Rejected</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <Card className="shadow-md border-0 rounded-3xl">
-        <CardHeader>
-          <CardTitle>Pending Requests</CardTitle>
-        </CardHeader>
         <CardContent>
           <div className="hidden md:grid md:grid-cols-8 text-sm font-semibold text-gray-600 border-b pb-3 mb-3">
             <span>Name</span>
@@ -106,7 +202,7 @@ export default function EmployeeEditRequestsPage() {
             <span className="text-center">Actions</span>
           </div>
 
-          {filtered.map((r) => (
+          {sortedRequests.map((r) => (
             <div
               key={r.id}
               className="grid md:grid-cols-8 items-center py-3 border-b text-sm hover:bg-gray-50 transition-all"
@@ -118,10 +214,12 @@ export default function EmployeeEditRequestsPage() {
               <span className="text-gray-600">{r.department_name}</span>
 
               {/* Date */}
-              <span className="text-gray-700">{r.work_date}</span>
+              <span className="text-gray-700"> {r.work_date
+                ? format(new Date(r.work_date), "dd/MMM/yyyy", { locale: id })
+                : "-"}</span>
 
               {/* Type */}
-              <span className="text-gray-700">{r.edit_type}</span>
+              <span className="text-gray-700">{formatEditType(r.edit_type)}</span>
 
               {/* Requested Time */}
               <span className="text-gray-800">
@@ -189,6 +287,19 @@ export default function EmployeeEditRequestsPage() {
 
           {filtered.length === 0 && <p className="text-center text-gray-400 py-6">No edit requests found</p>}
         </CardContent>
+
+        <div className="px-6 pb-6 mt-4">
+          <h3 className="text-sm font-semibold text-gray-700 mb-2">Type of Request:</h3>
+          <ul className="text-sm text-gray-600 leading-relaxed list-disc list-inside">
+            <li><strong>Clock In</strong> — Employee requests to adjust their clock-in time.</li>
+            <li><strong>Clock Out</strong> — Employee requests to adjust their clock-out time.</li>
+            <li><strong>Clock In & Out</strong> — Adjustment for both clock-in and clock-out times.</li>
+            <li><strong>Work Type</strong> — Change between office and home work type.</li>
+            <li><strong>All Request Type</strong> — Combination of Clock In, Clock Out, and Work Type.</li>
+          </ul>
+        </div>
+
+
         {rejectModal.open && (
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">

@@ -42,8 +42,8 @@ const navigationItemsOwner = [
     icon: Building2,
     path: "/structure",
     submenu: [
-      { name: "Divsions", path: "/structure/divisions" },
-      { name: "Sub-Divisions", path: "/structure/sub-divisions" },
+      { name: "Department Group", path: "/structure/divisions" },
+      { name: "Department", path: "/structure/sub-divisions" },
     ],
   },
   { name: "Branch", icon: MapPin, path: "/branch" },

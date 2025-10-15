@@ -112,12 +112,13 @@ export default function EmployeeDashboard() {
     currentPage * ITEMS_PER_PAGE
   )
 
+  // Attendance Rate
   useEffect(() => {
     const fetchMonthlyStats = async () => {
       if (!currentCompany?.uuid) return
 
       try {
-        // ambil range tanggal bulan ini
+        // Ambil range tanggal bulan ini
         const now = new Date()
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
@@ -125,48 +126,63 @@ export default function EmployeeDashboard() {
         const res: any = await fetchAttendanceRange(startOfMonth, endOfMonth, currentCompany.uuid)
         const attendances = res?.data ?? []
 
-        if (attendances.length === 0) return
-
-        const workingDays = attendances.filter((a: any) => {
-          const day = new Date(a.work_date).getDay()
-          return day !== 0 && day !== 6 // exclude Sunday (0) & Saturday (6)
-        }).length
-
-        if (Array.isArray(workingDays)) {
-          // hitung jumlah hadir (status = "PRESENT")
-          const presentDays = workingDays.filter((a: any) => a.status === "PRESENT").length
-
-          // hitung total hari kerja (anggap semua record adalah hari kerja)
-          const totalDays = workingDays.length
-
-          // hitung attendance rate
-          const rate = (presentDays / totalDays) * 100
-
-          // hitung total jam kerja (jam keluar - jam masuk)
-          let totalMs = 0
-          workingDays.forEach((a: any) => {
-            if (a.clock_in_at && a.clock_out_at) {
-              const inTime = new Date(`1970-01-01T${a.clock_in_at}Z`)
-              const outTime = new Date(`1970-01-01T${a.clock_out_at}Z`)
-              totalMs += outTime.getTime() - inTime.getTime()
-            }
-          })
-          const totalHoursCalc = totalMs / (1000 * 60 * 60) // ms → jam
-
-          setAttendanceRate(rate)
-          setTotalHours(totalHoursCalc)
-        } else {
-          return null
+        if (attendances.length === 0) {
+          setAttendanceRate(0)
+          setTotalHours(0)
+          return
         }
 
+        // Filter hanya hari kerja (exclude weekend)
+        const workingDays = attendances.filter((a: any) => {
+          const day = new Date(a.work_date).getDay()
+          return day !== 0 && day !== 6 // 0 = Minggu, 6 = Sabtu
+        })
+
+        // Hitung jumlah hadir (status = PRESENT)
+        const presentDays = workingDays.filter((a: any) => a.status === "PRESENT").length
+
+        // Total hari kerja
+        const totalDays = workingDays.length
+
+        // Hitung attendance rate
+        const rate = totalDays > 0 ? (presentDays / totalDays) * 100 : 0
+
+        // 🎯 Total jam kerja langsung dari backend
+        const totalHoursCalc = workingDays.reduce(
+          (acc: number, a: any) => acc + (a.total_work_hours ?? 0),
+          0
+        )
+
+        setAttendanceRate(rate)
+        setTotalHours(totalHoursCalc)
       } catch (err) {
         console.error("❌ Failed to calculate monthly stats:", err)
       }
     }
 
     fetchMonthlyStats()
-  }, [currentCompany?.uuid])
+  }, [currentCompany?.uuid, fetchAttendanceRange])
 
+
+
+  const formatEditType = (type: string) => {
+    switch (type) {
+      case "CLOCK_IN":
+        return "Clock In"
+      case "CLOCK_OUT":
+        return "Clock Out"
+      case "BOTH":
+        return "Clock In & Out"
+      case "HOME_FLAG":
+        return "Work Type"
+      case "BOTH_PLUS_FLAG":
+        return "All Request Type"
+      case "BOTH PLUS FLAG":
+        return "All Request Type"
+      default:
+        return type || "-"
+    }
+  }
 
   return (
     <main className="p-4 md:p-6">
@@ -355,7 +371,7 @@ export default function EmployeeDashboard() {
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h4 className="font-semibold text-gray-900 text-sm">
-                              {req.edit_type.replace("_", " ").toUpperCase()}
+                              {formatEditType(req.edit_type.replace("_", " ").toUpperCase())}
                             </h4>
                             <p className="text-xs text-gray-600 mt-1">
                               {req.work_date}

@@ -59,25 +59,25 @@ export default function DivisionManager({
                 <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-orange-100 overflow-hidden">
                     <div className="p-6 border-b border-orange-100 flex justify-between items-center">
                         <div>
-                            <h2 className="text-2xl font-semibold text-gray-900">Divisions</h2>
-                            <p className="text-muted-foreground">Manage your organization&apos;s main divisions</p>
+                            <h2 className="text-2xl font-semibold text-gray-900">Department Groups</h2>
+                            <p className="text-muted-foreground">Manage your organization&apos;s main department group</p>
                         </div>
                         <Button
                             onClick={() => setIsFormOpen(true)}
                             className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
                         >
                             <Plus className="w-4 h-4 mr-2" />
-                            Add Division
+                            Add Department Group
                         </Button>
                     </div>
 
                     <Table>
                         <TableHeader>
                             <TableRow className="border-orange-100">
-                                <TableHead>Division Name</TableHead>
+                                <TableHead>Department Group Name</TableHead>
                                 <TableHead>Description</TableHead>
                                 <TableHead>Responsible</TableHead>
-                                <TableHead>Sub-Divisions</TableHead>
+                                <TableHead>Department</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -113,7 +113,7 @@ export default function DivisionManager({
                                     </TableCell>
                                     <TableCell>
                                         <Badge variant="secondary" className="bg-orange-100 text-orange-700">
-                                            {getSubDivisionCount(division.uuid)} sub-divisions
+                                            {getSubDivisionCount(division.uuid)} departments
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -169,15 +169,15 @@ export default function DivisionManager({
             <div className="space-y-6">
                 <div className="flex justify-between items-center">
                     <div>
-                        <h2 className="text-2xl font-semibold text-gray-900">Divisions</h2>
-                        <p className="text-muted-foreground">Manage your organization&apos;s main divisions</p>
+                        <h2 className="text-2xl font-semibold text-gray-900">Department Group</h2>
+                        <p className="text-muted-foreground">Manage your organization&apos;s main department group</p>
                     </div>
                     <Button
                         onClick={() => setIsFormOpen(true)}
                         className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
                     >
                         <Plus className="w-4 h-4 mr-2" />
-                        Add Division
+                        Add Department Group
                     </Button>
                 </div>
 
@@ -266,7 +266,7 @@ export default function DivisionManager({
                 isOpen={!!deletingDivision}
                 onClose={() => setDeletingDivision(null)}
                 onConfirm={() => deletingDivision && handleDelete(deletingDivision.uuid)}
-                title="Delete Division"
+                title="Delete Department Group"
                 description={`Are you sure you want to delete "${deletingDivision?.name}"? This action cannot be undone.`}
             />
         </>

@@ -93,26 +93,26 @@ export function DivisionForm({ mode, division, trigger }: DivisionDialogProps) {
             if (mode === "create") {
                 await api.createDivision(payload)
                     .then(() => {
-                        toast.success("Division created")
+                        toast.success("Department Group created")
                     })
                     .catch((err) => {
-                        console.error("Failed to create division:", err);
-                        toast.error("Failed to create division")
+                        console.error("Failed to create department group:", err);
+                        toast.error("Failed to create department group")
                     });
             } else if (division) {
                 await api.updateDivision(division.uuid, payload)
                     .then(() => {
-                        toast.success("Division updated")
+                        toast.success("Department Group updated")
                     })
                     .catch((err) => {
-                        console.error("Failed to update division:", err);
-                        toast.error("Failed to update division")
+                        console.error("Failed to update department group:", err);
+                        toast.error("Failed to update department group")
                     });
             }
 
             setOpen(false)
         } catch (error) {
-            console.error(`Failed to ${mode} division:`, error)
+            console.error(`Failed to ${mode} department group:`, error)
         } finally {
             setLoading(false)
         }
@@ -144,19 +144,19 @@ export function DivisionForm({ mode, division, trigger }: DivisionDialogProps) {
                         <div className="p-2 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
                             <Building2 className="w-5 h-5 text-orange-600" />
                         </div>
-                        {mode === "create" ? "Create New Division" : "Edit Division"}
+                        {mode === "create" ? "Create New Department Group" : "Edit Department Group"}
                     </DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="flex flex-col sm:flex-row space gap-4">
                         <div className="space-y-2 w-full">
-                            <Label htmlFor="name">Division Name *</Label>
+                            <Label htmlFor="name">Department Group Name *</Label>
                             <Input
                                 id="name"
                                 value={formData.name}
                                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                                placeholder="Enter division name"
+                                placeholder="Enter department group name"
                                 required
                                 className="rounded-lg"
                             />
@@ -189,7 +189,7 @@ export function DivisionForm({ mode, division, trigger }: DivisionDialogProps) {
                             id="desc"
                             value={formData.desc}
                             onChange={(e) => setFormData((prev) => ({ ...prev, desc: e.target.value }))}
-                            placeholder="Enter division description"
+                            placeholder="Enter department group description"
                             rows={3}
                             className="rounded-lg resize-none"
                         />
@@ -211,7 +211,7 @@ export function DivisionForm({ mode, division, trigger }: DivisionDialogProps) {
                             className="bg-orange-500 hover:bg-orange-600 rounded-lg"
                         >
                             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                            {mode === "create" ? "Create Division" : "Update Division"}
+                            {mode === "create" ? "Create Department Group" : "Update Department Group"}
                         </Button>
                     </div>
                 </form>

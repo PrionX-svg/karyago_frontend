@@ -12,6 +12,9 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar, Clock, FileText, Edit, ChevronLeft, ChevronRight, Info, X } from "lucide-react"
 import { employeeAPI } from "@/lib/api/employee-api"
+import { DatePicker } from "@/components/ui/date-picker"
+import { format } from "date-fns"
+import { id } from "date-fns/locale"
 
 export default function AttendancePage() {
     const { currentCompany } = useCompanyStore()
@@ -21,6 +24,10 @@ export default function AttendancePage() {
     const [viewType, setViewType] = useState<"attendance" | "edit-request">("attendance")
     const [timeFilter, setTimeFilter] = useState<"this-week" | "this-month">("this-week")
     const [searchTerm, setSearchTerm] = useState("")
+    const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined)
+    const [dateTo, setDateTo] = useState<Date | undefined>(undefined)
+    const [statusFilter, setStatusFilter] = useState("all")
+
     const [currentPage, setCurrentPage] = useState(1)
 
     const ITEMS_PER_PAGE = 10
@@ -47,18 +54,65 @@ export default function AttendancePage() {
     }, [attendanceList])
 
     /** Filter hasil pencarian */
-    const filteredAttendance = attendanceList.filter((att) => {
-        if (!searchTerm) return true
-        const term = searchTerm.toLowerCase()
-        return (
-            att.work_date?.toLowerCase().includes(term) ||
-            att.notes?.toLowerCase().includes(term)
-        )
+    // const filteredAttendance = attendanceList.filter((att) => {
+    //     if (!searchTerm) return true
+    //     const term = searchTerm.toLowerCase()
+    //     return (
+    //         att.work_date?.toLowerCase().includes(term) ||
+    //         att.notes?.toLowerCase().includes(term)
+    //     )
+    // })
+
+    const filteredAttendance = attendanceList.filter((a) => {
+        const workDate = a.work_date ? new Date(a.work_date) : undefined
+
+        // 🔍 Filter by search
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase()
+            const matchDate = a.work_date?.toLowerCase().includes(term)
+            const matchNotes = a.notes?.toLowerCase().includes(term)
+            if (!matchDate && !matchNotes) return false
+        }
+
+        // 🧾 Filter by status
+        if (statusFilter !== "all" && a.status !== statusFilter) return false
+
+        // 🗓️ Filter by date range
+        if (dateFrom && workDate && workDate < dateFrom) return false
+        if (dateTo && workDate && workDate > dateTo) return false
+
+        return true
     })
 
+    const filteredEditRequests = myEditRequests.filter((r) => {
+        const workDate = r.work_date ? new Date(r.work_date) : undefined
+
+        if (statusFilter !== "all" && r.status !== statusFilter) return false
+        if (searchTerm && !r.reason?.toLowerCase().includes(searchTerm.toLowerCase())) return false
+        if (dateFrom && workDate && workDate < dateFrom) return false
+        if (dateTo && workDate && workDate > dateTo) return false
+
+        return true
+    })
+
+    // 🧭 Sort attendance by work_date (newest first)
+    const sortedAttendance = [...filteredAttendance].sort((a, b) => {
+        const dateA = new Date(a.work_date ?? 0).getTime()
+        const dateB = new Date(b.work_date ?? 0).getTime()
+        return dateB - dateA // newest first
+    })
+
+    // 🧭 Sort edit requests by work_date (newest first)
+    const sortedEditRequests = [...filteredEditRequests].sort((a, b) => {
+        const dateA = new Date(a.work_date ?? 0).getTime()
+        const dateB = new Date(b.work_date ?? 0).getTime()
+        return dateB - dateA
+    })
+
+
     /** Pagination */
-    const totalPages = Math.ceil(filteredAttendance.length / ITEMS_PER_PAGE)
-    const paginatedAttendance = filteredAttendance.slice(
+    const totalPages = Math.ceil(sortedAttendance.length / ITEMS_PER_PAGE)
+    const paginatedAttendance = sortedAttendance.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
     )
@@ -69,28 +123,40 @@ export default function AttendancePage() {
         const absent = attendanceList.filter((a) => a.status === "ABSENT").length
         const open = attendanceList.filter((a) => a.status === "OPEN").length
 
-        // Hitung total jam kerja hanya untuk yang sudah clock in & out
-        const totalMs = attendanceList.reduce((acc, a) => {
-            if (a.clock_in_at && a.clock_out_at) {
-                const inTime = new Date(`${a.work_date}T${a.clock_in_at}`).getTime()
-                const outTime = new Date(`${a.work_date}T${a.clock_out_at}`).getTime()
-                if (!isNaN(inTime) && !isNaN(outTime) && outTime > inTime) {
-                    return acc + (outTime - inTime)
+        // Total jam kerja dari backend
+        const totalHours = attendanceList.reduce(
+            (acc, a) => acc + (a.total_work_hours ?? 0),
+            0
+        )
+
+        // Hitung total lembur:
+        // kalau overtime_hours ada → pakai backend,
+        // kalau null tapi is_overtime true → hitung selisih jam > 8 jam
+        const totalOvertime = attendanceList.reduce((acc, a) => {
+            if (a.is_overtime) {
+                if (a.overtime_hours) {
+                    return acc + a.overtime_hours
+                }
+                // fallback manual: total_work_hours - 8 jam
+                if (a.total_work_hours && a.total_work_hours > 8) {
+                    return acc + (a.total_work_hours - 8)
                 }
             }
             return acc
         }, 0)
 
-        const totalHours = Math.floor(totalMs / 1000 / 60 / 60)
-
         return {
             present,
             absent,
             open,
-            totalHours,
+            totalHours: parseFloat(totalHours.toFixed(1)),
+            totalOvertime: parseFloat(totalOvertime.toFixed(1)),
             totalDays: attendanceList.length,
         }
     }, [attendanceList])
+
+
+
 
 
     const [editType, setEditType] = useState<
@@ -168,8 +234,6 @@ export default function AttendancePage() {
     }
 
 
-
-
     return (
         <main className="p-6 min-h-screen">
             {/* Header */}
@@ -188,37 +252,63 @@ export default function AttendancePage() {
             </div>
 
             {/* Search & Filter */}
-            <Card className="mb-6 bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-3xl">
-                <CardContent className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Input
-                        placeholder="Search by date or notes"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="h-12 rounded-2xl border-gray-200 bg-white focus:border-purple-500 focus:ring-purple-500"
-                    />
+            <Card className="mb-8 bg-white/90 backdrop-blur-sm border-0 shadow-lg rounded-3xl">
+                <CardContent className="p-6">
+                    <div className="flex flex-wrap md:flex-nowrap items-center gap-3 justify-between">
+                        {/* 🔍 Search */}
+                        <Input
+                            placeholder={`Search ${viewType === "attendance" ? "by date or notes" : "by reason"}`}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="h-12 w-full md:w-[260px] rounded-2xl border-gray-200 bg-white focus:border-orange-500 focus:ring-orange-500"
+                        />
 
-                    <Select
-                        value={viewType}
-                        onValueChange={(val: "attendance" | "edit-request") => setViewType(val)}
-                    >
-                        <SelectTrigger className="h-12 rounded-2xl border-gray-200 bg-white">
-                            <SelectValue placeholder="Select View" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="attendance">Attendance List</SelectItem>
-                            <SelectItem value="edit-request">Edit Request List</SelectItem>
-                        </SelectContent>
-                    </Select>
+                        {/* 📋 View Type */}
+                        <Select
+                            value={viewType}
+                            onValueChange={(val: "attendance" | "edit-request") => setViewType(val)}
+                        >
+                            <SelectTrigger className="h-12 w-full md:w-[180px] rounded-2xl border-gray-200 bg-white font-medium text-gray-700">
+                                <SelectValue placeholder="Select View" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="attendance">Attendance List</SelectItem>
+                                <SelectItem value="edit-request">Edit Request List</SelectItem>
+                            </SelectContent>
+                        </Select>
 
-                    <Select value={timeFilter} onValueChange={setTimeFilter}>
-                        <SelectTrigger className="h-12 rounded-2xl border-gray-200 bg-white">
-                            <SelectValue placeholder="Time Range" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="this-week">This Week</SelectItem>
-                            <SelectItem value="this-month">This Month</SelectItem>
-                        </SelectContent>
-                    </Select>
+                        {/* 🗓️ Date Range */}
+                        <div className="flex items-center gap-2 w-full md:w-auto">
+                            <DatePicker date={dateFrom} onDateChange={setDateFrom} placeholder="From" />
+                            <span className="text-gray-400">–</span>
+                            <DatePicker date={dateTo} onDateChange={setDateTo} placeholder="To" />
+                        </div>
+
+                        {/* 📊 Status — taruh di kanan */}
+                        <div className="flex justify-end w-full md:w-[180px]">
+                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                <SelectTrigger className="h-12 w-full rounded-2xl border-gray-200 bg-white font-medium text-gray-700">
+                                    <SelectValue placeholder="Status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Status</SelectItem>
+                                    {viewType === "attendance" ? (
+                                        <>
+                                            <SelectItem value="PRESENT">Present</SelectItem>
+                                            <SelectItem value="ABSENT">Absent</SelectItem>
+                                            <SelectItem value="OPEN">Open</SelectItem>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <SelectItem value="PENDING">Pending</SelectItem>
+                                            <SelectItem value="APPROVED">Approved</SelectItem>
+                                            <SelectItem value="REJECTED">Rejected</SelectItem>
+                                        </>
+                                    )}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
 
@@ -249,7 +339,9 @@ export default function AttendancePage() {
                                         key={a.uuid}
                                         className="grid grid-cols-1 md:grid-cols-9 gap-4 pb-3 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-all"
                                     >
-                                        <span className="font-medium text-gray-900">{a.work_date || "-"}</span>
+                                        <span className="font-medium text-gray-900">{a.work_date
+                                            ? format(new Date(a.work_date), "dd/MMM/yyyy", { locale: id })
+                                            : "-"}</span>
                                         <span className="text-gray-700 whitespace-nowrap">{a.clock_in_at
                                             ? new Date(a.clock_in_at).toLocaleTimeString("id-ID", {
                                                 hour: "2-digit",
@@ -407,11 +499,7 @@ export default function AttendancePage() {
                                     <Clock className="w-6 h-6" />
                                 </div>
                                 <p className="text-orange-100 text-sm font-medium mb-2">Total Overtime</p>
-                                <p className="text-4xl font-bold">
-                                    {
-                                        attendanceList.reduce((acc, a) => acc + (a.is_overtime ? a.overtime_hours ?? 0 : 0), 0).toFixed(1)
-                                    }h
-                                </p>
+                                <p className="text-4xl font-bold">{summaryStats.totalOvertime}h</p>
                             </CardContent>
                         </Card>
                     </div>
@@ -431,18 +519,20 @@ export default function AttendancePage() {
                         </div>
 
                         <div className="space-y-3 mt-4">
-                            {myEditRequests.map((r) => (
+                            {sortedEditRequests.map((r) => (
                                 <div
                                     key={r.id}
                                     className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-all"
                                 >
-                                    <span className="font-medium text-gray-900">{r.work_date}</span>
+                                    <span className="font-medium text-gray-900">{r.work_date
+                                        ? format(new Date(r.work_date), "dd/MMM/yyyy", { locale: id })
+                                        : "-"}</span>
                                     <span className="text-gray-700"> {r.proposed_is_home_office !== null && (
                                         <Badge
-                                            className={`ml-2 rounded-full ${r.proposed_is_home_office
+                                            className={`${r.proposed_is_home_office
                                                 ? "bg-green-100 text-green-700"
                                                 : "bg-blue-100 text-blue-700"
-                                                } border-0`}
+                                                } border-0 rounded-full`}
                                         >
                                             {r.proposed_is_home_office ? "Home Office" : "In Office"}
                                         </Badge>
