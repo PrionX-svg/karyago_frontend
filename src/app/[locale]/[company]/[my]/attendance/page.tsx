@@ -155,10 +155,7 @@ export default function AttendancePage() {
         }
     }, [attendanceList])
 
-
-
-
-
+    // State untuk modal edit request
     const [editType, setEditType] = useState<
         "CLOCK_IN" | "CLOCK_OUT" | "BOTH" | "HOME_FLAG" | "BOTH_PLUS_FLAG"
     >("CLOCK_IN")
