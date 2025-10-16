@@ -467,7 +467,7 @@ export default function EmployeePage() {
                                             </td>
                                             <td className="py-4 px-4 sm:px-6">
                                                 <div className="text-gray-900 dark:text-gray-100">
-                                                    {employee.branch?.name|| "-"}
+                                                    {employee.branch?.name || "-"}
                                                 </div>
                                             </td>
                                             <td className="py-4 px-4 sm:px-6">
@@ -537,19 +537,24 @@ export default function EmployeePage() {
                                                 <th className="text-left py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">
                                                     {em("employeeDepartment")}
                                                 </th>
+                                                <th className="text-left py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">Branch</th>
                                                 <th className="text-left py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">
-                                                    Branch
+                                                    Termination Date
+                                                </th>
+                                                <th className="text-left py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">
+                                                    Reason
                                                 </th>
                                                 <th className="text-left py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">
                                                     {em("freelanceStatus")}
                                                 </th>
                                                 <th className="text-right py-4 px-6 font-semibold text-gray-800 dark:text-gray-100">
-                                                    {em("actions")}
+                                                    Actions
                                                 </th>
                                             </tr>
                                         </thead>
+
                                         <tbody>
-                                            {filteredEmployees.map((employee, index) => (
+                                            {terminatedEmployees.map((employee, index) => (
                                                 <tr
                                                     key={employee.employee_uuid}
                                                     className={`border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors ${index % 2 === 0
@@ -560,17 +565,21 @@ export default function EmployeePage() {
                                                     <td className="py-4 px-6 font-medium text-gray-900 dark:text-gray-100">
                                                         {employee.name.fullname}
                                                     </td>
-                                                    <td className="py-4 px-6 text-gray-800 dark:text-gray-100">
-                                                        {employee.email}
-                                                    </td>
-                                                    <td className="py-4 px-6 text-gray-800 dark:text-gray-100">
-                                                        {employee.phone}
-                                                    </td>
+                                                    <td className="py-4 px-6 text-gray-800 dark:text-gray-100">{employee.email}</td>
+                                                    <td className="py-4 px-6 text-gray-800 dark:text-gray-100">{employee.phone}</td>
                                                     <td className="py-4 px-6 text-gray-800 dark:text-gray-100">
                                                         {employee.subDivision?.name || "-"}
                                                     </td>
                                                     <td className="py-4 px-6 text-gray-800 dark:text-gray-100">
                                                         {employee.branch?.name || "-"}
+                                                    </td>
+                                                    <td className="py-4 px-6 text-gray-800 dark:text-gray-100">
+                                                        {employee.termination?.date
+                                                            ? new Date(employee.termination.date).toLocaleDateString()
+                                                            : "-"}
+                                                    </td>
+                                                    <td className="py-4 px-6 text-gray-800 dark:text-gray-100 italic">
+                                                        {employee.termination?.reason || "-"}
                                                     </td>
                                                     <td className="py-4 px-6">
                                                         <Badge
@@ -583,21 +592,12 @@ export default function EmployeePage() {
                                                         </Badge>
                                                     </td>
                                                     <td className="py-4 px-6 text-right">
-                                                        <div className="flex justify-end gap-2">
-                                                            <EmployeesDialog mode="edit" employeeData={employee} />
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                onClick={() => handleDeleteClick(employee)}
-                                                                className="h-8 w-8 rounded-lg"
-                                                            >
-                                                                <Trash className="w-4 h-4 text-red-500 dark:text-red-400" />
-                                                            </Button>
-                                                        </div>
+                                                        <RehireEmployeeDialog employeeData={employee} />
                                                     </td>
                                                 </tr>
                                             ))}
                                         </tbody>
+
                                     </table>
                                 </div>
                             </div>
@@ -709,6 +709,13 @@ export default function EmployeePage() {
                             onDragOver={handleDrag}
                             onDrop={handleDrop}
                         >
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept=".xlsx,.xls"
+                                onChange={handleFileInput}
+                                className="hidden"
+                            />
                             {file ? (
                                 <div className="space-y-3">
                                     <CheckCircle className="h-10 w-10 text-green-600 mx-auto" />

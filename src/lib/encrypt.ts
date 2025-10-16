@@ -45,6 +45,12 @@ export async function encrypt(data: string): Promise<string> {
 }
 
 export async function decrypt(cipherText: string): Promise<string> {
+
+    // Check if it's plain UUID (no padding, no base64-like chars)
+    if (!cipherText.match(/^[A-Za-z0-9+/=]+$/)) {
+        console.warn("⚠️ decrypt(): input is not Base64 — returning as plain text");
+        return cipherText;
+    }
     const rawData = atob(cipherText)
     const dataBytes = new Uint8Array([...rawData].map(c => c.charCodeAt(0)))
     const iv = dataBytes.slice(0, 12)
