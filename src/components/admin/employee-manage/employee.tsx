@@ -252,7 +252,7 @@ export default function EmployeePage() {
                 {/* Toolbar */}
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4 mb-5 sm:mb-6 p-3 sm:p-4 bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                     <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                        <div className="relative flex-1 max-w-md">
+                        <div className="relative flex-1 w-full max-w-3xl">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                             <Input
                                 placeholder={em("searchPlaceholder")}
