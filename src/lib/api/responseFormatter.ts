@@ -28,6 +28,7 @@ import {
 } from "../interfaces/employee-interface";
 import { RoleType } from "../types/role-type";
 import { GetRoleByCompanyUuidResponse } from "../interfaces/role-interface";
+import { formatInTimeZone } from "date-fns-tz";
 
 function formatDate(dateString?: string | null): string | null {
   if (!dateString) return null
@@ -40,10 +41,11 @@ function formatTime(dateString?: string | null): string | null {
   if (!dateString) return null
   const date = new Date(dateString)
   if (isNaN(date.getTime())) return null
-  return date.toLocaleTimeString("en-US", {
+  return date.toLocaleTimeString("id-ID", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
+    timeZone: "Asia/Jakarta"
   })
 }
 
@@ -464,8 +466,13 @@ export const responseFormatter = {
     return {
       uuid: att.uuid,
       work_date: att.work_date ? att.work_date.split("T")[0] : null,
-      clock_in_at: att.clock_in_at ? formatTime(att.clock_in_at) : null,
-      clock_out_at: att.clock_out_at ? formatTime(att.clock_out_at) : null,
+      clock_in_at: att.clock_in_at
+        ? formatInTimeZone(new Date(att.clock_in_at), "Asia/Jakarta", "yyyy-MM-dd'T'HH:mm:ssXXX")
+        : null,
+
+      clock_out_at: att.clock_out_at
+        ? formatInTimeZone(new Date(att.clock_out_at), "Asia/Jakarta", "yyyy-MM-dd'T'HH:mm:ssXXX")
+        : null,
       is_home_office: att.is_home_office ?? false,
       notes: att.notes ?? "",
       status, // OPEN, PRESENT, ABSENT
@@ -494,8 +501,15 @@ export const responseFormatter = {
       work_date: a.work_date
         ? a.work_date.split("T")[0] // potong jadi YYYY-MM-DD
         : "",
-      clock_in_at: a.clock_in_at ?? null,
-      clock_out_at: a.clock_out_at ?? null,
+      // clock_in_at: a.clock_in_at ?? null,
+      // clock_out_at: a.clock_out_at ?? null,
+      clock_in_at: a.clock_in_at
+        ? formatInTimeZone(new Date(a.clock_in_at), "Asia/Jakarta", "yyyy-MM-dd'T'HH:mm:ssXXX")
+        : null,
+
+      clock_out_at: a.clock_out_at
+        ? formatInTimeZone(new Date(a.clock_out_at), "Asia/Jakarta", "yyyy-MM-dd'T'HH:mm:ssXXX")
+        : null,
       is_home_office: !!a.is_home_office,
       notes: a.notes || "",
       status:
@@ -525,9 +539,9 @@ export const responseFormatter = {
       company_uuid: att.company_uuid,
       company_name: att.company?.name ?? null,
       work_date: att.work_date ? att.work_date.split("T")[0] : null,
-      edit_type: att.edit_type ?? "", // "clock_in", "clock_out", "full_day"
-      original_time: att.original_time ? new Date(att.original_time).toLocaleTimeString("en-US", { hour12: false }) : null,
-      requested_time: att.requested_time ? new Date(att.requested_time).toLocaleTimeString("en-US", { hour12: false }) : null,
+      edit_type: att.edit_type ?? "",
+      original_time: formatTime(att.original_time),
+      requested_time: formatTime(att.requested_time),
       reason: att.reason ?? "",
       status: att.status ?? "PENDING", // default value
       reviewed_by: att.reviewed_by_user
@@ -542,29 +556,6 @@ export const responseFormatter = {
     }
   },
 
-  /** Format list of edit attendance requests (for employee or HR view) */
-  // formatAttendanceEditList(data: any): any[] {
-  //   if (!Array.isArray(data)) {
-  //     console.warn("⚠️ formatAttendanceEditList got invalid data:", data)
-  //     return []
-  //   }
-
-  //   return data.map((r: any) => ({
-  //     id: r.id,
-  //     user_name: r.employee?.user
-  //       ? `${r.employee.user.firstname ?? ""} ${r.employee.user.lastname ?? ""}`.trim() || "Unknown"
-  //       : "Unknown",
-  //     department_name: r.employee?.user?.department?.name ?? "-",
-  //     work_date: r.work_date ? r.work_date.split("T")[0] : "",
-  //     edit_type: r.request_type?.replace(/_/g, " ") ?? "-",
-  //     reason: r.reason ?? "-",
-  //     status: r.status ?? "PENDING",
-  //     proposed_clock_in_at: r.proposed_clock_in_at ?? null,
-  //     proposed_clock_out_at: r.proposed_clock_out_at ?? null,
-  //     proposed_is_home_office: r.proposed_is_home_office ?? null,
-  //   }))
-  // }
-
   formatAttendanceEditList(data: any): any[] {
     if (!Array.isArray(data)) {
       console.warn("⚠️ formatAttendanceEditList got invalid data:", data)
@@ -573,31 +564,26 @@ export const responseFormatter = {
 
     return data.map((r: any) => ({
       id: r.id,
-      // ✅ Fix name
+
       user_name: r.employee?.user
         ? `${r.employee.user.firstname ?? ""} ${r.employee.user.lastname ?? ""}`.trim() || "Unknown"
         : "Unknown",
 
-      // ✅ Fix department
       department_name: r.employee?.department?.name ?? "-",
-
-      // ✅ Date
       work_date: r.work_date ? r.work_date.split("T")[0] : "",
-
-      // ✅ Type (with formatting)
       edit_type: r.request_type?.replace(/_/g, " ") ?? "-",
-
       reason: r.reason ?? "-",
       status: r.status ?? "PENDING",
-
-      // ✅ Requested times
+      // proposed_clock_in_at: r.proposed_clock_in_at
+      //   ? r.proposed_clock_in_at.slice(11, 16).replace(":", ".")
+      //   : null,
+      // proposed_clock_out_at: r.proposed_clock_out_at
+      //   ? r.proposed_clock_out_at.slice(11, 16).replace(":", ".")
+      //   : null,
       proposed_clock_in_at: r.proposed_clock_in_at ?? null,
       proposed_clock_out_at: r.proposed_clock_out_at ?? null,
+
       proposed_is_home_office: r.proposed_is_home_office ?? null,
     }))
   }
-
-
-
-
 };

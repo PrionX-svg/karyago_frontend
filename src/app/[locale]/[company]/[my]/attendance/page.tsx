@@ -13,8 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, Clock, FileText, Edit, ChevronLeft, ChevronRight, Info, X } from "lucide-react"
 import { employeeAPI } from "@/lib/api/employee-api"
 import { DatePicker } from "@/components/ui/date-picker"
-import { format } from "date-fns"
+import { toZonedTime, format } from "date-fns-tz"
 import { id } from "date-fns/locale"
+
 
 export default function AttendancePage() {
     const { currentCompany } = useCompanyStore()
@@ -206,9 +207,10 @@ export default function AttendancePage() {
             // Clock In / Out proposal times
             const workDate = selectedAttendance.work_date
             if (requestedClockIn)
-                payload.proposed_clock_in_at = `${workDate}T${requestedClockIn}:00Z`
+                payload.proposed_clock_in_at = `${workDate}T${requestedClockIn}:00+07:00`
             if (requestedClockOut)
-                payload.proposed_clock_out_at = `${workDate}T${requestedClockOut}:00Z`
+                payload.proposed_clock_out_at = `${workDate}T${requestedClockOut}:00+07:00`
+
 
             // Home flag
             if (["HOME_FLAG", "BOTH_PLUS_FLAG"].includes(requestType!))
@@ -344,14 +346,10 @@ export default function AttendancePage() {
                                         <div>
                                             <p className="text-xs text-gray-400 md:hidden">Clock In</p>
                                             <p className="text-gray-700 whitespace-nowrap">
-                                                {a.clock_in_at
-                                                    ? new Date(a.clock_in_at).toLocaleTimeString("id-ID", {
-                                                        hour: "2-digit",
-                                                        minute: "2-digit",
-                                                        hour12: false,
-                                                        timeZone: "Asia/Jakarta",
-                                                    })
-                                                    : "-"}
+                                                {a.clock_in_at ? a.clock_in_at.slice(11, 16).replace(":", ".") : "-"}
+                                                {/* {a.clock_in_at
+                                                    ? format(toZonedTime(a.clock_in_at, "Asia/Jakarta"), "HH.mm")
+                                                    : "-"} */}
                                             </p>
                                         </div>
 
@@ -359,14 +357,7 @@ export default function AttendancePage() {
                                         <div>
                                             <p className="text-xs text-gray-400 md:hidden">Clock Out</p>
                                             <p className="text-gray-700 whitespace-nowrap">
-                                                {a.clock_out_at
-                                                    ? new Date(a.clock_out_at).toLocaleTimeString("id-ID", {
-                                                        hour: "2-digit",
-                                                        minute: "2-digit",
-                                                        hour12: false,
-                                                        timeZone: "Asia/Jakarta",
-                                                    })
-                                                    : "-"}
+                                                {a.clock_out_at ? a.clock_out_at.slice(11, 16).replace(":", ".") : "-"}
                                             </p>
                                         </div>
 
@@ -604,21 +595,11 @@ export default function AttendancePage() {
                                         <p className="text-xs text-gray-400 md:hidden">Requested Time</p>
                                         <p className="text-sm text-gray-600">
                                             {r.proposed_clock_in_at
-                                                ? new Date(r.proposed_clock_in_at).toLocaleTimeString("id-ID", {
-                                                    hour: "2-digit",
-                                                    minute: "2-digit",
-                                                    hour12: false,
-                                                    timeZone: "Asia/Jakarta",
-                                                })
+                                                ? format(toZonedTime(r.proposed_clock_in_at, "Asia/Jakarta"), "HH.mm")
                                                 : "-"}{" "}
                                             →{" "}
                                             {r.proposed_clock_out_at
-                                                ? new Date(r.proposed_clock_out_at).toLocaleTimeString("id-ID", {
-                                                    hour: "2-digit",
-                                                    minute: "2-digit",
-                                                    hour12: false,
-                                                    timeZone: "Asia/Jakarta",
-                                                })
+                                                ? format(toZonedTime(r.proposed_clock_out_at, "Asia/Jakarta"), "HH.mm")
                                                 : "-"}
                                         </p>
                                     </div>

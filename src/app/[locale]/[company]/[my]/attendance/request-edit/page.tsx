@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Send, CalendarDays } from "lucide-react"
+import { formatInTimeZone } from "date-fns-tz"
 
 export default function RequestEditAttendancePage() {
   const router = useRouter()
@@ -57,7 +58,7 @@ export default function RequestEditAttendancePage() {
 
     try {
       setIsSubmitting(true)
-      const workDate = selectedDate.toISOString().split("T")[0]
+      const workDate = formatInTimeZone(selectedDate, "Asia/Jakarta", "yyyy-MM-dd")
       const payload: any = {
         work_date: workDate,
         request_type: requestType,
@@ -65,11 +66,13 @@ export default function RequestEditAttendancePage() {
       }
 
       if (clockInChecked && clockInTime)
-        payload.proposed_clock_in_at = `${workDate}T${clockInTime}:00Z`
+        payload.proposed_clock_in_at = `${workDate}T${clockInTime}:00+07:00`  
       if (clockOutChecked && clockOutTime)
-        payload.proposed_clock_out_at = `${workDate}T${clockOutTime}:00Z`
+       payload.proposed_clock_out_at = `${workDate}T${clockOutTime}:00+07:00`
       if (locationType === "home")
         payload.proposed_is_home_office = true
+      if (locationType != "home")
+         payload.proposed_is_home_office = false
 
       console.log("📤 Submitting payload:", payload)
       await employeeAPI.createEditRequest(payload)

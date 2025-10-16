@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { employeeAPI } from "@/lib/api/employee-api"
 import { toast } from "sonner"
+import { formatInTimeZone } from "date-fns-tz"
 
 /* ---------- TYPE DEFINITIONS ---------- */
 type Attendance = {
@@ -111,9 +112,13 @@ export const useEmployeeSelfStore = create<EmployeeSelfStore>()(
       },
 
       /** Clock In */
-      async clockIn(workDate, companyUUID, at) {
+      async clockIn(workDate, companyUUID) {
         try {
-          const res = await employeeAPI.clockIn(workDate, companyUUID, at)
+          // 🕒 Ambil waktu saat ini dan ubah ke WIB
+          const now = new Date()
+          const jakartaTime = formatInTimeZone(now, "Asia/Jakarta", "yyyy-MM-dd'T'HH:mm:ssXXX")
+
+          const res = await employeeAPI.clockIn(workDate, companyUUID, jakartaTime)
           set({ attendanceToday: res ?? null })
           toast.success("Clocked in successfully!")
         } catch (err) {
@@ -122,10 +127,13 @@ export const useEmployeeSelfStore = create<EmployeeSelfStore>()(
         }
       },
 
-      /** Clock Out */
-      async clockOut(workDate, companyUUID, at) {
+      async clockOut(workDate, companyUUID) {
         try {
-          const res = await employeeAPI.clockOut(workDate, companyUUID, at)
+          // 🕒 Ambil waktu saat ini dan ubah ke WIB
+          const now = new Date()
+          const jakartaTime = formatInTimeZone(now, "Asia/Jakarta", "yyyy-MM-dd'T'HH:mm:ssXXX")
+
+          const res = await employeeAPI.clockOut(workDate, companyUUID, jakartaTime)
           set({ attendanceToday: res ?? null })
           toast.success("Clocked out successfully!")
         } catch (err) {

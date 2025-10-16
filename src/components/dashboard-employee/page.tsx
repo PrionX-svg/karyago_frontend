@@ -84,7 +84,7 @@ export default function EmployeeDashboard() {
       const now = new Date().toDateString()
       if (now !== lastDate) {
         lastDate = now
-        toast.info("A new attendance day has started 🌅")
+        toast.info("A new attendance day has started")
         resetForNewDay()
         await fetchAttendanceToday(currentCompany.uuid)
       }
@@ -221,10 +221,28 @@ export default function EmployeeDashboard() {
                       {attendanceToday.status}
                     </span>
                     {attendanceToday.clock_in_at && (
-                      <> • Clock In at {attendanceToday.clock_in_at}</>
+                      <>
+                        {" "}• Clock In at{" "}
+                        {new Date(attendanceToday.clock_in_at)
+                          .toLocaleTimeString("en-GB", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })
+                          .replace(":", ".")}
+                      </>
                     )}
                     {attendanceToday.clock_out_at && (
-                      <> • Clock Out at {attendanceToday.clock_out_at}</>
+                      <>
+                        {" "}• Clock Out at{" "}
+                        {new Date(attendanceToday.clock_out_at)
+                          .toLocaleTimeString("en-GB", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })
+                          .replace(":", ".")}
+                      </>
                     )}
                   </p>
                 )}

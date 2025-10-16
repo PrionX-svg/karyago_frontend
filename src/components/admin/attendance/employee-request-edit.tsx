@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DatePicker } from "@/components/ui/date-picker"
 import { format } from "date-fns"
 import { id } from "date-fns/locale"
+import { toZonedTime } from "date-fns-tz"
 
 export default function EmployeeEditRequestsPage() {
   const { currentCompany } = useCompanyStore()
@@ -198,7 +199,13 @@ export default function EmployeeEditRequestsPage() {
                 <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
                   <p><strong>Date:</strong> {r.work_date ? format(new Date(r.work_date), "dd/MMM/yyyy", { locale: id }) : "-"}</p>
                   <p><strong>Type:</strong> {formatEditType(r.edit_type)}</p>
-                  <p><strong>Time:</strong> {r.proposed_clock_in_at ? new Date(r.proposed_clock_in_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "-"} → {r.proposed_clock_out_at ? new Date(r.proposed_clock_out_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "-"}</p>
+                  <p><strong>Time:</strong>  {r.proposed_clock_in_at
+                    ? format(toZonedTime(r.proposed_clock_in_at, "Asia/Jakarta"), "HH.mm")
+                    : "-"}{" "}
+                    →{" "}
+                    {r.proposed_clock_out_at
+                      ? format(toZonedTime(r.proposed_clock_out_at, "Asia/Jakarta"), "HH.mm")
+                      : "-"}</p>
                   <p><strong>Reason:</strong> {r.reason || "-"}</p>
                 </div>
                 {r.status === "PENDING" && (
@@ -227,8 +234,13 @@ export default function EmployeeEditRequestsPage() {
                 <span>{r.work_date ? format(new Date(r.work_date), "dd/MMM/yyyy", { locale: id }) : "-"}</span>
                 <span>{formatEditType(r.edit_type)}</span>
                 <span>
-                  {r.proposed_clock_in_at ? new Date(r.proposed_clock_in_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "-"} →{" "}
-                  {r.proposed_clock_out_at ? new Date(r.proposed_clock_out_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "-"}{" "}
+                  {r.proposed_clock_in_at
+                    ? format(toZonedTime(r.proposed_clock_in_at, "Asia/Jakarta"), "HH.mm")
+                    : "-"}{" "}
+                  →{" "}
+                  {r.proposed_clock_out_at
+                    ? format(toZonedTime(r.proposed_clock_out_at, "Asia/Jakarta"), "HH.mm")
+                    : "-"}
                   {r.proposed_is_home_office && <Badge className="ml-2 bg-blue-100 text-blue-700">Home Office</Badge>}
                 </span>
                 <span className="text-gray-500 truncate">{r.reason}</span>

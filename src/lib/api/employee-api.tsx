@@ -4,9 +4,11 @@ import patchAPI from "./patchAPI"
 import { API_URL } from "./constants"
 import { responseFormatter } from "./responseFormatter"
 import { useUserStore } from "@/stores/user-store"
+import { formatInTimeZone } from "date-fns-tz"
 
 // Format tanggal "YYYY-MM-DD"
-const formatDate = (date: Date) => date.toISOString().split("T")[0]
+const formatDate = (date: Date) =>
+    formatInTimeZone(date, "Asia/Jakarta", "yyyy-MM-dd")
 
 export const employeeAPI = {
     async clockIn(workDate: Date, companyUuid?: string, at?: string) {

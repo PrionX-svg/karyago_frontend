@@ -10,7 +10,7 @@ import { useCompanyStore } from "@/stores/company-store"
 import { employeeAPI } from "@/lib/api/employee-api"
 import { DatePicker } from "@/components/ui/date-picker"
 import { CalendarClockIcon, ChevronLeft, ChevronRight } from "lucide-react"
-import { format } from "date-fns"
+import { format, parseISO } from "date-fns"
 import { id } from "date-fns/locale"
 
 export default function EmployeeAttendancePage() {
@@ -165,8 +165,15 @@ export default function EmployeeAttendancePage() {
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
                   <p><strong>Date:</strong> {a.work_date ? format(new Date(a.work_date), "dd/MMM/yyyy", { locale: id }) : "-"}</p>
-                  <p><strong>Clock In:</strong> {a.clock_in_at ? new Date(a.clock_in_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "-"}</p>
-                  <p><strong>Clock Out:</strong> {a.clock_out_at ? new Date(a.clock_out_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "-"}</p>
+                  <p>
+                    <strong>Clock In:</strong>{" "}
+                    {a.clock_in_at ? a.clock_in_at.slice(11, 16).replace(":", ".") : "-"}
+                  </p>
+                  <p>
+                    <strong>Clock Out:</strong>{" "}
+                    {a.clock_out_at ? a.clock_out_at.slice(11, 16).replace(":", ".") : "-"}
+                  </p>
+
                   <p><strong>Total Hours:</strong> {a.total_work_hours ? `${a.total_work_hours.toFixed(1)}h` : "-"}</p>
                   {a.is_overtime && (
                     <p><strong>Overtime:</strong> {a.overtime_hours ? `${a.overtime_hours.toFixed(1)}h` : "OT"}</p>
@@ -187,8 +194,8 @@ export default function EmployeeAttendancePage() {
               >
                 <span className="font-medium">{a.employee_name || "-"}</span>
                 <span>{a.work_date ? format(new Date(a.work_date), "dd/MMM/yyyy", { locale: id }) : "-"}</span>
-                <span>{a.clock_in_at ? new Date(a.clock_in_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "-"}</span>
-                <span>{a.clock_out_at ? new Date(a.clock_out_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "-"}</span>
+                <span> {a.clock_in_at ? a.clock_in_at.slice(11, 16).replace(":", ".") : "-"}</span>
+                <span>{a.clock_out_at ? a.clock_out_at.slice(11, 16).replace(":", ".") : "-"}</span>
                 <span className="text-center text-gray-800 font-medium">
                   {a.total_work_hours ? `${a.total_work_hours.toFixed(1)}h` : "-"}
                 </span>
