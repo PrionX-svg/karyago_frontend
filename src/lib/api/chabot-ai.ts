@@ -1,5 +1,5 @@
 // export type ChatModel = "gpt-4o-mini" | "gpt-4o" | "claude-3-haiku" | "local-dev";
-export type ChatRole = "user" | "assistant";
+export type ChatRole = "owner" | "admin" | "employee" | "assistant";
 
 export interface ChatTurn {
   id: string;
@@ -13,7 +13,8 @@ export async function askChatbot({
 }: {
   message: string;
 }) {
-  const res = await fetch("http://127.0.0.1:8080/api/v1/chatbot/ask", {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const res = await fetch(`${API_URL}/api/v1/chatbot/ask`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
