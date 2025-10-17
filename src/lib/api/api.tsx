@@ -344,10 +344,10 @@ export const api = {
       return Promise.reject(error);
     }
   },
-  async removeEmployeeFromSubDivision(userUuid: string, departmentUuid: string) {
+  async removeEmployeeFromSubDivision(userUuid: string) {
     const updateEmployee = useEmployeeStore.getState().updateEmployee;
     try {
-      const response = await patchAPI({ department_uuid: departmentUuid }, `${API_URL.unassignEmployeeFromSubDivision}${userUuid}`);
+      const response = await patchAPI({ department_uuid: "" }, `${API_URL.unassignEmployeeFromSubDivision}${userUuid}`);
       if (response.status === 200) {
         updateEmployee({
           user_uuid: userUuid,

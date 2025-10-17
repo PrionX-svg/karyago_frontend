@@ -15,7 +15,7 @@ import { ChevronDown, Globe } from "lucide-react";
 
 const localeLabels = {
   en: "English",
-  de: "Deutsch",
+  // de: "Deutsch",
   id: "Bahasa",
 } as const;
 

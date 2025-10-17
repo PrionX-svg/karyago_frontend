@@ -34,7 +34,7 @@ export function AssignEmployeeDialog({ employee, mode, storedUuid }: EmployeeDia
                     toast.error("Failed to assign employee.");
                 });
         } else {
-            await api.removeEmployeeFromSubDivision(employee.employee_uuid, employee.subDivision!.uuid)
+            await api.removeEmployeeFromSubDivision(employee.user_uuid)
                 .then(() => {
                     toast.success("Employee removed successfully!");
                 })
