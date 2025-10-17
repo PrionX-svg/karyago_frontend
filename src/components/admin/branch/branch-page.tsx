@@ -28,6 +28,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import Image from "next/image";
 
 export default function BranchPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -69,7 +70,7 @@ export default function BranchPage() {
     image: null as string | null,
   });
 
-  const { createBranch, isCreatingBranch } = company.useCreateBranch({
+  const { createBranch } = company.useCreateBranch({
     company_uuid: decryptedUuid,
     name: form.name,
     address: form.address,
@@ -212,10 +213,13 @@ export default function BranchPage() {
                 {/* Image */}
                 <div className="relative">
                   {branch.image ? (
-                    <img
-                      src={branch.image}
+                    <Image
+                      src={branch.image || "/placeholder.png"}
                       alt={branch.name}
+                      width={500}
+                      height={300}
                       className="w-full h-44 sm:h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                      priority
                     />
                   ) : (
                     <div className="w-full h-44 sm:h-48 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800">

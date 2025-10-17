@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Send, MessageCircle, X, Loader2, Settings, Trash } from "lucide-react";
+import { Send, MessageCircle, X, Loader2, Trash } from "lucide-react";
 import { useCompanyStore } from "@/stores/company-store";
 import { askChatbot, ChatTurn } from "@/lib/api/chabot-ai";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
@@ -24,7 +23,6 @@ export function ChatbotAI() {
 
   // history per company
   const storageKey = useMemo(() => `chatbot_history::${companyKey}`, [companyKey]);
-  const modelKey = "chatbot_model";
 
   const [history, setHistory] = useState<ChatTurn[]>([]);
 
@@ -64,6 +62,7 @@ export function ChatbotAI() {
       const reply = await askChatbot({ message: msg});
       const botTurn: ChatTurn = { id: nid(), role: "assistant", content: reply || "(no reply)", ts: now() };
       setHistory((h) => [...h, botTurn]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       toast.error(e?.message || "Chat failed");
       // rollback input so user can edit

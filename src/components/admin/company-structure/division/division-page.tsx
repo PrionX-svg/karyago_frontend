@@ -11,7 +11,6 @@ import {
   Search,
   Building2,
   Crown,
-  Building,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useCompanyStore } from "@/stores/company-store"
