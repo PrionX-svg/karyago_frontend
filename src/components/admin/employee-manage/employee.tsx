@@ -9,18 +9,13 @@ import {
     List,
     Search,
     Users,
-    Mail,
     Phone,
-    Briefcase,
     User,
     Trash,
     Upload,
     Download,
     CheckCircle,
     X,
-    TowerControl,
-    Group,
-    UserRound,
     UsersIcon,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -42,7 +37,6 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { motion } from "framer-motion";
 import employee from "@/lib/queries/employee-queries";
 import { useUserStore } from "@/stores/user-store";
 import { Badge } from "@/components/ui/badge";
@@ -63,13 +57,13 @@ export default function EmployeePage() {
     const [file, setFile] = useState<File | null>(null);
     const [importing, setImporting] = useState<boolean>(false);
     const [showImportedDataDialog, setShowImportedDataDialog] = useState(false);
-    const [importedData, setImportedData] = useState<EmployeeType[]>([]);
+    const [importedData] = useState<EmployeeType[]>([]);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const userData = useUserStore((state) => state.user);
 
     const em = useTranslations("employees");
-    const ie = useTranslations("import-excel");
-    const co = useTranslations("common");
+    // const ie = useTranslations("import-excel");
+    // const co = useTranslations("common");
     const ap = useTranslations("api");
 
     const employeesData = useEmployeeStore((state) => state.employees);
@@ -77,8 +71,8 @@ export default function EmployeePage() {
         (state) => state.terminatedEmployees
     );
 
-    const { exportExcel, isExportingExcel } = employee.useExportExcel();
-    const { importEmployee, isImportingEmployee } = employee.useImportEmployee();
+    const { exportExcel } = employee.useExportExcel();
+    const { importEmployee } = employee.useImportEmployee();
 
     const handleDeleteClick = (employee: EmployeeType) => {
         setSelectedEmployee(employee);

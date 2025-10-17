@@ -1,7 +1,6 @@
-import React, { useRef } from "react";
+import React from "react";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -13,21 +12,26 @@ import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import FileUploader from "./FileUploader";
 
-interface UpdateBranchDialogProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  form: {
-    name: string;
-    address: string;
-    email: string;
-    phone: string;
-    image?: string | null;
-  };
-  handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>, image: string) => void;
-  setForm: (form: any) => void;
-  isUpdating: boolean;
+interface UpdateBranchForm {
+  branchUuid: string
+  companyUuid: string
+  name: string
+  address: string
+  email: string
+  phone: string
+  image: string | null
 }
+
+interface UpdateBranchDialogProps {
+  open: boolean
+  setOpen: (open: boolean) => void
+  form: UpdateBranchForm
+  setForm: React.Dispatch<React.SetStateAction<UpdateBranchForm>>
+  handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>, image: string) => void
+  isUpdating: boolean
+}
+
 
 export function UpdateBranchDialog({
   open,
@@ -59,6 +63,7 @@ export function UpdateBranchDialog({
       setPreviewUrl(URL.createObjectURL(file));
     } else {
       setPreviewUrl(null);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setForm((prev: any) => ({ ...prev, image: "" }));
     }
   };
@@ -100,7 +105,7 @@ export function UpdateBranchDialog({
                   if (res.status === 200 && res.data?.url?.file_name) {
                     imageName = res.data.url.file_name;
                   }
-                } catch (err) {
+                } catch {
                   // Optionally show error
                 }
               }

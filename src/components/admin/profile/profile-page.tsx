@@ -13,7 +13,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { User, Edit3, X, Save, Camera, Clock } from "lucide-react";
+import { User, Edit3, X, Save, Camera } from "lucide-react";
 import { useUserStore } from "@/stores/user-store";
 import { UpdateUserPayload } from "@/lib/interfaces/user-interface";
 import { api } from "@/lib/api/api";

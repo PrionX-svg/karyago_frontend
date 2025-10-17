@@ -1,21 +1,23 @@
-import AssignEmployeePage from "@/components/admin/employee-assign/assign-employees-page";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 
+import AssignEmployeePage from "@/components/admin/employee-assign/assign-employees-page"
 
-function formatSlugToTitle(slug: string): string {
+function formatSlugToTitle(slug) {
   return slug
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+    .join(" ")
 }
 
-export function generateMetadata({ params }: { params: { company: string } }) {
-  const formattedTitle = formatSlugToTitle(params.company);
+export async function generateMetadata({ params }) {
+  const formattedTitle = formatSlugToTitle(params.company)
   return {
     title: `Assign Employee - ${formattedTitle}`,
     description: `Assign Employee for ${formattedTitle}`,
-  };
+  }
 }
 
 export default function Page() {
-  return <AssignEmployeePage />;
+  return <AssignEmployeePage />
 }

@@ -1,5 +1,3 @@
-import { log } from "console";
-
 export const API_URL = {
   login: "/auth/login",
   logout: "/auth/logout",

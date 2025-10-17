@@ -14,12 +14,13 @@ import { api } from "@/lib/api/api"
 import { decrypt } from "@/lib/encrypt"
 import { useEmployeeStore } from "@/stores/employee-store"
 import { toast } from "sonner"
+import { DivisionType } from "@/lib/types/company-type"
 
 interface DivisionDialogProps {
     isOpen: boolean
     onClose: () => void
-    onSubmit: () => void
-    initialData?: () => void
+    onSubmit: (data: Omit<DivisionType, "uuid">) => void
+    initialData?: DivisionType
     mode: "create" | "edit"
     division?: {
         uuid: string

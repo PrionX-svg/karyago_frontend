@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -15,9 +15,23 @@ import { format } from "date-fns"
 import { id } from "date-fns/locale"
 import { toZonedTime } from "date-fns-tz"
 
+interface EditRequestItem {
+  id: string
+  user_name: string
+  department_name?: string
+  work_date: string
+  edit_type: string
+  reason?: string
+  status: "PENDING" | "APPROVED" | "REJECTED"
+  proposed_clock_in_at?: string | null
+  proposed_clock_out_at?: string | null
+  proposed_is_home_office?: boolean
+}
+
+
 export default function EmployeeEditRequestsPage() {
   const { currentCompany } = useCompanyStore()
-  const [requests, setRequests] = useState<any[]>([])
+  const [requests, setRequests] = useState<EditRequestItem[]>([])
   const [search, setSearch] = useState("")
   const [selectedStatus, setSelectedStatus] = useState("all")
   const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined)
@@ -28,7 +42,7 @@ export default function EmployeeEditRequestsPage() {
     reason: "",
   })
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     if (!currentCompany?.uuid) return
     try {
       const res = await employeeAPI.getAllEditRequests(currentCompany.uuid)
@@ -36,11 +50,11 @@ export default function EmployeeEditRequestsPage() {
     } catch (err) {
       console.error("❌ Failed to fetch edit requests:", err)
     }
-  }
+  }, [currentCompany?.uuid])
 
   useEffect(() => {
     fetchRequests()
-  }, [currentCompany?.uuid])
+  }, [currentCompany?.uuid, fetchRequests])
 
   const employeeNames = useMemo(() => {
     const unique = new Set(

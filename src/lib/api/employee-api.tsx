@@ -3,7 +3,6 @@ import postAPI from "./postAPI"
 import patchAPI from "./patchAPI"
 import { API_URL } from "./constants"
 import { responseFormatter } from "./responseFormatter"
-import { useUserStore } from "@/stores/user-store"
 import { formatInTimeZone } from "date-fns-tz"
 
 // Format tanggal "YYYY-MM-DD"
@@ -213,10 +212,11 @@ export const employeeAPI = {
     },
 
 
-    async updateSelfProfile(payload: any) {
+    async updateSelfProfile(payload: Record<string, unknown>) {
         const res = await postAPI(payload, API_URL.updateUser ?? "/employee/me")
         return { ...res, data: res.data?.data ?? res.data }
     },
+
 
     async getDepartments(companyUuid: string) {
         const res = await getAPI(`/departments?company_uuid=${companyUuid}`)
