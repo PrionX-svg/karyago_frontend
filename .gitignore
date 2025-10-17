@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.terraform.lock.hcl
+main.tf
+terraform.tfstate
+.terraform/providers/registry.terraform.io/hashicorp/null/3.2.4/darwin_arm64/LICENSE.txt
+.terraform/providers/registry.terraform.io/hashicorp/null/3.2.4/darwin_arm64/terraform-provider-null_v3.2.4_x5
