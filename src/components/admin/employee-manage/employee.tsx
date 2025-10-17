@@ -145,10 +145,15 @@ export default function EmployeePage() {
         formData.append("company_uuid", storedUuid);
         formData.append("role_uuid", userData.role.uuid);
 
+        // For debug
+        // for (let [key, value] of formData.entries()) {
+        //     console.log("FormData entry:", key, value);
+        // }
+
         importEmployee(formData)
             .then(() => {
                 toast.success(ap("importSuccess"));
-                setFile(null);
+                setFile(file);
             })
             .catch((error) => {
                 const errorMessage =
@@ -748,7 +753,9 @@ export default function EmployeePage() {
                                 Import Rules
                             </h4>
                             <ul className="list-disc pl-5 text-xs sm:text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                                <li>All required fields must be filled</li>
+                                <li>Sheet name in Excel, just only Users. Delete other sheet if exist.</li>
+                                <li>All required fields must be filled:</li>
+                                <p>First name, last name, email, password, phone, isFreelance, gender, DOB, isPresent, Start Date</p>
                                 <li>Email must be unique and valid</li>
                                 <li>Phone must use correct format</li>
                                 <li>Date format: YYYY-MM-DD</li>
