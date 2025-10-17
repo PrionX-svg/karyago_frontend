@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar, Clock, FileText, Edit, ChevronLeft, ChevronRight, Info, X } from "lucide-react"
+import { Calendar, Clock, Edit, ChevronLeft, ChevronRight, X } from "lucide-react"
 import { employeeAPI } from "@/lib/api/employee-api"
 import { DatePicker } from "@/components/ui/date-picker"
 import { toZonedTime, format } from "date-fns-tz"
@@ -23,7 +23,7 @@ export default function AttendancePage() {
     const { myEditRequests, fetchMyEditRequests } = useAttendanceEditStore()
 
     const [viewType, setViewType] = useState<"attendance" | "edit-request">("attendance")
-    const [timeFilter, setTimeFilter] = useState<"this-week" | "this-month">("this-week")
+    const [timeFilter] = useState<"this-week" | "this-month">("this-week")
     const [searchTerm, setSearchTerm] = useState("")
     const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined)
     const [dateTo, setDateTo] = useState<Date | undefined>(undefined)
@@ -48,21 +48,12 @@ export default function AttendancePage() {
         const { from, to } = getDateRange(timeFilter)
         fetchAttendanceRange(from, to, currentCompany.uuid)
         fetchMyEditRequests(currentCompany.uuid)
-    }, [currentCompany?.uuid, timeFilter])
+    }, [currentCompany?.uuid, timeFilter, fetchAttendanceRange, fetchMyEditRequests])
 
-    useEffect(() => {
-        console.log("🟢 attendanceList (from store):", attendanceList)
-    }, [attendanceList])
+    // useEffect(() => {
+    //     console.log("🟢 attendanceList (from store):", attendanceList)
+    // }, [attendanceList])
 
-    /** Filter hasil pencarian */
-    // const filteredAttendance = attendanceList.filter((att) => {
-    //     if (!searchTerm) return true
-    //     const term = searchTerm.toLowerCase()
-    //     return (
-    //         att.work_date?.toLowerCase().includes(term) ||
-    //         att.notes?.toLowerCase().includes(term)
-    //     )
-    // })
 
     const filteredAttendance = attendanceList.filter((a) => {
         const workDate = a.work_date ? new Date(a.work_date) : undefined
@@ -168,8 +159,9 @@ export default function AttendancePage() {
 
 
     const [showEditModal, setShowEditModal] = useState(false)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedAttendance, setSelectedAttendance] = useState<any>(null)
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const openEditModal = (att: any) => {
         setSelectedAttendance(att)
         setShowEditModal(true)
@@ -197,8 +189,8 @@ export default function AttendancePage() {
                 if (editType === "BOTH_PLUS_FLAG") return "BOTH_PLUS_FLAG"
                 return null
             })()
-
-            const payload: any = {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const payload: Record<string, any> = {
                 work_date: selectedAttendance.work_date,
                 request_type: requestType,
                 reason,
@@ -218,7 +210,8 @@ export default function AttendancePage() {
 
             console.log("📤 Submitting edit request:", payload)
 
-            await employeeAPI.createEditRequest(payload)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await employeeAPI.createEditRequest(payload as any)
 
             toast.success("Edit request submitted successfully!")
             setShowEditModal(false)
@@ -641,6 +634,7 @@ export default function AttendancePage() {
 
                             <div>
                                 <label className="text-sm font-medium text-gray-600">Request Type</label>
+                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                 <Select value={editType} onValueChange={(v) => setEditType(v as any)}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select Type" />

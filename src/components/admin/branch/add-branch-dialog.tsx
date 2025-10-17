@@ -14,20 +14,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import FileDropUploader from "@/lib/upload-image";
 
+interface BranchForm {
+  name: string
+  address: string
+  email: string
+  phone: string
+  image: string | null
+}
+
 interface AddBranchDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  form: {
-    name: string;
-    address: string;
-    email: string;
-    phone: string;
-    image?: string | null;
-  };
+  form: BranchForm;
   handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  setForm: (form: any) => void;
+  setForm: React.Dispatch<React.SetStateAction<BranchForm>>;
 }
+
 
 export function AddBranchDialog({
   open,
@@ -59,9 +62,9 @@ export function AddBranchDialog({
           m.default({ file_name: fileName }, "/upload/delete")
         );
         if (res.status === 200) {
-          setForm((prev: any) => ({ ...prev, image: "" }));
+          setForm((prev) => ({ ...prev, image: "" }));
         }
-      } catch (e) {
+      } catch {
         // Ignore error
       }
       lastImageRef.current = null;
@@ -159,7 +162,7 @@ export function AddBranchDialog({
               <FileDropUploader
                 folder="/branch-images"
                 onChange={(fileName: string) =>
-                  setForm((prev: any) => ({ ...prev, image: fileName }))
+                  setForm((prev) => ({ ...prev, image: fileName }))
                 }
               />
             </div>

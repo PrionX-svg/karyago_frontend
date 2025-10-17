@@ -1,21 +1,16 @@
 "use client";
 
-import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/mode-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { ChevronDown } from "lucide-react";
-import { useGeneralStore } from "@/stores/genaral-store";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import user from "@/lib/queries/user-queries";
@@ -24,8 +19,6 @@ import { Skeleton } from "../ui/skeleton";
 import company from "@/lib/queries/company-queries";
 import { useCompanyStore } from "@/stores/company-store";
 import Image from "next/image";
-import { useCallback, useState } from "react";
-import { api } from "@/lib/api/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { API_URL } from "@/lib/api/constants";
@@ -115,7 +108,7 @@ export function Header() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenu>My Account</DropdownMenu>
             {/* <DropdownMenuSeparator />
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>

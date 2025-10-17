@@ -10,12 +10,25 @@ import { useCompanyStore } from "@/stores/company-store"
 import { employeeAPI } from "@/lib/api/employee-api"
 import { DatePicker } from "@/components/ui/date-picker"
 import { CalendarClockIcon, ChevronLeft, ChevronRight } from "lucide-react"
-import { format, parseISO } from "date-fns"
+import { format} from "date-fns"
 import { id } from "date-fns/locale"
+
+interface AttendanceItem {
+  uuid: string
+  employee_name: string
+  work_date: string
+  clock_in_at?: string | null
+  clock_out_at?: string | null
+  total_work_hours?: number
+  overtime_hours?: number
+  is_overtime?: boolean
+  notes?: string | null
+  status?: "PRESENT" | "ABSENT" | "OPEN"
+}
 
 export default function EmployeeAttendancePage() {
   const { currentCompany } = useCompanyStore()
-  const [attendanceList, setAttendanceList] = useState<any[]>([])
+  const [attendanceList, setAttendanceList] = useState<AttendanceItem[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [page, setPage] = useState(1)
   const [selectedEmployee, setSelectedEmployee] = useState<string>("all")

@@ -1,5 +1,5 @@
 export type EmployeeType = {
-    fullname: { fullname: string; firstname: string; lastname: string; };
+    // fullname: { fullname: string; firstname: string; lastname: string; };
     company_uuid: string;
     user_uuid: string;
     employee_uuid: string;
@@ -15,6 +15,10 @@ export type EmployeeType = {
     subDivision?: {
         uuid: string;
         name: string;
+    }
+    branch?: {
+        uuid: string
+        name: string
     }
     termination?: {
         reason: string | null;

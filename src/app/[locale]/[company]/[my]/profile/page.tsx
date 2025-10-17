@@ -8,9 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
-  User, Mail, Phone, Calendar, Briefcase, Users, Building2,
-  Edit, Save, X, Camera, Shield, Circle, IdCard, DollarSign,
-  Building,
+  User, Mail, Phone, Calendar, Briefcase, Users,
+  Edit, Save, X, Camera, Shield, Circle,
   FolderTree,
 } from "lucide-react"
 
@@ -23,16 +22,17 @@ function fmtDate(d?: string | null) {
 export default function ProfilePage() {
   const { selfProfile, fetchSelfProfile, updateSelfProfile } = useEmployeeSelfStore()
   const [isEditing, setIsEditing] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [draft, setDraft] = useState<any>(null)
   const loading = !selfProfile && !draft
 
   useEffect(() => {
     fetchSelfProfile()
-  }, [])
+  }, [fetchSelfProfile])
 
   useEffect(() => {
     if (selfProfile) setDraft(selfProfile)
-  }, [selfProfile])
+  }, [selfProfile, fetchSelfProfile])
 
   const canSave = useMemo(() => {
     if (!draft) return false
@@ -267,19 +267,6 @@ function InfoBlock({ icon, label, value }: { icon: React.ReactNode; label: strin
     <div className="space-y-2">
       <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">{icon}{label}</Label>
       <p className="p-3 bg-gray-50 rounded-xl">{value || "-"}</p>
-    </div>
-  )
-}
-
-/** Badge dekoratif */
-function BadgeCard({ icon, title, subtitle }: { icon: React.ReactNode; title: string; subtitle: string }) {
-  return (
-    <div className="flex flex-col items-center p-4 bg-white rounded-2xl shadow-sm">
-      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center mb-3">
-        {icon}
-      </div>
-      <p className="text-sm font-semibold text-gray-900 text-center">{title}</p>
-      <p className="text-xs text-gray-500 text-center mt-1">{subtitle}</p>
     </div>
   )
 }

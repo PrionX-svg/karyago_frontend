@@ -24,7 +24,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 }) => {
   const t = useTranslations('branchPage');
   const [dragActive, setDragActive] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  const [, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(previewUrl || null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -93,10 +93,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
   return (
     <div
-      className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 border-gray-300 dark:border-stone-700 dark:hover:border-orange-300 hover:border-orange-300 hover:bg-orange-50/50 dark:hover:bg-orange-900/10 ${
-        dragActive &&
+      className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 border-gray-300 dark:border-stone-700 dark:hover:border-orange-300 hover:border-orange-300 hover:bg-orange-50/50 dark:hover:bg-orange-900/10 ${dragActive &&
         "bg-orange-50 dark:bg-orange-900/20 !dark:border-orange-400 !border-orange-400"
-      }`}
+        }`}
       onDragEnter={handleDrag}
       onDragLeave={handleDrag}
       onDragOver={handleDrag}

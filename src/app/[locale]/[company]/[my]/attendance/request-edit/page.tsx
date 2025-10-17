@@ -59,6 +59,7 @@ export default function RequestEditAttendancePage() {
     try {
       setIsSubmitting(true)
       const workDate = formatInTimeZone(selectedDate, "Asia/Jakarta", "yyyy-MM-dd")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
         work_date: workDate,
         request_type: requestType,

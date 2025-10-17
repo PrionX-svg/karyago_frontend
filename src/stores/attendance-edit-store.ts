@@ -76,7 +76,7 @@ export const useAttendanceEditStore = create<AttendanceEditStore>((set, get) => 
   fetchAllEditRequests: async (companyUuid) => {
     try {
       set({ isLoading: true })
-      const res = await employeeAPI.getAllEditRequests(companyUuid)
+      const res = await employeeAPI.getAllEditRequests(companyUuid ?? "")
       set({ allEditRequests: res.data || [] })
     } catch (error) {
       console.error(error)
@@ -99,9 +99,8 @@ export const useAttendanceEditStore = create<AttendanceEditStore>((set, get) => 
       } else {
         toast.error("There's no response data from server")
       }
-    } catch (error: any) {
-      console.error(error)
-      toast.error(error?.response?.data?.message || "Fail to create edit request")
+    } catch{
+      toast.error("Fail to create edit request")
     }
   },
 

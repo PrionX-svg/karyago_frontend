@@ -7,8 +7,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarHeader,
-  SidebarInput,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -16,14 +14,23 @@ import {
   TooltipProvider,
 } from "@/components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Home, User, Users, Building2, MapPin, ChevronDown, Search, PanelLeftClose, PanelLeftOpen, TimerIcon, FolderTree, Calendar } from "lucide-react"
+import { Home, User, Users, Building2, MapPin, ChevronDown, PanelLeftClose, PanelLeftOpen, Calendar, LucideIcon } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
-import { useIsMobile } from "@/hooks/use-mobile"
 import { useParams, usePathname } from "next/navigation"
 
-const navigationItemsOwner = [
+interface NavItem {
+  name: string
+  icon: LucideIcon
+  path?: string
+  submenu?: {
+    name: string
+    path: string
+  }[]
+}
+
+const navigationItemsOwner : NavItem[] = [
   { name: "Dashboard", icon: Home, path: "" },
   { name: "Profile", icon: User, path: "/profile" },
   {
@@ -49,7 +56,7 @@ const navigationItemsOwner = [
   { name: "Branch", icon: MapPin, path: "/branch" },
 ]
 
-const navigationItemsEmployee = [
+const navigationItemsEmployee : NavItem[] = [
   { name: "Dashboard", icon: Home, path: "" },
   { name: "Profile", icon: User, path: "/my/profile" },
   {
@@ -150,7 +157,7 @@ function DesktopSidebar({ navigationItems = defaultNavigationItems }: { navigati
         <div className="space-y-1">
           {navigationItems.map((item) => {
             const fullPath = `${basePath}${item.path}`
-            const itemIsActive = isActive(item.path)
+            const itemIsActive = isActive(item.path ?? "")
 
             return (
               <div key={item.name}>
@@ -258,7 +265,7 @@ function MobileSidebar({ navigationItems = defaultNavigationItems }: { navigatio
               <SidebarMenu>
                 {navigationItems.map((item) => {
                   const fullPath = `${basePath}${item.path}`
-                  const itemIsActive = isActive(item.path)
+                  const itemIsActive = isActive(item.path ?? "")
 
                   return (
                     <div key={item.name}>
@@ -334,8 +341,7 @@ function MobileSidebar({ navigationItems = defaultNavigationItems }: { navigatio
 
 // Main AppSidebar Component
 // Main AppSidebar Component
-export function AppSidebar({ role = "owner" }: { role?: "owner" | "employee" | "admin" }) {
-  const isMobile = useIsMobile()
+export function AppSidebar({ role = "owner" }: { role?: "owner" | "admin" | "employee" }) {
 
   // Owner dan Admin pakai menu yang sama
   const items =

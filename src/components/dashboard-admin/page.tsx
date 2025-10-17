@@ -8,15 +8,39 @@ import { employeeAPI } from "@/lib/api/employee-api"
 import Link from "next/link"
 import { useCompanyStore } from "@/stores/company-store"
 import { useEmployeeStore } from "@/stores/employee-store"
-import { Building2, Users, Clock, Target, Briefcase } from "lucide-react"
+import { Building2, Users, Target, Briefcase } from "lucide-react"
+
+interface Division {
+  uuid: string
+  name: string
+}
+
+interface SubDivision {
+  uuid: string
+  name: string
+  division_uuid?: string
+}
+
+interface EditRequest {
+  id: string
+  user_name?: string
+  edit_type: string
+  status: "PENDING" | "APPROVED" | "REJECTED"
+}
+
+interface AttendanceRecord {
+  status: string
+}
+
 
 export default function AdminDashboardPage({ params }: { params: { locale: string; company: string } }) {
   const { currentCompany } = useCompanyStore()
   const { employees, terminatedEmployees } = useEmployeeStore()
 
-  const [divisions, setDivisions] = useState<any[]>([])
-  const [subDivisions, setSubDivisions] = useState<any[]>([])
-  const [editRequests, setEditRequests] = useState<any[]>([])
+  const [divisions, setDivisions] = useState<Division[]>([])
+  const [subDivisions, setSubDivisions] = useState<SubDivision[]>([])
+  const [editRequests, setEditRequests] = useState<EditRequest[]>([])
+
   const [attendanceRate, setAttendanceRate] = useState<number | null>(null)
 
   // 🔹 Fetch all core data
@@ -38,9 +62,11 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
 
   // 🔹 Ambil data divisions & sub-divisions langsung dari store
   useEffect(() => {
-    setDivisions(useCompanyStore.getState().division || [])
-    setSubDivisions(useCompanyStore.getState().subDivision || [])
-  }, [useCompanyStore.getState().division, useCompanyStore.getState().subDivision])
+    const { division, subDivision } = useCompanyStore.getState()
+    setDivisions(division || [])
+    setSubDivisions(subDivision || [])
+  }, [currentCompany?.uuid]) // cukup trigger ulang saat company berubah
+
 
   // 🔹 Hitung attendance rate (akurat)
   useEffect(() => {
@@ -68,7 +94,7 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
         }).filter(Boolean).length
 
         // total hadir
-        const totalPresent = records.filter((r: any) => r.status === "PRESENT").length
+        const totalPresent = records.filter((r: AttendanceRecord) => r.status === "PRESENT").length
 
         // rate
         const totalPossible = activeCount * totalWorkDays

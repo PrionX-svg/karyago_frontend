@@ -19,8 +19,6 @@ import {
 import patchAPI from "./patchAPI";
 import deleteAPI from "./deleteAPI";
 import { UpdateUserPayload } from "../interfaces/user-interface";
-import { nullable } from "zod";
-import user from "../queries/user-queries";
 
 export const api = {
   async getMe() {

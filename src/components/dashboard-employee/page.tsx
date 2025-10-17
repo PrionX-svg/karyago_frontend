@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
-import { api } from "@/lib/api/api"
 import { useCompanyStore } from "@/stores/company-store"
 import { useAttendanceEditStore } from "@/stores/attendance-edit-store"
 import { useEmployeeSelfStore } from "@/stores/employee-self-store"
@@ -16,7 +15,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import {
-  Calendar,
   Clock,
   Target,
   Award,
@@ -26,7 +24,12 @@ import {
   Briefcase,
   Home,
 } from "lucide-react"
-import { any } from "zod"
+
+interface AttendanceRecord {
+  work_date: string
+  status: string
+  total_work_hours?: number
+}
 
 export default function EmployeeDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -73,9 +76,10 @@ export default function EmployeeDashboard() {
       }
     }
     loadData()
-  }, [currentCompany?.uuid])
+  }, [currentCompany?.uuid, fetchAttendanceToday, fetchMyEditRequests])
 
   /** Auto-reset saat ganti hari */
+
   useEffect(() => {
     if (!currentCompany?.uuid) return
     let lastDate = new Date().toDateString()
@@ -91,7 +95,7 @@ export default function EmployeeDashboard() {
     }, 60000) // cek tiap 1 menit
 
     return () => clearInterval(interval)
-  }, [currentCompany?.uuid])
+  }, [currentCompany?.uuid, fetchAttendanceToday, resetForNewDay])
 
   /** Format jam tampil */
   const formatTime = (date: Date) =>
@@ -123,8 +127,9 @@ export default function EmployeeDashboard() {
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-        const res: any = await fetchAttendanceRange(startOfMonth, endOfMonth, currentCompany.uuid)
-        const attendances = res?.data ?? []
+        const res = (await fetchAttendanceRange(startOfMonth, endOfMonth, currentCompany.uuid)) as unknown as { data?: AttendanceRecord[] }
+        const attendances = res.data ?? []
+
 
         if (attendances.length === 0) {
           setAttendanceRate(0)
@@ -133,13 +138,13 @@ export default function EmployeeDashboard() {
         }
 
         // Filter hanya hari kerja (exclude weekend)
-        const workingDays = attendances.filter((a: any) => {
+        const workingDays = attendances.filter((a) => {
           const day = new Date(a.work_date).getDay()
           return day !== 0 && day !== 6 // 0 = Minggu, 6 = Sabtu
         })
 
         // Hitung jumlah hadir (status = PRESENT)
-        const presentDays = workingDays.filter((a: any) => a.status === "PRESENT").length
+        const presentDays = workingDays.filter((a) => a.status === "PRESENT").length
 
         // Total hari kerja
         const totalDays = workingDays.length
@@ -149,7 +154,7 @@ export default function EmployeeDashboard() {
 
         // 🎯 Total jam kerja langsung dari backend
         const totalHoursCalc = workingDays.reduce(
-          (acc: number, a: any) => acc + (a.total_work_hours ?? 0),
+          (acc: number, a) => acc + (a.total_work_hours ?? 0),
           0
         )
 
@@ -371,7 +376,7 @@ export default function EmployeeDashboard() {
             <CardContent>
               {myEditRequests.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  There's no edit request
+                  There&apos;s no edit request
                 </p>
               ) : (
                 <>

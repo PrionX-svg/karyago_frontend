@@ -16,6 +16,7 @@ interface DivisionManagerProps {
     setDivisions: (divisions: DivisionType[]) => void
     viewMode: "table" | "card"
     getSubDivisionCount: (divisionUuid: string) => number
+
 }
 
 export default function DivisionManager({
@@ -143,16 +144,15 @@ export default function DivisionManager({
                 </div>
 
                 <DivisionForm
-                    mode="edit"
+                    mode={editingDivision ? "edit" : "create"}
                     isOpen={isFormOpen || !!editingDivision}
                     onClose={() => {
                         setIsFormOpen(false)
                         setEditingDivision(null)
                     }}
-                    onSubmit={() => { editingDivision ? handleUpdate : handleCreate }}
-                    initialData={() => editingDivision}
+                    onSubmit={(data) => (editingDivision ? handleUpdate(data) : handleCreate(data))}
+                    initialData={editingDivision || undefined}
                 />
-
                 <DeleteConfirmDialog
                     isOpen={!!deletingDivision}
                     onClose={() => setDeletingDivision(null)}
@@ -252,15 +252,16 @@ export default function DivisionManager({
             </div>
 
             <DivisionForm
-                mode="edit"
+                mode={editingDivision ? "edit" : "create"}
                 isOpen={isFormOpen || !!editingDivision}
                 onClose={() => {
                     setIsFormOpen(false)
                     setEditingDivision(null)
                 }}
-                onSubmit={() => { editingDivision ? handleUpdate : handleCreate }}
-                 initialData={() => editingDivision}
+                onSubmit={(data) => (editingDivision ? handleUpdate(data) : handleCreate(data))}
+                initialData={editingDivision || undefined}
             />
+
 
             <DeleteConfirmDialog
                 isOpen={!!deletingDivision}

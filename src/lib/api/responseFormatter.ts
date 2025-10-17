@@ -30,13 +30,6 @@ import { RoleType } from "../types/role-type";
 import { GetRoleByCompanyUuidResponse } from "../interfaces/role-interface";
 import { formatInTimeZone } from "date-fns-tz";
 
-function formatDate(dateString?: string | null): string | null {
-  if (!dateString) return null
-  const date = new Date(dateString)
-  if (isNaN(date.getTime())) return null
-  return date.toISOString().split("T")[0] // YYYY-MM-DD
-}
-
 function formatTime(dateString?: string | null): string | null {
   if (!dateString) return null
   const date = new Date(dateString)
@@ -48,6 +41,8 @@ function formatTime(dateString?: string | null): string | null {
     timeZone: "Asia/Jakarta"
   })
 }
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const responseFormatter = {
   formatUserData(response: GetMeResponse): UserType {
@@ -445,6 +440,8 @@ export const responseFormatter = {
       name: role?.name ?? "",
     }));
   },
+
+
   formatGetEmployeeDashboard(response: any) {
     const data = response.data?.data ?? {}
     return {
