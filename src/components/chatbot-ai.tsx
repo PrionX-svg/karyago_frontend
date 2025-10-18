@@ -3,44 +3,50 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Send, MessageCircle, X, Loader2, Trash } from "lucide-react";
 import { useCompanyStore } from "@/stores/company-store";
-import { askChatbot, ChatTurn } from "@/lib/api/chabot-ai";
+import { useUserStore } from "@/stores/user-store";
+import { askChatbot, ChatTurn, ChatRole } from "@/lib/api/chabot-ai";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
-// ---- util kecil
 const now = () => Date.now();
-const nid = () => Math.random().toString(36).slice(2);
+const nid = () => crypto.randomUUID();
 
 export function ChatbotAI() {
   const { currentCompany } = useCompanyStore();
-  const companyKey = currentCompany?.uuid ?? "no-company";
+  const { user } = useUserStore();
 
-  // UI state
+  // ambil info user
+  const userUUID = user?.userUuid || "";
+  const userRole = (user?.role?.name?.toLowerCase() as ChatRole) || "employee";
+
+  // key unik per company & user
+  const companyKey = currentCompany?.uuid ?? "no-company";
+  const storageKey = useMemo(
+    () => `chatbot_history::${companyKey}::${userUUID}`,
+    [companyKey, userUUID]
+  );
+
+  // state
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // history per company
-  const storageKey = useMemo(() => `chatbot_history::${companyKey}`, [companyKey]);
-
   const [history, setHistory] = useState<ChatTurn[]>([]);
 
-  // load persisted
+  // load history
   useEffect(() => {
     try {
-      const savedHist = localStorage.getItem(storageKey);
-      if (savedHist) setHistory(JSON.parse(savedHist));
-    } catch {}
+      const saved = localStorage.getItem(storageKey);
+      if (saved) setHistory(JSON.parse(saved));
+    } catch { }
   }, [storageKey]);
 
-  // persist on change
+  // simpan history setiap berubah
   useEffect(() => {
     try {
       localStorage.setItem(storageKey, JSON.stringify(history));
-    } catch {}
+    } catch { }
   }, [history, storageKey]);
-
 
   // autoscroll
   const endRef = useRef<HTMLDivElement | null>(null);
@@ -53,24 +59,42 @@ export function ChatbotAI() {
     if (!msg || loading) return;
     setInput("");
 
-    // push user turn
-    const userTurn: ChatTurn = { id: nid(), role: "user", content: msg, ts: now() };
+    const userTurn: ChatTurn = {
+      id: nid(),
+      role: userRole,
+      content: msg,
+      ts: now(),
+    };
     setHistory((h) => [...h, userTurn]);
 
     setLoading(true);
     try {
-      const reply = await askChatbot({ message: msg});
-      const botTurn: ChatTurn = { id: nid(), role: "assistant", content: reply || "(no reply)", ts: now() };
+      const reply = await askChatbot({ message: msg });
+      const botTurn: ChatTurn = {
+        id: nid(),
+        role: "assistant",
+        content: reply || "(no reply)",
+        ts: now(),
+      };
       setHistory((h) => [...h, botTurn]);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      toast.error(e?.message || "Chat failed");
-      // rollback input so user can edit
+    } catch (e) {
+      const errMsg =
+        e instanceof Error
+          ? e.message
+          : typeof e === "string"
+            ? e
+            : "Chat failed";
+
+      toast.error(errMsg);
       setInput(msg);
-      // add system error bubble (optional)
       setHistory((h) => [
         ...h,
-        { id: nid(), role: "assistant", content: "⚠️ Sorry, I couldn’t process that request.", ts: now() },
+        {
+          id: nid(),
+          role: "assistant",
+          content: "⚠️ Sorry, I couldn’t process that request.",
+          ts: now(),
+        },
       ]);
     } finally {
       setLoading(false);
@@ -79,7 +103,9 @@ export function ChatbotAI() {
 
   const clearChat = () => {
     setHistory([]);
-    try { localStorage.removeItem(storageKey); } catch {}
+    try {
+      localStorage.removeItem(storageKey);
+    } catch { }
   };
 
   const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
@@ -93,7 +119,7 @@ export function ChatbotAI() {
     <>
       {/* Floating button */}
       <div className="fixed bottom-6 right-6 z-40">
-        {!open ? (
+        {!open && (
           <Button
             size="lg"
             className="rounded-full shadow-lg h-14 w-14 p-0 bg-gradient-to-br from-orange-500 to-red-500"
@@ -102,7 +128,7 @@ export function ChatbotAI() {
           >
             <MessageCircle className="h-6 w-6 text-white" />
           </Button>
-        ) : null}
+        )}
       </div>
 
       {/* Panel */}
@@ -119,18 +145,6 @@ export function ChatbotAI() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                {/* Model picker
-                <Select value={model} onValueChange={(v) => setModel(v as ChatModel)}>
-                  <SelectTrigger className="h-8 w-[150px] rounded-xl text-xs">
-                    <SelectValue placeholder="Model" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="gpt-4o-mini">gpt-4o-mini</SelectItem>
-                    <SelectItem value="gpt-4o">gpt-4o</SelectItem>
-                    <SelectItem value="claude-3-haiku">claude-3-haiku</SelectItem>
-                    <SelectItem value="local-dev">local-dev</SelectItem>
-                  </SelectContent>
-                </Select> */}
                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={clearChat} title="Clear">
                   <Trash className="h-4 w-4" />
                 </Button>
@@ -148,13 +162,12 @@ export function ChatbotAI() {
                 </div>
               )}
               {history.map((t) => (
-                <div key={t.id} className={`flex ${t.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div key={t.id} className={`flex ${t.role === "assistant" ? "justify-start" : "justify-end"}`}>
                   <div
-                    className={`px-3 py-2 rounded-2xl max-w-[85%] text-sm leading-relaxed shadow-sm ${
-                      t.role === "user"
-                        ? "bg-gradient-to-br from-orange-500 to-red-500 text-white"
-                        : "bg-gray-50 border"
-                    }`}
+                    className={`px-3 py-2 rounded-2xl max-w-[85%] text-sm leading-relaxed shadow-sm ${t.role === "assistant"
+                      ? "bg-gray-50 border"
+                      : "bg-gradient-to-br from-orange-500 to-red-500 text-white"
+                      }`}
                   >
                     {t.content}
                   </div>

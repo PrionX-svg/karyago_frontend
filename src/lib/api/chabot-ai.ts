@@ -13,8 +13,8 @@ export async function askChatbot({
 }: {
   message: string;
 }) {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const res = await fetch(`${API_URL}/api/v1/chatbot/ask`, {
+  const API_URL = process.env.NEXT_PUBLIC_BASE_URL;
+  const res = await fetch(`${API_URL}/chatbot/ask`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
