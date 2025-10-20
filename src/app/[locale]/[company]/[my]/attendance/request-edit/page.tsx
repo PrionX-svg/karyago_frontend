@@ -15,10 +15,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Send, CalendarDays } from "lucide-react"
 import { formatInTimeZone } from "date-fns-tz"
+import { useTranslations } from "next-intl"
 
 export default function RequestEditAttendancePage() {
   const router = useRouter()
   const { currentCompany } = useCompanyStore()
+  const attendanceEditPage = useTranslations("attendance");
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
   const [locationType, setLocationType] = useState("office")
@@ -67,22 +69,23 @@ export default function RequestEditAttendancePage() {
       }
 
       if (clockInChecked && clockInTime)
-        payload.proposed_clock_in_at = `${workDate}T${clockInTime}:00+07:00`  
+        payload.proposed_clock_in_at = `${workDate}T${clockInTime}:00+07:00`
       if (clockOutChecked && clockOutTime)
-       payload.proposed_clock_out_at = `${workDate}T${clockOutTime}:00+07:00`
+        payload.proposed_clock_out_at = `${workDate}T${clockOutTime}:00+07:00`
       if (locationType === "home")
         payload.proposed_is_home_office = true
       if (locationType != "home")
-         payload.proposed_is_home_office = false
+        payload.proposed_is_home_office = false
 
-      console.log("📤 Submitting payload:", payload)
+      // For debug
+      // console.log("📤 Submitting payload:", payload)
       await employeeAPI.createEditRequest(payload)
 
-      toast.success("Edit request submitted successfully!")
+      toast.success(attendanceEditPage("editRequestSent"))
       router.push(`/${currentCompany?.uuid}/my/attendance`)
     } catch (err) {
-      console.error("❌ Error submitting edit request:", err)
-      toast.error("Failed to submit edit request.")
+      console.error(attendanceEditPage("editRequestFailed"), err)
+      toast.error(attendanceEditPage("editRequestFailed"))
     } finally {
       setIsSubmitting(false)
     }
@@ -100,10 +103,10 @@ export default function RequestEditAttendancePage() {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent leading-tight">
-                Request Edit Attendance
+                {attendanceEditPage("editRequestTitle")}
               </h1>
               <p className="text-gray-600 text-xs sm:text-sm mt-1">
-                Submit a correction request for your attendance record
+                {attendanceEditPage("editRequestDesc")}
               </p>
             </div>
           </div>
@@ -116,7 +119,7 @@ export default function RequestEditAttendancePage() {
               className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-2xl px-5 py-2 shadow-lg hover:shadow-xl transition-all"
             >
               <Send className="w-4 h-4 mr-2" />
-              {isSubmitting ? "Submitting..." : "Send Request"}
+              {isSubmitting ? attendanceEditPage("processing") : attendanceEditPage("submitEditRequest")}
             </Button>
           </div>
         </div>
@@ -127,7 +130,7 @@ export default function RequestEditAttendancePage() {
           <CardContent className="p-5 sm:p-8 grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">
             {/* Calendar Section */}
             <div className="flex flex-col space-y-6">
-              <Label className="text-gray-700 font-semibold">Select Date</Label>
+              <Label className="text-gray-700 font-semibold">{attendanceEditPage("editRequestSelectDate")}</Label>
               <div className="flex justify-center sm:justify-start">
                 <Calendar
                   mode="single"
@@ -138,7 +141,7 @@ export default function RequestEditAttendancePage() {
               </div>
 
               <div>
-                <Label className="text-gray-700 font-semibold mb-2 block">Work Location</Label>
+                <Label className="text-gray-700 font-semibold mb-2 block">{attendanceEditPage("editRequestSelectWorkType")}</Label>
                 <RadioGroup
                   value={locationType}
                   onValueChange={setLocationType}
@@ -147,13 +150,13 @@ export default function RequestEditAttendancePage() {
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="office" id="office" />
                     <Label htmlFor="office" className="text-gray-700 cursor-pointer">
-                      Office
+                      {attendanceEditPage("inOffice")}
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="home" id="home" />
                     <Label htmlFor="home" className="text-gray-700 cursor-pointer">
-                      Home Office
+                      {attendanceEditPage("homeOffice")}
                     </Label>
                   </div>
                 </RadioGroup>
@@ -176,7 +179,7 @@ export default function RequestEditAttendancePage() {
                 </div>
                 {clockInChecked && (
                   <div>
-                    <Label className="text-sm text-gray-600 mb-2 block">Clock In Time</Label>
+                    <Label className="text-sm text-gray-600 mb-2 block">{attendanceEditPage("editClockIn")}</Label>
                     <Input
                       type="time"
                       value={clockInTime}
@@ -201,7 +204,7 @@ export default function RequestEditAttendancePage() {
                 </div>
                 {clockOutChecked && (
                   <div>
-                    <Label className="text-sm text-gray-600 mb-2 block">Clock Out Time</Label>
+                    <Label className="text-sm text-gray-600 mb-2 block">{attendanceEditPage("editClockOut")}</Label>
                     <Input
                       type="time"
                       value={clockOutTime}
@@ -214,11 +217,11 @@ export default function RequestEditAttendancePage() {
 
               {/* Reason */}
               <div className="space-y-3">
-                <Label className="text-gray-700 font-medium">Reason</Label>
+                <Label className="text-gray-700 font-medium">{attendanceEditPage("editReasonLabel")}</Label>
                 <Textarea
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  placeholder="Explain why you need this attendance correction..."
+                  placeholder={attendanceEditPage("editReasonPlaceholder")}
                   className="border-gray-200 rounded-xl min-h-[100px] sm:min-h-[120px] resize-none text-sm sm:text-base"
                 />
               </div>

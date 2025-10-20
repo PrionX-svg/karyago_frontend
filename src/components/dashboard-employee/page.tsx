@@ -24,6 +24,7 @@ import {
   Briefcase,
   Home,
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 interface AttendanceRecord {
   work_date: string
@@ -32,6 +33,7 @@ interface AttendanceRecord {
 }
 
 export default function EmployeeDashboard() {
+  const tdashboardEmployee = useTranslations("dashboardEmployee");
   const [currentTime, setCurrentTime] = useState(new Date())
   const [mounted, setMounted] = useState(false)
 
@@ -72,14 +74,13 @@ export default function EmployeeDashboard() {
         }
       } catch (error) {
         console.error(error)
-        toast.error("Failed to load dashboard data")
+        toast.error(tdashboardEmployee("loadError"))
       }
     }
     loadData()
-  }, [currentCompany?.uuid, fetchAttendanceToday, fetchMyEditRequests])
+  }, [currentCompany?.uuid, fetchAttendanceToday, fetchMyEditRequests, tdashboardEmployee])
 
   /** Auto-reset saat ganti hari */
-
   useEffect(() => {
     if (!currentCompany?.uuid) return
     let lastDate = new Date().toDateString()
@@ -88,14 +89,14 @@ export default function EmployeeDashboard() {
       const now = new Date().toDateString()
       if (now !== lastDate) {
         lastDate = now
-        toast.info("A new attendance day has started")
+        toast.info(tdashboardEmployee("newDay"))
         resetForNewDay()
         await fetchAttendanceToday(currentCompany.uuid)
       }
     }, 60000) // cek tiap 1 menit
 
     return () => clearInterval(interval)
-  }, [currentCompany?.uuid, fetchAttendanceToday, resetForNewDay])
+  }, [currentCompany?.uuid, fetchAttendanceToday, resetForNewDay, tdashboardEmployee])
 
   /** Format jam tampil */
   const formatTime = (date: Date) =>
@@ -179,11 +180,11 @@ export default function EmployeeDashboard() {
       case "BOTH":
         return "Clock In & Out"
       case "HOME_FLAG":
-        return "Work Type"
+        return tdashboardEmployee("editTypeHome")
       case "BOTH_PLUS_FLAG":
-        return "All Request Type"
+        return tdashboardEmployee("allRequestEditType")
       case "BOTH PLUS FLAG":
-        return "All Request Type"
+        return tdashboardEmployee("allRequestEditType")
       default:
         return type || "-"
     }
@@ -227,7 +228,7 @@ export default function EmployeeDashboard() {
                     </span>
                     {attendanceToday.clock_in_at && (
                       <>
-                        {" "}• Clock In at{" "}
+                        {" "}• {tdashboardEmployee("clockCard.clockInAt")}{" "}
                         {new Date(attendanceToday.clock_in_at)
                           .toLocaleTimeString("en-GB", {
                             hour: "2-digit",
@@ -239,7 +240,7 @@ export default function EmployeeDashboard() {
                     )}
                     {attendanceToday.clock_out_at && (
                       <>
-                        {" "}• Clock Out at{" "}
+                        {" "}• {tdashboardEmployee("clockCard.clockOutAt")}{" "}
                         {new Date(attendanceToday.clock_out_at)
                           .toLocaleTimeString("en-GB", {
                             hour: "2-digit",
@@ -267,7 +268,7 @@ export default function EmployeeDashboard() {
                         }`}
                     >
                       <Briefcase className="w-4 h-4" />
-                      <span>Office</span>
+                      <span>{tdashboardEmployee("clockCard.buttonOffice")}</span>
                     </button>
                     <button
                       onClick={() => toggleHomeOffice(true, currentCompany?.uuid)}
@@ -281,7 +282,7 @@ export default function EmployeeDashboard() {
                         }`}
                     >
                       <Home className="w-4 h-4" />
-                      <span>Home Office</span>
+                      <span>{tdashboardEmployee("clockCard.buttonHomeOffice")}</span>
                     </button>
                   </div>
                 </div>
@@ -289,7 +290,7 @@ export default function EmployeeDashboard() {
                 {/* Notes */}
                 <div className="mb-6">
                   <Textarea
-                    placeholder="Add notes for today..."
+                    placeholder={tdashboardEmployee("clockCard.notesPlaceholder")}
                     value={notes}
                     onChange={(e) => saveNotes(e.target.value, currentCompany?.uuid)}
                     disabled={attendanceToday?.status === "PRESENT"}
@@ -309,7 +310,7 @@ export default function EmployeeDashboard() {
                     className="bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                   >
                     <Clock className="w-4 h-4 mr-2" />
-                    Clock In
+                    {tdashboardEmployee("clockCard.buttonClockIn")}
                   </Button>
                   <Button
                     onClick={() => clockOut(new Date(), currentCompany?.uuid)}
@@ -317,7 +318,7 @@ export default function EmployeeDashboard() {
                     className="bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-6 py-3 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                   >
                     <Clock className="w-4 h-4 mr-2" />
-                    Clock Out
+                    {tdashboardEmployee("clockCard.buttonClockOut")}
                   </Button>
                 </div>
               </div>
@@ -330,7 +331,7 @@ export default function EmployeeDashboard() {
           <CardContent className="p-6 text-white flex flex-col justify-between">
             <CardTitle className="text-white font-semibold text-lg flex items-center">
               <Target className="w-5 h-5 mr-2" />
-              Attendance Rate
+              {tdashboardEmployee("attendanceRateCard.title")}
             </CardTitle>
             <div>
               <div className="text-5xl font-bold mb-2">
@@ -338,7 +339,7 @@ export default function EmployeeDashboard() {
               </div>
               <p className="text-sm text-blue-100 flex items-center">
                 <Heart className="w-3 h-3 mr-1" />
-                This month
+                {tdashboardEmployee("attendanceRateCard.description")}
               </p>
             </div>
           </CardContent>
@@ -349,7 +350,7 @@ export default function EmployeeDashboard() {
           <CardContent className="p-6 text-white flex flex-col justify-between">
             <CardTitle className="text-white font-semibold text-lg flex items-center">
               <Award className="w-5 h-5 mr-2" />
-              Total Hours
+              {tdashboardEmployee("totalHoursCard.title")}
             </CardTitle>
             <div>
               <div className="text-4xl font-bold mb-2">
@@ -357,7 +358,7 @@ export default function EmployeeDashboard() {
               </div>
               <p className="text-sm text-purple-100 flex items-center">
                 <Smile className="w-3 h-3 mr-1" />
-                This month
+                {tdashboardEmployee("totalHoursCard.description")}
               </p>
             </div>
           </CardContent>
@@ -369,14 +370,14 @@ export default function EmployeeDashboard() {
             <CardHeader className="pb-4">
               <CardTitle className="text-gray-900 font-semibold text-xl flex items-center">
                 <Edit className="w-6 h-6 mr-3 text-orange-500" />
-                My Edit Requests
+                {tdashboardEmployee("editRequests.title")}
               </CardTitle>
             </CardHeader>
 
             <CardContent>
               {myEditRequests.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  There&apos;s no edit request
+                  {tdashboardEmployee("editRequests.noRequests")}
                 </p>
               ) : (
                 <>
@@ -408,7 +409,7 @@ export default function EmployeeDashboard() {
                                 : "bg-red-500"
                               } text-white`}
                           >
-                            {req.status}
+                            {tdashboardEmployee(`editRequests.status${req.status.charAt(0)}${req.status.slice(1).toLowerCase()}`)}
                           </Badge>
                         </div>
                         <p className="text-xs text-gray-500">
@@ -428,7 +429,7 @@ export default function EmployeeDashboard() {
                         disabled={currentPage === 1}
                         onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                       >
-                        Prev
+                        {tdashboardEmployee("editRequests.pagePrev")}
                       </Button>
                       <span className="text-sm text-gray-600">
                         Page {currentPage} of {totalPages}
@@ -442,7 +443,7 @@ export default function EmployeeDashboard() {
                           setCurrentPage((p) => Math.min(totalPages, p + 1))
                         }
                       >
-                        Next
+                        {tdashboardEmployee("editRequests.pageNext")}
                       </Button>
                     </div>
                   )}

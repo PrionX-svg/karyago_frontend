@@ -12,6 +12,7 @@ import {
   Edit, Save, X, Camera, Shield, Circle,
   FolderTree,
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 function fmtDate(d?: string | null) {
   if (!d) return "-"
@@ -20,6 +21,7 @@ function fmtDate(d?: string | null) {
 }
 
 export default function ProfilePage() {
+  const tprofilePage = useTranslations("employeeProfilePage")
   const { selfProfile, fetchSelfProfile, updateSelfProfile } = useEmployeeSelfStore()
   const [isEditing, setIsEditing] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,10 +70,10 @@ export default function ProfilePage() {
         {/* Left section (Title + Subtitle) */}
         <div className="flex flex-col items-center sm:items-start space-y-1">
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent leading-tight">
-            My Profile
+           {tprofilePage("title")}
           </h1>
           <p className="text-gray-600 text-xs sm:text-sm">
-            Manage your personal information and settings
+            {tprofilePage("description")}
           </p>
         </div>
 
@@ -81,7 +83,7 @@ export default function ProfilePage() {
             onClick={() => setIsEditing(true)}
             className="w-full sm:w-auto bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-2xl px-5 py-2 shadow-md hover:shadow-lg transition-all"
           >
-            <Edit className="w-4 h-4 mr-2" /> Edit Profile
+            <Edit className="w-4 h-4 mr-2" /> {tprofilePage("buttonEditProfile")}
           </Button>
         ) : (
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -90,14 +92,14 @@ export default function ProfilePage() {
               onClick={onCancel}
               className="rounded-2xl w-full sm:w-auto"
             >
-              <X className="w-4 h-4 mr-2" /> Cancel
+              <X className="w-4 h-4 mr-2" /> {tprofilePage("buttonCancel")}
             </Button>
             <Button
               disabled={!canSave}
               onClick={onSave}
               className="rounded-2xl w-full sm:w-auto bg-emerald-600 text-white"
             >
-              <Save className="w-4 h-4 mr-2" /> Save Changes
+              <Save className="w-4 h-4 mr-2" /> {tprofilePage("buttonSaveChanges")}
             </Button>
           </div>
         )}
@@ -122,7 +124,7 @@ export default function ProfilePage() {
 
               <h2 className="text-2xl font-bold">{selfProfile?.name || "-"}</h2>
               <Badge className="mt-2 rounded-full bg-gradient-to-r from-orange-400 to-red-500 text-white">
-                <Shield className="w-3 h-3 mr-1" /> Emlpoyee
+                <Shield className="w-3 h-3 mr-1" /> {tprofilePage("badgeRole")}
               </Badge>
 
             </CardContent>
@@ -134,7 +136,7 @@ export default function ProfilePage() {
           <Card className="rounded-3xl">
             <CardHeader>
               <CardTitle className="flex items-center text-xl">
-                <User className="w-6 h-6 mr-3 text-orange-500" /> Personal Information
+                <User className="w-6 h-6 mr-3 text-orange-500" /> {tprofilePage("sectionPersonalInfo")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -142,7 +144,7 @@ export default function ProfilePage() {
                 {/* Email */}
                 <div>
                   <Label className="text-sm flex items-center">
-                    <Mail className="w-4 h-4 mr-2 text-gray-500" /> Email
+                    <Mail className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelEmail")}
                   </Label>
                   {isEditing ? (
                     <Input
@@ -158,7 +160,7 @@ export default function ProfilePage() {
                 {/* Phone */}
                 <div>
                   <Label className="text-sm flex items-center">
-                    <Phone className="w-4 h-4 mr-2 text-gray-500" /> Phone
+                    <Phone className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelPhone")}
                   </Label>
                   {isEditing ? (
                     <Input
@@ -174,7 +176,7 @@ export default function ProfilePage() {
                 {/* Birth Date */}
                 <div>
                   <Label className="text-sm flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-gray-500" /> Birth Date
+                    <Calendar className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelBirthDate")}
                   </Label>
                   {isEditing ? (
                     <Input
@@ -191,7 +193,7 @@ export default function ProfilePage() {
                 {/* Gender */}
                 <div>
                   <Label className="text-sm flex items-center">
-                    <Circle className="w-4 h-4 mr-2 text-gray-500" /> Gender
+                    <Circle className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelGender")}
                   </Label>
                   {isEditing ? (
                     <Input
@@ -245,13 +247,13 @@ export default function ProfilePage() {
           <Card className="rounded-3xl">
             <CardHeader>
               <CardTitle className="flex items-center text-xl">
-                <Briefcase className="w-6 h-6 mr-3 text-orange-500" /> Work Information
+                <Briefcase className="w-6 h-6 mr-3 text-orange-500" /> {tprofilePage("sectionWorkInfo")}
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <InfoBlock icon={<Briefcase className="w-4 h-4" />} label="Company" value={selfProfile?.company} />
-              <InfoBlock icon={<Users className="w-4 h-4" />} label="Employee ID" value={selfProfile?.employee_id} />
-              <InfoBlock icon={<FolderTree className="w-4 h-4" />} label="Department" value={selfProfile?.department} />
+              <InfoBlock icon={<Briefcase className="w-4 h-4" />} label={tprofilePage("labelCompany")} value={selfProfile?.company} />
+              <InfoBlock icon={<Users className="w-4 h-4" />} label={tprofilePage("labelEmployeeId")} value={selfProfile?.employee_id} />
+              <InfoBlock icon={<FolderTree className="w-4 h-4" />} label={tprofilePage("labelDepartment")} value={selfProfile?.department} />
             </CardContent>
           </Card>
         </div>
