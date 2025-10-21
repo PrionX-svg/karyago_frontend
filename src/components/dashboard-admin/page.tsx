@@ -9,6 +9,7 @@ import Link from "next/link"
 import { useCompanyStore } from "@/stores/company-store"
 import { useEmployeeStore } from "@/stores/employee-store"
 import { Building2, Users, Target, Briefcase } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 interface Division {
   uuid: string
@@ -137,20 +138,22 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
     }
   }
 
+  const t = useTranslations("dashboard")
+
   return (
     <div className="w-full max-w-full space-y-6">
       {/* 🔸 Stats Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={<Users className="w-6 h-6 text-green-600" />} value={stats.activeEmployees} label="Active Employees" />
-        <StatCard icon={<Briefcase className="w-6 h-6 text-orange-600" />} value={stats.terminatedEmployees} label="Terminated Employees" />
-        <StatCard icon={<Building2 className="w-6 h-6 text-blue-600" />} value={stats.divisions} label="Division" />
-        <StatCard icon={<Target className="w-6 h-6 text-purple-600" />} value={stats.subDivisions} label="Sub-Division" />
+        <StatCard icon={<Users className="w-6 h-6 text-green-600" />} value={stats.activeEmployees} label={t("cards.activeEmployees")} />
+        <StatCard icon={<Briefcase className="w-6 h-6 text-orange-600" />} value={stats.terminatedEmployees} label={t("cards.terminatedEmployees")} />
+        <StatCard icon={<Building2 className="w-6 h-6 text-blue-600" />} value={stats.divisions} label={t("cards.departmentGroup")} />
+        <StatCard icon={<Target className="w-6 h-6 text-purple-600" />} value={stats.subDivisions} label={t("cards.department")} />
       </div>
 
       {/* 🔸 Employee Distribution */}
       <Card>
         <CardHeader>
-          <CardTitle>Employee Distribution</CardTitle>
+          <CardTitle>{t("employeeDistribution.title")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {subDivisions.length > 0 ? (
@@ -178,7 +181,7 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
               )
             })
           ) : (
-            <p className="text-sm text-muted-foreground">No sub-division data found</p>
+            <p className="text-sm text-muted-foreground">No department data found</p>
           )}
 
 
@@ -190,12 +193,12 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
         {/* Attendance Rate */}
         <Card>
           <CardHeader>
-            <CardTitle>Attendance Rate</CardTitle>
+            <CardTitle>{t("employeeDistribution.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="text-6xl font-bold text-foreground">{attendanceRate ? `${attendanceRate.toFixed(0)}%` : "--"}</div>
-              <p className="text-sm text-muted-foreground">This Month</p>
+              <p className="text-sm text-muted-foreground">{t("attendanceRate.thisMonth")}</p>
             </div>
           </CardContent>
         </Card>
@@ -203,9 +206,9 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
         {/* Edit Requests */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Requested Edit Attendance</CardTitle>
+            <CardTitle>{t("requestedEditAttendance.title")}</CardTitle>
             <Link href={`/${params.locale}/${params.company}/employees/attendance-requests`} className="text-sm text-primary hover:underline">
-              See more
+              {t("requestedEditAttendance.seeMore")}
             </Link>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -222,11 +225,11 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
                   <span className={`text-xs px-2 py-1 rounded-md ${req.status === "PENDING" ? "bg-yellow-100 text-yellow-700" :
                     req.status === "APPROVED" ? "bg-green-100 text-green-700" :
                       "bg-red-100 text-red-700"
-                    }`}>{req.status}</span>
+                    }`}> {t(`requestedEditAttendance.${req.status.toLowerCase()}`)}</span>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">No recent requests</p>
+              <p className="text-sm text-muted-foreground">{t("requestedEditAttendance.noRequests")}</p>
             )}
           </CardContent>
         </Card>

@@ -15,6 +15,7 @@ import { employeeAPI } from "@/lib/api/employee-api"
 import { DatePicker } from "@/components/ui/date-picker"
 import { toZonedTime, format } from "date-fns-tz"
 import { id } from "date-fns/locale"
+import { useTranslations } from "next-intl"
 
 
 export default function AttendancePage() {
@@ -225,6 +226,21 @@ export default function AttendancePage() {
         }
     }
 
+    const attendancePage = useTranslations("attendance");
+
+    const getEditStatusLabel = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return attendancePage("statusPending");
+      case "APPROVED":
+        return attendancePage("statusApproved");
+      case "REJECTED":
+        return attendancePage("statusRejected");
+      default:
+        return status;
+    }
+    
+  };
 
     return (
         <main className="p-4 sm:p-6 min-h-screen">
@@ -236,9 +252,9 @@ export default function AttendancePage() {
                     </div>
                     <div>
                         <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-br from-orange-500 to-red-500 bg-clip-text text-transparent">
-                            My Attendance
+                            {attendancePage("title-1")}
                         </h1>
-                        <p className="text-gray-600 text-xs sm:text-sm">Your attendance records and summary</p>
+                        <p className="text-gray-600 text-xs sm:text-sm">{attendancePage("description-1")}</p>
                     </div>
                 </div>
             </div>
@@ -248,7 +264,11 @@ export default function AttendancePage() {
                 <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-col lg:flex-row flex-wrap gap-3 justify-between">
                         <Input
-                            placeholder={`Search ${viewType === "attendance" ? "by date or notes" : "by reason"}`}
+                            placeholder={
+                                viewType === "attendance"
+                                    ? attendancePage("searchPlaceholder-1")
+                                    : attendancePage("searchPlaceholder-2")
+                            }
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="h-11 sm:h-12 w-full lg:w-[260px] rounded-2xl border-gray-200 bg-white focus:border-orange-500 focus:ring-orange-500"
@@ -258,16 +278,16 @@ export default function AttendancePage() {
                                 <SelectValue placeholder="Select View" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="attendance">Attendance List</SelectItem>
-                                <SelectItem value="edit-request">Edit Request List</SelectItem>
+                                <SelectItem value="attendance">{attendancePage("filterTitle-1")}</SelectItem>
+                                <SelectItem value="edit-request">{attendancePage("filterTitle-2")}</SelectItem>
                             </SelectContent>
                         </Select>
 
                         {/* Date Range */}
                         <div className="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto">
-                            <DatePicker date={dateFrom} onDateChange={setDateFrom} placeholder="From" />
+                            <DatePicker date={dateFrom} onDateChange={setDateFrom} placeholder={attendancePage("filterPlaceholderDateFrom")} />
                             <span className="text-gray-400 hidden sm:block">–</span>
-                            <DatePicker date={dateTo} onDateChange={setDateTo} placeholder="To" />
+                            <DatePicker date={dateTo} onDateChange={setDateTo} placeholder={attendancePage("filterPlaceholderDateTo")} />
                         </div>
 
                         {/* Status Filter */}
@@ -277,18 +297,18 @@ export default function AttendancePage() {
                                     <SelectValue placeholder="Status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Status</SelectItem>
+                                    <SelectItem value="all">{attendancePage("filterPlaceholderStatusDefault")}</SelectItem>
                                     {viewType === "attendance" ? (
                                         <>
-                                            <SelectItem value="PRESENT">Present</SelectItem>
-                                            <SelectItem value="ABSENT">Absent</SelectItem>
-                                            <SelectItem value="OPEN">Open</SelectItem>
+                                            <SelectItem value="PRESENT">{attendancePage("filterPlaceholderStatusAttendance-1")}</SelectItem>
+                                            <SelectItem value="ABSENT">{attendancePage("filterPlaceholderStatusAttendance-2")}</SelectItem>
+                                            <SelectItem value="OPEN">{attendancePage("filterPlaceholderStatusAttendance-3")}</SelectItem>
                                         </>
                                     ) : (
                                         <>
-                                            <SelectItem value="PENDING">Pending</SelectItem>
-                                            <SelectItem value="APPROVED">Approved</SelectItem>
-                                            <SelectItem value="REJECTED">Rejected</SelectItem>
+                                            <SelectItem value="PENDING">{attendancePage("filterPlaceholderStatusEditAttendance-1")}</SelectItem>
+                                            <SelectItem value="APPROVED">{attendancePage("filterPlaceholderStatusEditAttendance-2")}</SelectItem>
+                                            <SelectItem value="REJECTED">{attendancePage("filterPlaceholderStatusEditAttendance-3")}</SelectItem>
                                         </>
                                     )}
                                 </SelectContent>
@@ -307,15 +327,15 @@ export default function AttendancePage() {
 
                             {/* Header */}
                             <div className="hidden md:grid md:grid-cols-9 gap-4 pb-3 border-b border-gray-200 text-sm font-semibold text-gray-600">
-                                <span>Date</span>
-                                <span>Clock In</span>
-                                <span>Clock Out</span>
-                                <span>Type</span>
-                                <span>Total Hours</span>
-                                <span>Overtime</span>
-                                <span>Notes</span>
-                                <span>Status</span>
-                                <span>Actions</span>
+                                <span>{attendancePage("tableHeaderDate")}</span>
+                                <span>{attendancePage("tableHeaderAttendanceClockIn")}</span>
+                                <span>{attendancePage("tableHeaderAttendanceClockOut")}</span>
+                                <span>{attendancePage("tableHeaderAttendanceType")}</span>
+                                <span>{attendancePage("tableHeaderAttendanceTotalHours")}</span>
+                                <span>{attendancePage("tableHeaderAttendanceOvetime")}</span>
+                                <span>{attendancePage("tableHeaderAttendanceNotes")}</span>
+                                <span>{attendancePage("tableHeaderAttendanceStatus")}</span>
+                                <span>{attendancePage("tableHeaderAttendanceAction")}</span>
                             </div>
 
                             {/* Rows */}
@@ -327,7 +347,7 @@ export default function AttendancePage() {
                                     >
                                         {/* ✅ Date */}
                                         <div className="col-span-2 sm:col-span-1">
-                                            <p className="text-xs text-gray-400 md:hidden">Date</p>
+                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderDate")}</p>
                                             <p className="font-medium text-gray-900">
                                                 {a.work_date
                                                     ? format(new Date(a.work_date), "dd/MMM/yyyy", { locale: id })
@@ -337,7 +357,7 @@ export default function AttendancePage() {
 
                                         {/* ✅ Clock In */}
                                         <div>
-                                            <p className="text-xs text-gray-400 md:hidden">Clock In</p>
+                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceClockIn")}</p>
                                             <p className="text-gray-700 whitespace-nowrap">
                                                 {a.clock_in_at ? a.clock_in_at.slice(11, 16).replace(":", ".") : "-"}
                                                 {/* {a.clock_in_at
@@ -348,7 +368,7 @@ export default function AttendancePage() {
 
                                         {/* ✅ Clock Out */}
                                         <div>
-                                            <p className="text-xs text-gray-400 md:hidden">Clock Out</p>
+                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceClockOut")}</p>
                                             <p className="text-gray-700 whitespace-nowrap">
                                                 {a.clock_out_at ? a.clock_out_at.slice(11, 16).replace(":", ".") : "-"}
                                             </p>
@@ -356,7 +376,7 @@ export default function AttendancePage() {
 
                                         {/* ✅ Type */}
                                         <div>
-                                            <p className="text-xs text-gray-400 md:hidden">Type</p>
+                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceType")}</p>
                                             <Badge
                                                 className={`${a.is_home_office
                                                     ? "bg-green-100 text-green-700"
@@ -369,7 +389,7 @@ export default function AttendancePage() {
 
                                         {/* ✅ Total Hours */}
                                         <div>
-                                            <p className="text-xs text-gray-400 md:hidden">Total</p>
+                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceTotalHours")}</p>
                                             <p className="text-gray-800 font-medium text-sm text-center">
                                                 {a.total_work_hours ? `${a.total_work_hours.toFixed(1)}h` : "-"}
                                             </p>
@@ -377,7 +397,7 @@ export default function AttendancePage() {
 
                                         {/* ✅ Overtime */}
                                         <div>
-                                            <p className="text-xs text-gray-400 md:hidden">Overtime</p>
+                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceOvetime")}</p>
                                             {a.is_overtime ? (
                                                 <Badge className="bg-orange-100 text-orange-700 border-0 rounded-full text-xs sm:text-sm">
                                                     {a.overtime_hours ? `${a.overtime_hours.toFixed(1)}h` : "OT"}
@@ -389,13 +409,13 @@ export default function AttendancePage() {
 
                                         {/* ✅ Notes */}
                                         <div className="col-span-2 sm:col-span-1">
-                                            <p className="text-xs text-gray-400 md:hidden">Notes</p>
+                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceNotes")}</p>
                                             <p className="text-gray-500 text-sm break-words">{a.notes || "-"}</p>
                                         </div>
 
                                         {/* ✅ Status */}
                                         <div>
-                                            <p className="text-xs text-gray-400 md:hidden">Status</p>
+                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceStatus")}</p>
                                             <Badge
                                                 className={`${a.status === "PRESENT"
                                                     ? "bg-green-100 text-green-700"
@@ -425,7 +445,7 @@ export default function AttendancePage() {
 
                                 {paginatedAttendance.length === 0 && (
                                     <p className="text-center text-gray-500 text-sm py-4">
-                                        No attendance records found.
+                                        {attendancePage("noAttendance")}
                                     </p>
                                 )}
                             </div>
@@ -467,7 +487,7 @@ export default function AttendancePage() {
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
                                     <Calendar className="w-6 h-6" />
                                 </div>
-                                <p className="text-green-100 text-sm font-medium mb-2">Present Days</p>
+                                <p className="text-green-100 text-sm font-medium mb-2">{attendancePage("summaryStat-1")}</p>
                                 <p className="text-4xl font-bold">{summaryStats.present}</p>
                             </CardContent>
                         </Card>
@@ -478,7 +498,7 @@ export default function AttendancePage() {
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
                                     <Clock className="w-6 h-6" />
                                 </div>
-                                <p className="text-yellow-100 text-sm font-medium mb-2">Still Open</p>
+                                <p className="text-yellow-100 text-sm font-medium mb-2">{attendancePage("summaryStat-2")}</p>
                                 <p className="text-4xl font-bold">{summaryStats.open}</p>
                             </CardContent>
                         </Card>
@@ -489,7 +509,7 @@ export default function AttendancePage() {
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
                                     <X className="w-6 h-6" />
                                 </div>
-                                <p className="text-red-100 text-sm font-medium mb-2">Absent Days</p>
+                                <p className="text-red-100 text-sm font-medium mb-2">{attendancePage("summaryStat-3")}</p>
                                 <p className="text-4xl font-bold">{summaryStats.absent}</p>
                             </CardContent>
                         </Card>
@@ -500,7 +520,7 @@ export default function AttendancePage() {
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
                                     <Clock className="w-6 h-6" />
                                 </div>
-                                <p className="text-blue-100 text-sm font-medium mb-2">Total Hours</p>
+                                <p className="text-blue-100 text-sm font-medium mb-2">{attendancePage("totalHours")}</p>
                                 <p className="text-4xl font-bold">{summaryStats.totalHours}h</p>
                             </CardContent>
                         </Card>
@@ -511,7 +531,7 @@ export default function AttendancePage() {
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
                                     <Clock className="w-6 h-6" />
                                 </div>
-                                <p className="text-orange-100 text-sm font-medium mb-2">Total Overtime</p>
+                                <p className="text-orange-100 text-sm font-medium mb-2">{attendancePage("summaryStat-5")}</p>
                                 <p className="text-4xl font-bold">{summaryStats.totalOvertime}h</p>
                             </CardContent>
                         </Card>
@@ -521,14 +541,14 @@ export default function AttendancePage() {
                 /* Edit Requests */
                 <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-3xl overflow-hidden">
                     <CardContent className="p-6">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-6">Edit Request List</h2>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6">{attendancePage("editRequestList")}</h2>
 
                         <div className="hidden md:grid md:grid-cols-5 gap-4 pb-3 border-b border-gray-200 text-sm font-semibold text-gray-600">
-                            <span>Date</span>
-                            <span>Type</span>
-                            <span>Reason</span>
-                            <span>Status</span>
-                            <span>Requested Time</span>
+                            <span>{attendancePage("tableHeaderDate")}</span>
+                            <span>{attendancePage("tableHeaderEditAttendanceType")}</span>
+                            <span>{attendancePage("tableHeaderEditAttendanceReason")}</span>
+                            <span>{attendancePage("tableHeaderEditAttendanceStatus")}</span>
+                            <span>{attendancePage("tableHeaderEditAttendanceRequestedTime")}</span>
                         </div>
 
                         <div className="space-y-3 mt-4">
@@ -539,7 +559,7 @@ export default function AttendancePage() {
                                 >
                                     {/* 🗓️ Date */}
                                     <div>
-                                        <p className="text-xs text-gray-400 md:hidden">Date</p>
+                                        <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderDate")}</p>
                                         <p className="font-medium text-gray-900 text-sm sm:text-base">
                                             {r.work_date
                                                 ? format(new Date(r.work_date), "dd/MMM/yyyy", { locale: id })
@@ -549,7 +569,7 @@ export default function AttendancePage() {
 
                                     {/* 🧾 Type */}
                                     <div>
-                                        <p className="text-xs text-gray-400 md:hidden">Type</p>
+                                        <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderEditAttendanceType")}</p>
                                         {r.proposed_is_home_office !== null && (
                                             <Badge
                                                 className={`${r.proposed_is_home_office
@@ -564,13 +584,13 @@ export default function AttendancePage() {
 
                                     {/* 💬 Reason */}
                                     <div className="col-span-2 sm:col-span-1">
-                                        <p className="text-xs text-gray-400 md:hidden">Reason</p>
+                                        <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderEditAttendanceReason")}</p>
                                         <p className="text-sm text-gray-600 break-words">{r.reason || "-"}</p>
                                     </div>
 
                                     {/* 🏷️ Status */}
                                     <div>
-                                        <p className="text-xs text-gray-400 md:hidden">Status</p>
+                                        <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderEditAttendanceStatus")}</p>
                                         <Badge
                                             className={`${r.status === "PENDING"
                                                 ? "bg-yellow-100 text-yellow-700"
@@ -579,13 +599,13 @@ export default function AttendancePage() {
                                                     : "bg-red-100 text-red-700"
                                                 } border-0 rounded-full text-xs sm:text-sm`}
                                         >
-                                            {r.status}
+                                            {getEditStatusLabel(r.status)}
                                         </Badge>
                                     </div>
 
                                     {/* 🕒 Requested Time */}
                                     <div>
-                                        <p className="text-xs text-gray-400 md:hidden">Requested Time</p>
+                                        <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderEditAttendanceRequestedTime")}</p>
                                         <p className="text-sm text-gray-600">
                                             {r.proposed_clock_in_at
                                                 ? format(toZonedTime(r.proposed_clock_in_at, "Asia/Jakarta"), "HH.mm")
@@ -602,7 +622,7 @@ export default function AttendancePage() {
 
                             {myEditRequests.length === 0 && (
                                 <p className="text-center text-gray-500 text-sm py-4">
-                                    No edit requests found.
+                                    {attendancePage("noRequests")}
                                 </p>
                             )}
                         </div>
@@ -623,17 +643,17 @@ export default function AttendancePage() {
                             <div className="w-10 h-10 bg-purple-100 text-purple-600 flex items-center justify-center rounded-xl">
                                 <Edit className="w-5 h-5" />
                             </div>
-                            <h2 className="text-xl font-semibold">Request Attendance Edit</h2>
+                            <h2 className="text-xl font-semibold">{attendancePage("editRequestTitle")}</h2>
                         </div>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="text-sm font-medium text-gray-600">Date</label>
+                                <label className="text-sm font-medium text-gray-600">{attendancePage("tableHeaderDate")}</label>
                                 <Input value={selectedAttendance.work_date} disabled />
                             </div>
 
                             <div>
-                                <label className="text-sm font-medium text-gray-600">Request Type</label>
+                                <label className="text-sm font-medium text-gray-600">{attendancePage("editRequestType")}</label>
                                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                 <Select value={editType} onValueChange={(v) => setEditType(v as any)}>
                                     <SelectTrigger>
@@ -654,7 +674,7 @@ export default function AttendancePage() {
                                 <div className="grid grid-cols-2 gap-3">
                                     {["CLOCK_IN", "BOTH", "BOTH_PLUS_FLAG"].includes(editType) && (
                                         <div>
-                                            <label className="text-sm text-gray-600">Requested Clock In</label>
+                                            <label className="text-sm text-gray-600">{attendancePage("editClockIn")}</label>
                                             <Input
                                                 type="time"
                                                 value={requestedClockIn}
@@ -665,7 +685,7 @@ export default function AttendancePage() {
 
                                     {["CLOCK_OUT", "BOTH", "BOTH_PLUS_FLAG"].includes(editType) && (
                                         <div>
-                                            <label className="text-sm text-gray-600">Requested Clock Out</label>
+                                            <label className="text-sm text-gray-600">{attendancePage("editClockOut")}</label>
                                             <Input
                                                 type="time"
                                                 value={requestedClockOut}
@@ -687,19 +707,19 @@ export default function AttendancePage() {
                                         className="w-4 h-4 text-purple-500 border-gray-300 rounded"
                                     />
                                     <label htmlFor="homeFlag" className="text-sm text-gray-700">
-                                        Set as Home Office
+                                        {attendancePage("editClockOut")}
                                     </label>
                                 </div>
                             )}
 
                             <div>
                                 <label className="text-sm font-medium text-gray-600">
-                                    Reason for Edit Request
+                                    {attendancePage("editReasonLabel")}
                                 </label>
                                 <textarea
                                     className="w-full p-3 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-purple-400"
                                     rows={3}
-                                    placeholder="Explain why you need to edit..."
+                                    placeholder={attendancePage("editReasonPlaceholder")}
                                     value={reason}
                                     onChange={(e) => setReason(e.target.value)}
                                 />
@@ -709,7 +729,7 @@ export default function AttendancePage() {
                                 className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl"
                                 onClick={handleSubmitEditRequest}
                             >
-                                Submit Request
+                                {attendancePage("submitEditRequest")}
                             </Button>
                         </div>
                     </div>

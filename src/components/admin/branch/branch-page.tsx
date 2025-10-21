@@ -29,8 +29,10 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export default function BranchPage() {
+  const t = useTranslations("branchPage");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [branchToDelete, setBranchToDelete] = useState<CompanyBranchType | null>(null);
   const { deleteBranch, isDeletingBranch } = company.useDeleteBranch(branchToDelete?.uuid || "");
@@ -160,11 +162,11 @@ export default function BranchPage() {
                 <Building2 className="h-6 w-6 text-orange-600 dark:text-orange-400" />
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                Branch Management
+                {t("title")}
               </h1>
             </div>
             <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-              Manage and organize your company locations efficiently.
+              {t("description")}
             </p>
             {companyBranches.length > 0 && (
               <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">

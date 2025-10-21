@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -14,6 +14,7 @@ import { DatePicker } from "@/components/ui/date-picker"
 import { format } from "date-fns"
 import { id } from "date-fns/locale"
 import { toZonedTime } from "date-fns-tz"
+import { useTranslations } from "next-intl"
 
 interface EditRequestItem {
   id: string
@@ -107,8 +108,8 @@ export default function EmployeeEditRequestsPage() {
 
   const formatEditType = (type: string) => {
     switch (type) {
-      case "CLOCK_IN": return "Clock In"
-      case "CLOCK_OUT": return "Clock Out"
+      case "CLOCK IN": return "Clock In"
+      case "CLOCK OUT": return "Clock Out"
       case "BOTH": return "Clock In & Out"
       case "HOME_FLAG": return "Work Type"
       case "BOTH_PLUS_FLAG":
@@ -116,6 +117,21 @@ export default function EmployeeEditRequestsPage() {
       default: return type || "-"
     }
   }
+
+  const t = useTranslations("attendance");
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return t("statusPending");
+      case "APPROVED":
+        return t("statusApproved");
+      case "REJECTED":
+        return t("statusRejected");
+      default:
+        return status;
+    }
+  };
 
   return (
     <main className="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
@@ -125,7 +141,7 @@ export default function EmployeeEditRequestsPage() {
           <div className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900 dark:to-orange-950 rounded-xl border border-orange-200 dark:border-orange-800">
             <ListChecksIcon className="w-5 h-5 text-orange-600 dark:text-orange-400" />
           </div>
-          Attendance Edit Requests
+          {t("title-5")}
         </h1>
       </div>
 
@@ -133,7 +149,7 @@ export default function EmployeeEditRequestsPage() {
       <div className="w-full bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm flex flex-wrap gap-3 justify-between items-start sm:items-center mb-6 overflow-hidden">
         <div className="flex flex-wrap gap-3 flex-1 min-w-0">
           <Input
-            placeholder="Search employee..."
+            placeholder={t("searchPlaceholder-3")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full sm:w-48 min-w-0"
@@ -146,7 +162,7 @@ export default function EmployeeEditRequestsPage() {
             <SelectContent>
               {employeeNames.map((name) => (
                 <SelectItem key={name} value={name}>
-                  {name === "all" ? "All Employees" : name}
+                  {name === "all" ? t("filterTitleEmployeeName") : name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -155,9 +171,9 @@ export default function EmployeeEditRequestsPage() {
 
         <div className="flex flex-wrap gap-3 items-center justify-start sm:justify-end w-full sm:w-auto min-w-0">
           <div className="flex flex-wrap gap-2 items-center w-full sm:w-auto">
-            <DatePicker date={dateFrom} onDateChange={setDateFrom} placeholder="From" />
+            <DatePicker date={dateFrom} onDateChange={setDateFrom} placeholder={t("filterPlaceholderDateFrom")} />
             <span className="text-gray-500">–</span>
-            <DatePicker date={dateTo} onDateChange={setDateTo} placeholder="To" />
+            <DatePicker date={dateTo} onDateChange={setDateTo} placeholder={t("filterPlaceholderDateTo")} />
           </div>
 
           <Select value={selectedStatus} onValueChange={setSelectedStatus}>
@@ -165,10 +181,10 @@ export default function EmployeeEditRequestsPage() {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="PENDING">Pending</SelectItem>
-              <SelectItem value="APPROVED">Approved</SelectItem>
-              <SelectItem value="REJECTED">Rejected</SelectItem>
+              <SelectItem value="all">{t("filterPlaceholderStatusDefault")}</SelectItem>
+              <SelectItem value="PENDING">{t("filterPlaceholderStatusAttendance-1")}</SelectItem>
+              <SelectItem value="APPROVED">{t("filterPlaceholderStatusAttendance-2")}</SelectItem>
+              <SelectItem value="REJECTED">{t("filterPlaceholderStatusAttendance-3")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -176,21 +192,18 @@ export default function EmployeeEditRequestsPage() {
 
       {/* Table & Card Layout */}
       <Card className="shadow-md border-0 rounded-3xl">
-        <CardHeader>
-          <CardTitle>Edit Requests</CardTitle>
-        </CardHeader>
 
         <CardContent>
           {/* Desktop table */}
           <div className="hidden md:grid md:grid-cols-8 text-sm font-semibold text-gray-600 border-b pb-3 mb-3">
-            <span>Name</span>
-            <span>Department</span>
-            <span>Date</span>
-            <span>Type</span>
-            <span>Requested Time</span>
-            <span>Reason</span>
-            <span>Status</span>
-            <span className="text-center">Actions</span>
+            <span>{t("tableHeaderName")}</span>
+            <span>{t("tableHeaderDepartment")}</span>
+            <span>{t("tableHeaderDate")}</span>
+            <span>{t("tableHeaderEditAttendanceType")}</span>
+            <span>{t("tableHeaderEditAttendanceRequestedTime")}</span>
+            <span>{t("tableHeaderEditAttendanceReason")}</span>
+            <span>{t("tableHeaderEditAttendanceStatus")}</span>
+            <span className="text-center">{t("tableHeaderAttendanceAction")}</span>
           </div>
 
           {/* Mobile cards */}
@@ -207,13 +220,13 @@ export default function EmployeeEditRequestsPage() {
                         : "bg-red-100 text-red-700"
                       }`}
                   >
-                    {r.status}
+                     {getStatusLabel(r.status)}
                   </Badge>
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
-                  <p><strong>Date:</strong> {r.work_date ? format(new Date(r.work_date), "dd/MMM/yyyy", { locale: id }) : "-"}</p>
-                  <p><strong>Type:</strong> {formatEditType(r.edit_type)}</p>
-                  <p><strong>Time:</strong>  {r.proposed_clock_in_at
+                  <p><strong>{t("tableHeaderDate")}:</strong> {r.work_date ? format(new Date(r.work_date), "dd/MMM/yyyy", { locale: id }) : "-"}</p>
+                  <p><strong>{t("tableHeaderEditAttendanceType")}:</strong> {formatEditType(r.edit_type)}</p>
+                  <p><strong>{t("tableHeaderEditAttendanceRequestedTime")}:</strong>  {r.proposed_clock_in_at
                     ? format(toZonedTime(r.proposed_clock_in_at, "Asia/Jakarta"), "HH.mm")
                     : "-"}{" "}
                     →{" "}
@@ -266,7 +279,7 @@ export default function EmployeeEditRequestsPage() {
                       : "bg-red-100 text-red-700"
                     } rounded-full w-fit`}
                 >
-                  {r.status}
+                   {getStatusLabel(r.status)}
                 </Badge>
                 <div className="flex justify-center gap-2">
                   {r.status === "PENDING" && (
