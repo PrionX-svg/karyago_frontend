@@ -106,19 +106,21 @@ export default function EmployeeEditRequestsPage() {
     }
   }
 
+  const t = useTranslations("attendance");
+
   const formatEditType = (type: string) => {
     switch (type) {
-      case "CLOCK IN": return "Clock In"
-      case "CLOCK OUT": return "Clock Out"
-      case "BOTH": return "Clock In & Out"
-      case "HOME_FLAG": return "Work Type"
+      case "CLOCK IN": return t("editTypeClockIn")
+      case "CLOCK OUT": return t("editTypeClockOut");
+      case "BOTH": return t("editTypeBoth");
+      case "HOME_FLAG": return t("editTypeHome");
       case "BOTH_PLUS_FLAG":
-      case "BOTH PLUS FLAG": return "All Request Type"
+      case "BOTH PLUS FLAG": return t("allRequestEditType");
       default: return type || "-"
     }
   }
 
-  const t = useTranslations("attendance");
+  
 
   const getStatusLabel = (status: string) => {
     switch (status) {

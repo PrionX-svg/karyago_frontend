@@ -638,7 +638,12 @@
       "clockInOut": "<strong>Clock In & Out</strong> — Penyesuaian untuk waktu masuk dan pulang sekaligus.",
       "workType": "<strong>Tipe Kerja</strong> — Mengubah antara kerja di kantor dan kerja dari rumah.",
       "allRequestType": "<strong>Semua Jenis Permintaan</strong> — Kombinasi dari Clock In, Clock Out, dan Tipe Kerja."
-    }
+    },
+    "editTypeClockIn": "Clock In",
+    "editTypeClockOut": "Clock Out",
+    "editTypeBoth": "Clock In & Out",
+    "editTypeHome": "Tipe Kerja",
+    "allRequestEditType": "Semua Tipe Pengajuan"
   },
   "dashboardEmployee": {
     "title": "Dashboard Karyawan",

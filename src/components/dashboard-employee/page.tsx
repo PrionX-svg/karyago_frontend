@@ -169,22 +169,20 @@ export default function EmployeeDashboard() {
     fetchMonthlyStats()
   }, [currentCompany?.uuid, fetchAttendanceRange])
 
-
-
   const formatEditType = (type: string) => {
-    switch (type) {
+    switch (type.toUpperCase()) {
       case "CLOCK_IN":
-        return "Clock In"
+        return tdashboardEmployee("editRequests.editTypeClockIn");
       case "CLOCK_OUT":
-        return "Clock Out"
+        return tdashboardEmployee("editRequests.editTypeClockOut");
       case "BOTH":
-        return "Clock In & Out"
+        return tdashboardEmployee("editRequests.editTypeBoth");
       case "HOME_FLAG":
-        return tdashboardEmployee("editTypeHome")
+        return tdashboardEmployee("editRequests.editTypeHome");
       case "BOTH_PLUS_FLAG":
-        return tdashboardEmployee("allRequestEditType")
+        return tdashboardEmployee("editRequests.allRequestEditType");
       case "BOTH PLUS FLAG":
-        return tdashboardEmployee("allRequestEditType")
+        return tdashboardEmployee("editRequests.allRequestEditType");
       default:
         return type || "-"
     }
@@ -395,7 +393,7 @@ export default function EmployeeDashboard() {
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h4 className="font-semibold text-gray-900 text-sm">
-                              {formatEditType(req.edit_type.replace("_", " ").toUpperCase())}
+                              {formatEditType(req.edit_type)}
                             </h4>
                             <p className="text-xs text-gray-600 mt-1">
                               {req.work_date}
