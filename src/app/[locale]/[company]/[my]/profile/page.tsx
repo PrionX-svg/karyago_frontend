@@ -22,7 +22,7 @@ function fmtDate(d?: string | null) {
 
 export default function ProfilePage() {
   const tprofilePage = useTranslations("employeeProfilePage")
-  const { selfProfile, fetchSelfProfile, updateSelfProfile } = useEmployeeSelfStore()
+  const { selfProfile, fetchSelfProfile } = useEmployeeSelfStore()
   const [isEditing, setIsEditing] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [draft, setDraft] = useState<any>(null)
@@ -36,25 +36,6 @@ export default function ProfilePage() {
     if (selfProfile) setDraft(selfProfile)
   }, [selfProfile, fetchSelfProfile])
 
-  const canSave = useMemo(() => {
-    if (!draft) return false
-    return (draft.email?.length ?? 0) > 3
-  }, [draft])
-
-  const onSave = async () => {
-    await updateSelfProfile({
-      name: draft?.name,
-      email: draft?.email,
-      phone: draft?.phone,
-      birth_date: draft?.birth_date,
-    })
-    setIsEditing(false)
-  }
-
-  const onCancel = () => {
-    setDraft(selfProfile)
-    setIsEditing(false)
-  }
 
   if (loading) {
     return (
@@ -76,33 +57,7 @@ export default function ProfilePage() {
             {tprofilePage("description")}
           </p>
         </div>
-
-        {/* Right section (Buttons) */}
-        {!isEditing ? (
-          <Button
-            onClick={() => setIsEditing(true)}
-            className="w-full sm:w-auto bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-2xl px-5 py-2 shadow-md hover:shadow-lg transition-all"
-          >
-            <Edit className="w-4 h-4 mr-2" /> {tprofilePage("buttonEditProfile")}
-          </Button>
-        ) : (
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-            <Button
-              variant="outline"
-              onClick={onCancel}
-              className="rounded-2xl w-full sm:w-auto"
-            >
-              <X className="w-4 h-4 mr-2" /> {tprofilePage("buttonCancel")}
-            </Button>
-            <Button
-              disabled={!canSave}
-              onClick={onSave}
-              className="rounded-2xl w-full sm:w-auto bg-emerald-600 text-white"
-            >
-              <Save className="w-4 h-4 mr-2" /> {tprofilePage("buttonSaveChanges")}
-            </Button>
-          </div>
-        )}
+      
       </div>
 
 
@@ -146,15 +101,7 @@ export default function ProfilePage() {
                   <Label className="text-sm flex items-center">
                     <Mail className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelEmail")}
                   </Label>
-                  {isEditing ? (
-                    <Input
-                      value={selfProfile?.email ?? ""}
-                      onChange={(e) => setDraft({ ...draft, email: e.target.value })}
-                      className="rounded-xl bg-gray-50"
-                    />
-                  ) : (
                     <p className="p-3 bg-gray-50 rounded-xl">{selfProfile?.email || "-"}</p>
-                  )}
                 </div>
 
                 {/* Phone */}
@@ -162,32 +109,15 @@ export default function ProfilePage() {
                   <Label className="text-sm flex items-center">
                     <Phone className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelPhone")}
                   </Label>
-                  {isEditing ? (
-                    <Input
-                      value={selfProfile?.phone ?? ""}
-                      onChange={(e) => setDraft({ ...draft, phone: e.target.value })}
-                      className="rounded-xl bg-gray-50"
-                    />
-                  ) : (
                     <p className="p-3 bg-gray-50 rounded-xl">{selfProfile?.phone || "-"}</p>
-                  )}
                 </div>
 
                 {/* Birth Date */}
                 <div>
                   <Label className="text-sm flex items-center">
                     <Calendar className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelBirthDate")}
-                  </Label>
-                  {isEditing ? (
-                    <Input
-                      type="date"
-                      value={selfProfile?.birth_date ?? ""}
-                      onChange={(e) => setDraft({ ...draft, birth_date: e.target.value })}
-                      className="rounded-xl bg-gray-50"
-                    />
-                  ) : (
+                  </Label> 
                     <p className="p-3 bg-gray-50 rounded-xl">{fmtDate(selfProfile?.birth_date)}</p>
-                  )}
                 </div>
 
                 {/* Gender */}
@@ -195,15 +125,7 @@ export default function ProfilePage() {
                   <Label className="text-sm flex items-center">
                     <Circle className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelGender")}
                   </Label>
-                  {isEditing ? (
-                    <Input
-                      value={selfProfile?.gender ?? ""}
-                      onChange={(e) => setDraft({ ...draft, gender: e.target.value })}
-                      className="rounded-xl bg-gray-50"
-                    />
-                  ) : (
                     <p className="p-3 bg-gray-50 rounded-xl">{draft?.gender || "-"}</p>
-                  )}
                 </div>
 
                 {/* Social ID */}

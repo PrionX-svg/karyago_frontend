@@ -59,7 +59,7 @@ interface EmployeeSelfStore {
   resetForNewDay: () => void
 
   fetchSelfProfile: () => Promise<void>
-  updateSelfProfile: (payload: Partial<SelfProfile>) => Promise<void>
+
 }
 
 /* ---------- STORE IMPLEMENTATION ---------- */
@@ -207,22 +207,6 @@ export const useEmployeeSelfStore = create<EmployeeSelfStore>()(
           set({ selfProfile: res })
         } catch (e) {
           console.error("fetchSelfProfile error:", e)
-        }
-      },
-
-      async updateSelfProfile(payload) {
-        const prev = get().selfProfile
-        try {
-          // Optimistic update
-          set({ selfProfile: { ...prev, ...payload } as SelfProfile })
-          const res = await employeeAPI.updateSelfProfile(payload)
-          set({ selfProfile: res.data as SelfProfile })
-          toast.success("Profile updated successfully!")
-        } catch (e) {
-          // Rollback if failed
-          set({ selfProfile: prev ?? null })
-          toast.error("Failed to update profile.")
-          console.error("❌ updateSelfProfile error:", e)
         }
       },
     }),
