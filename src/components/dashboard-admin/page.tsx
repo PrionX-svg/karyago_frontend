@@ -110,7 +110,6 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
     calcRate()
   }, [currentCompany?.uuid, employees])
 
-
   // 🔹 Stats
   const stats = useMemo(() => ({
     activeEmployees: employees.length,
@@ -119,26 +118,26 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
     subDivisions: subDivisions.length,
   }), [employees, terminatedEmployees, divisions, subDivisions])
 
+  const t = useTranslations("dashboard")
+
   const formatEditType = (type: string) => {
     switch (type) {
       case "CLOCK_IN":
-        return "Clock In"
+        return t("editRequestsType.editTypeClockIn");
       case "CLOCK_OUT":
-        return "Clock Out"
+      case "CLOCK OUT":
+        return t("editRequestsType.editTypeClockOut");
       case "BOTH":
-        return "Clock In & Out"
+        return t("editRequestsType.editTypeBoth");
       case "HOME_FLAG":
-        return "Work Type"
+        return t("editRequestsType.editTypeHome");
       case "BOTH_PLUS_FLAG":
-        return "All Request Type"
       case "BOTH PLUS FLAG":
-        return "All Request Type"
+        return t("editRequestsType.allRequestEditType");
       default:
         return type || "-"
     }
   }
-
-  const t = useTranslations("dashboard")
 
   return (
     <div className="w-full max-w-full space-y-6">
@@ -193,7 +192,7 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
         {/* Attendance Rate */}
         <Card>
           <CardHeader>
-            <CardTitle>{t("employeeDistribution.title")}</CardTitle>
+            <CardTitle>{t("attendanceRate.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

@@ -649,7 +649,12 @@
       "clockInOut": "<strong>Clock In & Out</strong> — Adjustment for both clock-in and clock-out times.",
       "workType": "<strong>Work Type</strong> — Change between office and home work type.",
       "allRequestType": "<strong>All Request Type</strong> — Combination of Clock In, Clock Out, and Work Type."
-    }
+    },
+    "editTypeClockIn": "Clock In",
+    "editTypeClockOut": "Clock Out",
+    "editTypeBoth": "Clock In & Out",
+    "editTypeHome": "Work Type",
+    "allRequestEditType": "All Request Type"
   },
   "dashboardEmployee": {
     "title": "Employee Dashboard",
@@ -686,6 +691,7 @@
       "editTypeClockOut": "Clock Out",
       "editTypeBoth": "Clock In & Out",
       "editTypeHome": "Work Type",
+      "allRequestEditType": "All Request Type",
       "statusPending": "Pending",
       "statusApproved": "Approved",
       "statusRejected": "Rejected",
@@ -792,6 +798,15 @@
       "rejected": "Rejected",
       "clockInOut": "Clock In & Out",
       "noRequests": "No attendance edit requests yet"
+    },
+    "editRequestsType": {
+      "title": "My Edit Requests",
+      "noRequests": "No attendance edit requests yet",
+      "editTypeClockIn": "Clock In",
+      "editTypeClockOut": "Clock Out",
+      "editTypeBoth": "Clock In & Out",
+      "editTypeHome": "Work Type",
+      "allRequestEditType": "All Request Type"
     },
     "common": {
       "employee": "Employee",
