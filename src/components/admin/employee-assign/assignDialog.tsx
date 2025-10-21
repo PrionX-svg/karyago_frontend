@@ -93,13 +93,13 @@ export function AssignEmployeeDialog({ employee, mode, storedUuid }: EmployeeDia
                 {mode === "assign" ? (
                     <div className="space-y-4 mt-4">
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Select Department</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">{t("selectDepartment")}</label>
                             <Select
                                 value={selectedSubDivision}
                                 onValueChange={(value) => setSelectedSubDivision(value)}
                             >
                                 <SelectTrigger className="dark:bg-zinc-800 dark:text-white w-full">
-                                    <SelectValue placeholder="Choose a sub-division..." />
+                                    <SelectValue placeholder={t("selectDepartmentPlaceholder")} />
                                 </SelectTrigger>
                                 <SelectContent className="dark:bg-zinc-800 dark:text-white">
                                     {subDivisionData.map((subdivision) => (

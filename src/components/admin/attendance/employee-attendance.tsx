@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, useMemo } from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -12,6 +12,7 @@ import { DatePicker } from "@/components/ui/date-picker"
 import { CalendarClockIcon, ChevronLeft, ChevronRight } from "lucide-react"
 import { format} from "date-fns"
 import { id } from "date-fns/locale"
+import { useTranslations } from "next-intl"
 
 interface AttendanceItem {
   uuid: string
@@ -82,6 +83,8 @@ export default function EmployeeAttendancePage() {
   const totalPages = Math.ceil(sorted.length / ITEMS_PER_PAGE)
   const paginated = sorted.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE)
 
+  const t = useTranslations("attendance")
+
   return (
     <main className="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
       {/* Header */}
@@ -90,7 +93,7 @@ export default function EmployeeAttendancePage() {
           <div className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900 dark:to-orange-950 rounded-xl border border-orange-200 dark:border-orange-800">
             <CalendarClockIcon className="w-5 h-5 text-orange-600 dark:text-orange-400" />
           </div>
-          Employee Attendance
+          {t("title-4")}
         </h1>
       </div>
 
@@ -98,7 +101,7 @@ export default function EmployeeAttendancePage() {
       <div className="w-full bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm flex flex-wrap gap-3 justify-between items-start sm:items-center mb-6 overflow-hidden">
         <div className="flex flex-wrap gap-3 flex-1 min-w-0">
           <Input
-            placeholder="Search name..."
+            placeholder={t("searchPlaceholder-3")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full sm:w-48 min-w-0"
@@ -111,7 +114,7 @@ export default function EmployeeAttendancePage() {
             <SelectContent>
               {employeeNames.map((name) => (
                 <SelectItem key={name} value={name}>
-                  {name === "all" ? "All Employees" : name}
+                  {name === "all" ? t("filterTitleEmployeeName"): name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -120,9 +123,9 @@ export default function EmployeeAttendancePage() {
 
         <div className="flex flex-wrap gap-3 items-center justify-start sm:justify-end w-full sm:w-auto min-w-0">
           <div className="flex flex-wrap gap-2 items-center w-full sm:w-auto">
-            <DatePicker date={dateFrom} onDateChange={setDateFrom} placeholder="From" />
+            <DatePicker date={dateFrom} onDateChange={setDateFrom} placeholder={t("filterPlaceholderDateFrom")} />
             <span className="text-gray-500">–</span>
-            <DatePicker date={dateTo} onDateChange={setDateTo} placeholder="To" />
+            <DatePicker date={dateTo} onDateChange={setDateTo} placeholder={t("filterPlaceholderDateTo")}/>
           </div>
 
           <Select value={selectedStatus} onValueChange={setSelectedStatus}>
@@ -130,33 +133,29 @@ export default function EmployeeAttendancePage() {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="PRESENT">Present</SelectItem>
-              <SelectItem value="ABSENT">Absent</SelectItem>
-              <SelectItem value="OPEN">Open</SelectItem>
+              <SelectItem value="all">{t("filterPlaceholderStatusDefault")}</SelectItem>
+              <SelectItem value="PRESENT">{t("filterPlaceholderStatusAttendance-1")}</SelectItem>
+              <SelectItem value="ABSENT">{t("filterPlaceholderStatusAttendance-2")}</SelectItem>
+              <SelectItem value="OPEN">{t("filterPlaceholderStatusAttendance-3")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-
       {/* Main Card */}
       <Card className="shadow-md border-0 rounded-3xl">
-        <CardHeader>
-          <CardTitle>Attendance Records</CardTitle>
-        </CardHeader>
 
         <CardContent>
           {/* Table View for Desktop */}
           <div className="hidden md:grid md:grid-cols-8 text-sm font-semibold text-gray-500 border-b pb-2 mb-2">
-            <span>Name</span>
-            <span>Date</span>
-            <span>Clock In</span>
-            <span>Clock Out</span>
-            <span>Total Hours</span>
-            <span>Overtime</span>
-            <span>Status</span>
-            <span>Notes</span>
+            <span>{t("tableHeaderName")}</span>
+            <span>{t("tableHeaderDate")}</span>
+            <span>{t("tableHeaderAttendanceClockIn")}</span>
+            <span>{t("tableHeaderAttendanceClockOut")}</span>
+            <span>{t("tableHeaderAttendanceTotalHours")}</span>
+            <span>{t("tableHeaderAttendanceOvetime")}</span>
+            <span>{t("tableHeaderAttendanceStatus")}</span>
+            <span>{t("tableHeaderAttendanceNotes")}</span>
           </div>
 
           {/* Card View for Mobile */}
@@ -177,21 +176,21 @@ export default function EmployeeAttendancePage() {
                   </Badge>
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
-                  <p><strong>Date:</strong> {a.work_date ? format(new Date(a.work_date), "dd/MMM/yyyy", { locale: id }) : "-"}</p>
+                  <p><strong>{t("tableHeaderDate")}:</strong> {a.work_date ? format(new Date(a.work_date), "dd/MMM/yyyy", { locale: id }) : "-"}</p>
                   <p>
-                    <strong>Clock In:</strong>{" "}
+                    <strong>{t("tableHeaderAttendanceClockIn")}:</strong>{" "}
                     {a.clock_in_at ? a.clock_in_at.slice(11, 16).replace(":", ".") : "-"}
                   </p>
                   <p>
-                    <strong>Clock Out:</strong>{" "}
+                    <strong>{t("tableHeaderAttendanceClockOut")}:</strong>{" "}
                     {a.clock_out_at ? a.clock_out_at.slice(11, 16).replace(":", ".") : "-"}
                   </p>
 
-                  <p><strong>Total Hours:</strong> {a.total_work_hours ? `${a.total_work_hours.toFixed(1)}h` : "-"}</p>
+                  <p><strong>{t("tableHeaderAttendanceTotalHours")}:</strong> {a.total_work_hours ? `${a.total_work_hours.toFixed(1)}h` : "-"}</p>
                   {a.is_overtime && (
-                    <p><strong>Overtime:</strong> {a.overtime_hours ? `${a.overtime_hours.toFixed(1)}h` : "OT"}</p>
+                    <p><strong>{t("tableHeaderAttendanceOvetime")}:</strong> {a.overtime_hours ? `${a.overtime_hours.toFixed(1)}h` : "OT"}</p>
                   )}
-                  <p><strong>Notes:</strong> {a.notes || "-"}</p>
+                  <p><strong>{t("tableHeaderAttendanceNotes")}:</strong> {a.notes || "-"}</p>
                 </div>
               </Card>
             ))}
