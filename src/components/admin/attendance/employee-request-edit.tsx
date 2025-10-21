@@ -120,6 +120,19 @@ export default function EmployeeEditRequestsPage() {
 
   const t = useTranslations("attendance");
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return t("statusPending");
+      case "APPROVED":
+        return t("statusApproved");
+      case "REJECTED":
+        return t("statusRejected");
+      default:
+        return status;
+    }
+  };
+
   return (
     <main className="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
       {/* Header */}
@@ -207,7 +220,7 @@ export default function EmployeeEditRequestsPage() {
                         : "bg-red-100 text-red-700"
                       }`}
                   >
-                    {r.status}
+                     {getStatusLabel(r.status)}
                   </Badge>
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
@@ -266,7 +279,7 @@ export default function EmployeeEditRequestsPage() {
                       : "bg-red-100 text-red-700"
                     } rounded-full w-fit`}
                 >
-                  {r.status}
+                   {getStatusLabel(r.status)}
                 </Badge>
                 <div className="flex justify-center gap-2">
                   {r.status === "PENDING" && (

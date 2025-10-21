@@ -228,6 +228,20 @@ export default function AttendancePage() {
 
     const attendancePage = useTranslations("attendance");
 
+    const getEditStatusLabel = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return attendancePage("statusPending");
+      case "APPROVED":
+        return attendancePage("statusApproved");
+      case "REJECTED":
+        return attendancePage("statusRejected");
+      default:
+        return status;
+    }
+    
+  };
+
     return (
         <main className="p-4 sm:p-6 min-h-screen">
             {/* Header */}
@@ -585,7 +599,7 @@ export default function AttendancePage() {
                                                     : "bg-red-100 text-red-700"
                                                 } border-0 rounded-full text-xs sm:text-sm`}
                                         >
-                                            {r.status}
+                                            {getEditStatusLabel(r.status)}
                                         </Badge>
                                     </div>
 

@@ -20,6 +20,7 @@ import { api } from "@/lib/api/api";
 import { toast } from "sonner";
 import { decrypt } from "@/lib/encrypt";
 import { profileSchema, ProfileSchemaType } from "@/lib/schema";
+import { useTranslations } from "next-intl";
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
@@ -148,6 +149,8 @@ export default function ProfilePage() {
     fetchData();
   }, []);
 
+  const t = useTranslations("profileSummaryPage");
+
   if (!hasMounted) return null;
 
   return (
@@ -161,10 +164,10 @@ export default function ProfilePage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">
-                Profile Settings
+                {t("title")}
               </h1>
               <p className="mt-1 text-gray-600 dark:text-muted-foreground text-sm sm:text-base">
-                Manage your personal information and account preferences
+                {t("description")}
               </p>
             </div>
           </div>
@@ -176,7 +179,7 @@ export default function ProfilePage() {
                 className="gap-2 bg-orange-500 hover:bg-orange-600 text-white w-full sm:w-auto"
               >
                 <Edit3 className="w-4 h-4" />
-                Edit Profile
+                {t("buttonEditProfile")}
               </Button>
             ) : (
               <div className="flex flex-col gap-2 sm:flex-row sm:gap-2 w-full sm:w-auto">
@@ -186,14 +189,14 @@ export default function ProfilePage() {
                   className="gap-2 bg-transparent w-full sm:w-auto"
                 >
                   <X className="w-4 h-4" />
-                  Cancel
+                  {t("buttonCancelEdit")}
                 </Button>
                 <Button
                   onClick={handleSave}
                   className="gap-2 bg-orange-500 hover:bg-orange-600 text-white w-full sm:w-auto"
                 >
                   <Save className="w-4 h-4" />
-                  Save Changes
+                  {t("buttonSaveEdit")}
                 </Button>
               </div>
             )}
@@ -277,7 +280,7 @@ export default function ProfilePage() {
         <Card className="bg-white dark:bg-card border border-gray-200 dark:border-stone-700 rounded-xl shadow-sm">
           <CardHeader>
             <CardTitle className="text-lg font-bold text-gray-900 dark:text-foreground">
-              Personal Information
+              {t("personalInfo.title")}
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -315,7 +318,7 @@ export default function ProfilePage() {
               </div>
             ) : (
               <div className="space-y-2">
-                <Label>Full Name</Label>
+                <Label>{t("personalInfo.fullName")}</Label>
                 <div className="info-box">
                   {userData.name.firstName} {userData.name.lastName}
                 </div>
@@ -324,7 +327,7 @@ export default function ProfilePage() {
 
             {/* Email */}
             <div className="space-y-2">
-              <Label>Email Address</Label>
+              <Label>{t("personalInfo.emailAddress")}</Label>
               {isEditing ? (
                 <>
                   <Input
@@ -344,7 +347,7 @@ export default function ProfilePage() {
 
             {/* Phone */}
             <div className="space-y-2">
-              <Label>Phone Number</Label>
+              <Label>{t("personalInfo.phoneNumber")}</Label>
               {isEditing ? (
                 <>
                   <Input
@@ -363,7 +366,7 @@ export default function ProfilePage() {
 
             {/* Gender */}
             <div className="space-y-2">
-              <Label>Gender</Label>
+              <Label>{t("personalInfo.gender")}</Label>
               {isEditing ? (
                 <>
                   <Select
@@ -399,7 +402,7 @@ export default function ProfilePage() {
 
             {/* DOB */}
             <div className="space-y-2">
-              <Label>Date of Birth</Label>
+              <Label>{t("personalInfo.dateOfBirth")}</Label>
               {isEditing ? (
                 <>
                   <Input
@@ -427,7 +430,7 @@ export default function ProfilePage() {
 
             {/* Employment Type */}
             <div className="space-y-2">
-              <Label>Employment Type</Label>
+              <Label>{t("personalInfo.employmentType")}</Label>
               {isEditing ? (
                 <>
                   <Select
@@ -437,11 +440,10 @@ export default function ProfilePage() {
                     }
                   >
                     <SelectTrigger
-                      className={`border w-full ${
-                        errors.is_freelance
+                      className={`border w-full ${errors.is_freelance
                           ? "border-red-500"
                           : ""
-                      }`}
+                        }`}
                     >
                       <SelectValue placeholder="Select Employment Type" />
                     </SelectTrigger>
@@ -473,13 +475,13 @@ export default function ProfilePage() {
 
             {/* Branch */}
             <div className="space-y-2">
-              <Label>Branch/Division</Label>
+              <Label>{t("personalInfo.branchDepartment")}</Label>
               <div className="info-box">
                 {userData.branch?.name ? (
                   userData.branch.name
                 ) : (
                   <span className="italic text-muted-foreground">
-                    Not assigned
+                    {t("personalInfo.notAssigned")}
                   </span>
                 )}
               </div>

@@ -622,7 +622,7 @@
     "cancel": "Cancel",
     "editRequestSent": "Attendance edit request submitted successfully",
     "editRequestFailed": "Failed to submit edit request",
-    "statusPending": "Pending Approval",
+    "statusPending": "Pending",
     "statusApproved": "Approved",
     "statusRejected": "Rejected",
     "approvedBy": "Approved by",
@@ -766,5 +766,70 @@
       "genderRequired": "Please select gender",
       "dobInvalid": "Invalid birth date"
     }
+  },
+  "dashboard": {
+    "title": "Company Dashboard",
+    "description": "Monitor employee activities and your company performance summary",
+    "cards": {
+      "activeEmployees": "Active Employees",
+      "terminatedEmployees": "Terminated Employees",
+      "departmentGroup": "Department Group",
+      "department": "Department"
+    },
+    "employeeDistribution": {
+      "title": "Employee Distribution",
+      "noData": "No department data found"
+    },
+    "attendanceRate": {
+      "title": "Attendance Rate",
+      "thisMonth": "This Month"
+    },
+    "requestedEditAttendance": {
+      "title": "Requested Edit Attendance",
+      "seeMore": "See more",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "clockInOut": "Clock In & Out",
+      "noRequests": "No attendance edit requests yet"
+    },
+    "common": {
+      "employee": "Employee",
+      "employees": "Employees",
+      "status": "Status",
+      "loading": "Loading dashboard data...",
+      "noData": "No data available"
+    }
+  },
+  "profileSummaryPage": {
+    "title": "Profile Settings",
+    "description": "Manage your personal information and account preferences",
+    "buttonEditProfile": "Edit Profile",
+    "buttonCancelEdit": "Cancel",
+    "buttonSaveEdit": "Save",
+    "profileHeader": {
+      "role": "Role",
+      "employmentTypeFull": "Full-time Employee",
+      "employmentTypeFreelance": "Freelance"
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "fullName": "Full Name",
+      "emailAddress": "Email Address",
+      "phoneNumber": "Phone Number",
+      "dateOfBirth": "Date of Birth",
+      "gender": "Gender",
+      "role": "Role",
+      "employmentType": "Employment Type",
+      "branchDepartment": "Branch/Depatment",
+      "notAssigned": "Not assigned",
+      "notSet": "Not set"
+    },
+    "toast": {
+      "updateSuccess": "Profile updated successfully!",
+      "updateError": "Failed to update profile. Please try again."
+    },
+    "loading": "Loading profile...",
+    "noData": "No data available"
   }
 }

@@ -611,7 +611,7 @@
     "cancel": "Batal",
     "editRequestSent": "Permintaan ubah kehadiran telah dikirim",
     "editRequestFailed": "Gagal mengirim permintaan edit",
-    "statusPending": "Menunggu Persetujuan",
+    "statusPending": "Menunggu",
     "statusApproved": "Disetujui",
     "statusRejected": "Ditolak",
     "approvedBy": "Disetujui oleh",
@@ -756,5 +756,71 @@
       "genderRequired": "Pilih jenis kelamin",
       "dobInvalid": "Tanggal lahir tidak valid"
     }
+  },
+  "dashboard": {
+    "title": "Dashboard Perusahaan",
+    "description": "Pantau ringkasan aktivitas karyawan dan performa perusahaan Anda",
+    "cards": {
+      "activeEmployees": "Karyawan Aktif",
+      "terminatedEmployees": "Karyawan Berhenti",
+      "departmentGroup": "Grup Departemen",
+      "department": "Departemen"
+    },
+    "employeeDistribution": {
+      "title": "Distribusi Karyawan",
+      "noData": "Tidak ada data departemen yang ditemukan"
+    },
+    "attendanceRate": {
+      "title": "Tingkat Kehadiran",
+      "thisMonth": "Bulan Ini",
+      "seeMore": "Lihat Selengkapnya"
+    },
+    "requestedEditAttendance": {
+      "title": "Permintaan Ubah Kehadiran",
+      "seeMore": "Lihat Selengkapnya",
+      "pending": "Menunggu",
+      "approved": "Disetujui",
+      "rejected": "Ditolak",
+      "clockInOut": "Clock In & Out",
+      "noRequests": "Belum ada permintaan ubah kehadiran"
+    },
+    "common": {
+      "employee": "Karyawan",
+      "employees": "Karyawan",
+      "status": "Status",
+      "loading": "Memuat data dashboard...",
+      "noData": "Belum ada data untuk ditampilkan"
+    }
+  },
+  "profileSummaryPage": {
+    "title": "Pengaturan Profil",
+    "description": "Kelola informasi pribadi dan preferensi akun Anda",
+    "buttonEditProfile": "Edit Profil",
+    "buttonCancelEdit": "Batal",
+    "buttonSaveEdit": "Simpan",
+    "profileHeader": {
+      "role": "Peran",
+      "employmentTypeFull": "Karyawan Penuh Waktu",
+      "employmentTypeFreelance": "Freelance"
+    },
+    "personalInfo": {
+      "title": "Informasi Pribadi",
+      "fullName": "Nama Lengkap",
+      "emailAddress": "Alamat Email",
+      "phoneNumber": "Nomor Telepon",
+      "dateOfBirth": "Tanggal Lahir",
+      "gender": "Jenis Kelamin",
+      "role": "Peran",
+      "employmentType": "Tipe Pekerjaan",
+      "branchDepartment": "Cabang/Department",
+      "notAssigned": "Belum Ditugaskan",
+      "notSet": "Belum Diatur"
+    },
+    "toast": {
+      "updateSuccess": "Profil berhasil diperbarui!",
+      "updateError": "Gagal memperbarui profil. Silakan coba lagi."
+    },
+    "loading": "Memuat profil...",
+    "noData": "Tidak ada data tersedia"
   }
 }
