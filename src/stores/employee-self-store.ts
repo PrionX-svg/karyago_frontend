@@ -65,7 +65,7 @@ interface EmployeeSelfStore {
 /* ---------- STORE IMPLEMENTATION ---------- */
 export const useEmployeeSelfStore = create<EmployeeSelfStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       attendanceToday: null,
       attendanceList: [],
       myEditRequests: [],

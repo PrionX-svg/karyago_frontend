@@ -1,15 +1,12 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect } from "react"
 import { useEmployeeSelfStore } from "@/stores/employee-self-store"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
-  User, Mail, Phone, Calendar, Briefcase, Users,
-  Edit, Save, X, Camera, Shield, Circle,
+  User, Mail, Phone, Calendar, Briefcase, Users, Shield, Circle,
   FolderTree,
 } from "lucide-react"
 import { useTranslations } from "next-intl"
@@ -23,18 +20,12 @@ function fmtDate(d?: string | null) {
 export default function ProfilePage() {
   const tprofilePage = useTranslations("employeeProfilePage")
   const { selfProfile, fetchSelfProfile } = useEmployeeSelfStore()
-  const [isEditing, setIsEditing] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [draft, setDraft] = useState<any>(null)
-  const loading = !selfProfile && !draft
+  const loading = !selfProfile
 
   useEffect(() => {
     fetchSelfProfile()
   }, [fetchSelfProfile])
 
-  useEffect(() => {
-    if (selfProfile) setDraft(selfProfile)
-  }, [selfProfile, fetchSelfProfile])
 
 
   if (loading) {
@@ -70,11 +61,6 @@ export default function ProfilePage() {
                 <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
                   <User className="w-16 h-16 text-white" />
                 </div>
-                {isEditing && (
-                  <button className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full shadow flex items-center justify-center">
-                    <Camera className="w-5 h-5 text-gray-700" />
-                  </button>
-                )}
               </div>
 
               <h2 className="text-2xl font-bold">{selfProfile?.name || "-"}</h2>
@@ -125,7 +111,7 @@ export default function ProfilePage() {
                   <Label className="text-sm flex items-center">
                     <Circle className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelGender")}
                   </Label>
-                    <p className="p-3 bg-gray-50 rounded-xl">{draft?.gender || "-"}</p>
+                    <p className="p-3 bg-gray-50 rounded-xl">{selfProfile?.gender || "-"}</p>
                 </div>
 
                 {/* Social ID */}
