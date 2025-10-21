@@ -707,7 +707,7 @@ export default function AttendancePage() {
                                         className="w-4 h-4 text-purple-500 border-gray-300 rounded"
                                     />
                                     <label htmlFor="homeFlag" className="text-sm text-gray-700">
-                                        {attendancePage("editClockOut")}
+                                        {attendancePage("editSetAsHomeOffie")}
                                     </label>
                                 </div>
                             )}

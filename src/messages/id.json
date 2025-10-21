@@ -602,8 +602,8 @@
     "editRequestSelectDate": "Pilih Tanggal",
     "editRequestSelectWorkType": "Pilih Tipe Kerja",
     "editRequestType": "Tipe Pengajuan",
-    "editClockIn": "Ubah Jam Masuk",
-    "editClockOut": "Ubah Jam Keluar",
+    "editClockIn": "Ubah Jam Clock In",
+    "editClockOut": "Ubah Jam Clock Out",
     "editSetAsHomeOffie": "Tandai Sebagai Kerja di Rumah",
     "editReasonLabel": "Alasan Mengajukan Perubahan",
     "editReasonPlaceholder": "Jelaskan alasan Anda mengajukan edit...",
@@ -788,6 +788,13 @@
       "rejected": "Ditolak",
       "clockInOut": "Clock In & Out",
       "noRequests": "Belum ada permintaan ubah kehadiran"
+    },
+    "editRequestsType": {
+      "editTypeClockIn": "Clock In",
+      "editTypeClockOut": "Clock Out",
+      "editTypeBoth": "Clock In & Out",
+      "editTypeHome": "Tipe Kerja",
+      "allRequestEditType": "Semua Tipe Pengajuan"
     },
     "common": {
       "employee": "Karyawan",
