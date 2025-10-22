@@ -229,35 +229,38 @@ export default function AttendancePage() {
     const attendancePage = useTranslations("attendance");
 
     const getEditStatusLabel = (status: string) => {
-    switch (status) {
-      case "PENDING":
-        return attendancePage("statusPending");
-      case "APPROVED":
-        return attendancePage("statusApproved");
-      case "REJECTED":
-        return attendancePage("statusRejected");
-      default:
-        return status;
-    }
-    
-  };
+        switch (status) {
+            case "PENDING":
+                return attendancePage("statusPending");
+            case "APPROVED":
+                return attendancePage("statusApproved");
+            case "REJECTED":
+                return attendancePage("statusRejected");
+            default:
+                return status;
+        }
+
+    };
 
     return (
         <main className="p-4 sm:p-6 min-h-screen">
             {/* Header */}
             <div className="mb-8 text-center sm:text-left">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2 justify-center sm:justify-start">
-                    <div className="mx-auto sm:mx-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start sm:space-x-3 space-y-2 sm:space-y-0">
+                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
                         <Calendar className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-br from-orange-500 to-red-500 bg-clip-text text-transparent">
+                        <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent leading-tight">
                             {attendancePage("title-1")}
                         </h1>
-                        <p className="text-gray-600 text-xs sm:text-sm">{attendancePage("description-1")}</p>
+                        <p className="text-gray-600 text-xs sm:text-sm mt-1">
+                            {attendancePage("description-1")}
+                        </p>
                     </div>
                 </div>
             </div>
+
 
             {/* Search & Filter */}
             <Card className="mb-8 bg-white/90 backdrop-blur-sm border-0 shadow-lg rounded-3xl">

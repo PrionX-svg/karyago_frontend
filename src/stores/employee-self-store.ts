@@ -30,15 +30,22 @@ type EditRequest = {
 }
 
 type SelfProfile = {
-  name?: string
-  email?: string
-  phone?: string
-  gender?: string
-  birth_date?: string | null
-  company?: string | null
-  employee_id?: string | null
-  department?: string | null
-}
+  name?: string;
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  phone?: string;
+  gender?: string;
+  birth_date?: string | null;
+  company?: string | null;
+  company_uuid?: string | null;
+  employee_id?: string | null;
+  user_uuid?: string | null;
+  department?: string | null;
+  role_uuid?: string | null;
+  is_freelance?: boolean;
+};
+
 
 /* ---------- STORE INTERFACE ---------- */
 interface EmployeeSelfStore {

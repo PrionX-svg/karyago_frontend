@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useEmployeeSelfStore } from "@/stores/employee-self-store"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -8,8 +8,17 @@ import { Label } from "@/components/ui/label"
 import {
   User, Mail, Phone, Calendar, Briefcase, Users, Shield, Circle,
   FolderTree,
+  Edit3,
+  Save,
+  X,
 } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
+import { api } from "@/lib/api/api"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useUserStore } from "@/stores/user-store"
+import { useCompanyStore } from "@/stores/company-store"
 
 function fmtDate(d?: string | null) {
   if (!d) return "-"
@@ -20,20 +29,84 @@ function fmtDate(d?: string | null) {
 export default function ProfilePage() {
   const tprofilePage = useTranslations("employeeProfilePage")
   const { selfProfile, fetchSelfProfile } = useEmployeeSelfStore()
-  const loading = !selfProfile
+  const userData = useUserStore((state) => state.user)
+  const [isEditing, setIsEditing] = useState(false);
+  const [draft, setDraft] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    birth_date: "",
+  });
 
   useEffect(() => {
     fetchSelfProfile()
   }, [fetchSelfProfile])
 
+  useEffect(() => {
+    if (selfProfile) {
+      setDraft({
+        name: selfProfile.name || "",
+        email: selfProfile.email || "",
+        phone: selfProfile.phone || "",
+        birth_date: selfProfile.birth_date
+          ? new Date(selfProfile.birth_date).toISOString().split("T")[0]
+          : "",
+      });
+    }
+  }, [selfProfile]);
+
+  const handleEdit = () => setIsEditing(true);
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    if (selfProfile) {
+      setDraft({
+        name: selfProfile.name || "",
+        email: selfProfile.email || "",
+        phone: selfProfile.phone || "",
+        birth_date: selfProfile.birth_date
+          ? new Date(selfProfile.birth_date).toISOString().split("T")[0]
+          : "",
+      });
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      if (!draft.name || !draft.email) {
+        toast.error("Name dan email must filled");
+        return;
+      }
+
+      const payload = {
+        firstname: draft.name,
+        lastname: selfProfile?.lastname || "", // biarkan kosong
+        email: draft.email,
+        phone: draft.phone,
+        dob: new Date(draft.birth_date).toISOString(),
+        gender: selfProfile?.gender || "",
+        is_freelance: selfProfile?.is_freelance ?? false,
+        company_uuid: selfProfile?.company_uuid || "",
+        password: "", // tidak akan diubah di backend
+        role_uuid: selfProfile?.role_uuid || "",
+      };
+
+      await api.updateUser(payload, userData?.userUuid || "");
+
+      toast.success("Sucess update Profile");
+      setIsEditing(false);
+      fetchSelfProfile();
+    } catch (err) {
+      console.error(err);
+      toast.error("Fail to update profile");
+    }
+  };
 
 
-  if (loading) {
+  if (!selfProfile) {
     return (
-      <main className="p-6">
-        <div className="rounded-3xl border bg-white p-8 text-gray-500">Loading profile…</div>
-      </main>
-    )
+      <main className="p-6 text-gray-500">Loading profile…</main>
+    );
   }
 
   return (
@@ -42,13 +115,41 @@ export default function ProfilePage() {
         {/* Left section (Title + Subtitle) */}
         <div className="flex flex-col items-center sm:items-start space-y-1">
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent leading-tight">
-           {tprofilePage("title")}
+            {tprofilePage("title")}
           </h1>
           <p className="text-gray-600 text-xs sm:text-sm">
             {tprofilePage("description")}
           </p>
         </div>
-      
+
+        <div className="flex flex-col gap-2 w-full sm:flex-row sm:gap-3 sm:w-auto">
+          {!isEditing ? (
+            <Button
+              onClick={handleEdit}
+              className="bg-orange-500 hover:bg-orange-600 text-white w-full sm:w-auto"
+            >
+              <Edit3 className="w-4 h-4 mr-2" /> Edit Profile
+            </Button>
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                onClick={handleCancel}
+                className="w-full sm:w-auto"
+              >
+                <X className="w-4 h-4 mr-2" /> Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                className="bg-orange-500 hover:bg-orange-600 text-white w-full sm:w-auto"
+              >
+                <Save className="w-4 h-4 mr-2" /> Save
+              </Button>
+            </>
+          )}
+        </div>
+
+
       </div>
 
 
@@ -62,12 +163,17 @@ export default function ProfilePage() {
                   <User className="w-16 h-16 text-white" />
                 </div>
               </div>
-
-              <h2 className="text-2xl font-bold">{selfProfile?.name || "-"}</h2>
+              {isEditing ? (
+                <Input
+                  value={draft.name}
+                  onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+                />
+              ) : (
+                <h2 className="text-2xl font-bold">{selfProfile?.name || "-"}</h2>
+              )}
               <Badge className="mt-2 rounded-full bg-gradient-to-r from-orange-400 to-red-500 text-white">
                 <Shield className="w-3 h-3 mr-1" /> {tprofilePage("badgeRole")}
               </Badge>
-
             </CardContent>
           </Card>
         </div>
@@ -87,7 +193,15 @@ export default function ProfilePage() {
                   <Label className="text-sm flex items-center">
                     <Mail className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelEmail")}
                   </Label>
-                    <p className="p-3 bg-gray-50 rounded-xl">{selfProfile?.email || "-"}</p>
+                  {isEditing ? (
+                    <Input
+                      value={draft.email}
+                      type="email"
+                      onChange={(e) => setDraft({ ...draft, email: e.target.value })}
+                    />
+                  ) : (
+                    <p className="p-3 bg-gray-50 rounded-xl">{selfProfile.email}</p>
+                  )}
                 </div>
 
                 {/* Phone */}
@@ -95,15 +209,37 @@ export default function ProfilePage() {
                   <Label className="text-sm flex items-center">
                     <Phone className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelPhone")}
                   </Label>
-                    <p className="p-3 bg-gray-50 rounded-xl">{selfProfile?.phone || "-"}</p>
+                  {isEditing ? (
+                    <Input
+                      value={draft.phone}
+                      onChange={(e) => setDraft({ ...draft, phone: e.target.value })}
+                    />
+                  ) : (
+                    <p className="p-3 bg-gray-50 rounded-xl">
+                      {selfProfile.phone || "-"}
+                    </p>
+                  )}
                 </div>
 
                 {/* Birth Date */}
                 <div>
                   <Label className="text-sm flex items-center">
                     <Calendar className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelBirthDate")}
-                  </Label> 
-                    <p className="p-3 bg-gray-50 rounded-xl">{fmtDate(selfProfile?.birth_date)}</p>
+                  </Label>
+                  {isEditing ? (
+                    <Input
+                      type="date"
+                      value={draft.birth_date}
+                      onChange={(e) =>
+                        setDraft({ ...draft, birth_date: e.target.value })
+                      }
+                    />
+                  ) : (
+                    <p className="p-3 bg-gray-50 rounded-xl">
+                      {fmtDate(selfProfile.birth_date)}
+                    </p>
+                  )}
+
                 </div>
 
                 {/* Gender */}
@@ -111,7 +247,7 @@ export default function ProfilePage() {
                   <Label className="text-sm flex items-center">
                     <Circle className="w-4 h-4 mr-2 text-gray-500" /> {tprofilePage("labelGender")}
                   </Label>
-                    <p className="p-3 bg-gray-50 rounded-xl">{selfProfile?.gender || "-"}</p>
+                  <p className="p-3 bg-gray-50 rounded-xl">{selfProfile?.gender || "-"}</p>
                 </div>
 
                 {/* Social ID */}
