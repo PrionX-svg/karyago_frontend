@@ -10,12 +10,14 @@ function formatSlugToTitle(slug) {
     .join(" ")
 }
 
-export async function generateMetadata({ params }) {
-  const formattedTitle = formatSlugToTitle(params.company)
+export async function generateMetadata({ params }: { params: Promise<{ company: string }> }) {
+  const { company } = await params; // ← harus di-await sekarang
+  const formattedTitle = formatSlugToTitle(company);
+
   return {
     title: `Profile - ${formattedTitle}`,
     description: `Profile for ${formattedTitle}`,
-  }
+  };
 }
 
 export default function Page() {

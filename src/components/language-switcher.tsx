@@ -27,6 +27,7 @@ export function LanguageSwitcher() {
 
   // Extract locale from pathname to ensure sync with URL
   useEffect(() => {
+    if (!pathname) return; // ← tambahkan pengecekan aman
     const segments = pathname.split("/").filter(Boolean);
     const pathLocale = segments[0];
 
@@ -38,8 +39,9 @@ export function LanguageSwitcher() {
   }, [pathname, nextIntlLocale]);
 
   const handleLanguageChange = (newLocale: string) => {
-    // Don't do anything if we're already on the selected locale
-    if (currentLocale === newLocale) return;
+    if (currentLocale === newLocale || !pathname) return; // ← tambahkan guard
+    // // Don't do anything if we're already on the selected locale
+    // if (currentLocale === newLocale) return;
 
     // Get the current pathname without the locale prefix
     const segments = pathname.split("/").filter(Boolean);
