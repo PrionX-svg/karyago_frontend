@@ -10,12 +10,18 @@ function formatSlugToTitle(slug) {
     .join(" ")
 }
 
-export async function generateMetadata({ params }) {
-  const formattedTitle = formatSlugToTitle(params.company)
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ company: string }>;
+}) {
+  const { company } = await params;
+  const formattedTitle = formatSlugToTitle(company);
+
   return {
     title: `Employee's Edit Request Attendance - ${formattedTitle}`,
     description: `Employee's Edit Request Attendance for ${formattedTitle}`,
-  }
+  };
 }
 
 export default function Page() {

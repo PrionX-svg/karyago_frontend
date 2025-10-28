@@ -10,6 +10,7 @@ import { useCompanyStore } from "@/stores/company-store"
 import { useEmployeeStore } from "@/stores/employee-store"
 import { Building2, Users, Target, Briefcase } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { useParams } from "next/navigation"
 
 interface Division {
   uuid: string
@@ -34,7 +35,7 @@ interface AttendanceRecord {
 }
 
 
-export default function AdminDashboardPage({ params }: { params: { locale: string; company: string } }) {
+export default function AdminDashboardPage() {
   const { currentCompany } = useCompanyStore()
   const { employees, terminatedEmployees } = useEmployeeStore()
 
@@ -139,6 +140,10 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
     }
   }
 
+  const params = useParams();
+  const locale = params?.locale as string || "en";
+  const companySlug = currentCompany?.name || currentCompany?.uuid || "default-company";
+
   return (
     <div className="w-full max-w-full space-y-6">
       {/* 🔸 Stats Overview */}
@@ -206,7 +211,7 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>{t("requestedEditAttendance.title")}</CardTitle>
-            <Link href={`/${params.locale}/${params.company}/employees/attendance-requests`} className="text-sm text-primary hover:underline">
+            <Link href={`/${locale}/${companySlug}/employees/attendance-requests`} className="text-sm text-primary hover:underline">
               {t("requestedEditAttendance.seeMore")}
             </Link>
           </CardHeader>
