@@ -189,19 +189,19 @@ export default function EmployeeDashboard() {
   }
 
   return (
-    <main className="p-4 md:p-6">
+    <main className="p-4 md:p-6 bg-white dark:bg-[#0e0e0e] text-gray-900 dark:text-gray-100/90 transition-colors duration-300">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-auto">
 
         {/* ⏰ Clock & Attendance Card */}
         <div className="md:col-span-2 lg:col-span-2 lg:row-span-2">
-          <Card className="bg-white/95 backdrop-blur-xl border-gray-200 shadow-lg rounded-3xl h-full hover:shadow-xl transition-all duration-300">
+          <Card className="bg-white/95 dark:bg-[#111111]/90 backdrop-blur-xl border-gray-200 dark:border-gray-800 shadow-lg rounded-3xl h-full hover:shadow-xl transition-all duration-300 text-gray-900 dark:text-gray-100/90">
             <CardContent className="p-6 md:p-8 h-full flex flex-col justify-between">
               <div className="text-center flex-1 flex flex-col justify-center">
                 {/* Clock display */}
-                <div className="text-5xl md:text-6xl font-semibold text-gray-900 mb-3 tracking-tight">
+                <div className="text-5xl md:text-6xl font-semibold text-gray-900 dark:text-gray-100/90 mb-3 tracking-tight">
                   {mounted ? formatTime(currentTime) : "--:--:--"}
                 </div>
-                <p className="text-gray-600 mb-4 font-medium text-sm md:text-base">
+                <p className="text-gray-600 dark:text-gray-400 mb-4 font-medium text-sm md:text-base">
                   {currentTime.toLocaleDateString("en-US", {
                     weekday: "long",
                     day: "numeric",
@@ -212,7 +212,7 @@ export default function EmployeeDashboard() {
 
                 {/* Attendance Status */}
                 {attendanceToday && (
-                  <p className="text-sm text-gray-700 font-medium mb-4">
+                  <p className="text-sm text-gray-900 dark:text-gray-100/90 font-medium mb-4">
                     Status:{" "}
                     <span
                       className={`font-semibold ${attendanceToday.status === "OPEN"
@@ -253,13 +253,13 @@ export default function EmployeeDashboard() {
 
                 {/* Work Type */}
                 <div className="mb-6 flex justify-center">
-                  <div className="inline-flex bg-gray-100 rounded-2xl p-1">
+                  <div className="inline-flex bg-gray-100 dark:bg-[#1a1a1a] rounded-2xl p-1 border border-gray-200 dark:border-gray-700">
                     <button
                       onClick={() => toggleHomeOffice(false, currentCompany?.uuid)}
                       disabled={attendanceToday?.status === "PRESENT"}
                       className={`px-4 py-2 rounded-xl text-sm font-medium flex items-center space-x-2 transition-all duration-200 ${!isHomeOffice
-                        ? "bg-white text-gray-900 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white dark:bg-[#222222] text-gray-900 dark:text-gray-100/90 shadow-sm"
+                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                         } ${attendanceToday?.status === "PRESENT"
                           ? "opacity-50 cursor-not-allowed"
                           : ""
@@ -292,7 +292,7 @@ export default function EmployeeDashboard() {
                     value={notes}
                     onChange={(e) => saveNotes(e.target.value, currentCompany?.uuid)}
                     disabled={attendanceToday?.status === "PRESENT"}
-                    className="w-full bg-gray-50 border-gray-200 rounded-2xl resize-none text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:opacity-50"
+                    className="w-full bg-gray-50 dark:bg-[#1a1a1a] border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100/90 rounded-2xl ..."
                     rows={2}
                   />
                 </div>
@@ -325,7 +325,7 @@ export default function EmployeeDashboard() {
         </div>
 
         {/* Attendance Rate */}
-        <Card className="bg-gradient-to-br from-blue-500 to-indigo-600 border-0 shadow-lg rounded-3xl">
+        <Card className="bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 border-0 shadow-lg rounded-3xl text-white">
           <CardContent className="p-6 text-white flex flex-col justify-between">
             <CardTitle className="text-white font-semibold text-lg flex items-center">
               <Target className="w-5 h-5 mr-2" />
@@ -344,7 +344,7 @@ export default function EmployeeDashboard() {
         </Card>
 
         {/* Total Hours */}
-        <Card className="bg-gradient-to-br from-purple-500 to-pink-600 border-0 shadow-lg rounded-3xl">
+        <Card className="bg-gradient-to-br from-purple-500 to-pink-600 dark:from-purple-600 dark:to-pink-700 border-0 shadow-lg rounded-3xl">
           <CardContent className="p-6 text-white flex flex-col justify-between">
             <CardTitle className="text-white font-semibold text-lg flex items-center">
               <Award className="w-5 h-5 mr-2" />
@@ -364,9 +364,9 @@ export default function EmployeeDashboard() {
 
         {/* My Edit Requests */}
         <div className="md:col-span-2 lg:col-span-2">
-          <Card className="bg-white/95 backdrop-blur-xl border-gray-200 shadow-lg rounded-3xl">
+          <Card className="bg-white/95 dark:bg-[#111111]/90 backdrop-blur-xl border-gray-200 dark:border-gray-800 shadow-lg rounded-3xl text-gray-900 dark:text-gray-100/90">
             <CardHeader className="pb-4">
-              <CardTitle className="text-gray-900 font-semibold text-xl flex items-center">
+              <CardTitle className="text-gray-900 dark:text-gray-100/90 font-semibold text-xl flex items-center">
                 <Edit className="w-6 h-6 mr-3 text-orange-500" />
                 {tdashboardEmployee("editRequests.title")}
               </CardTitle>
@@ -374,7 +374,7 @@ export default function EmployeeDashboard() {
 
             <CardContent>
               {myEditRequests.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {tdashboardEmployee("editRequests.noRequests")}
                 </p>
               ) : (
@@ -392,25 +392,25 @@ export default function EmployeeDashboard() {
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <h4 className="font-semibold text-gray-900 text-sm">
+                            <h4 className="font-semibold text-gray-900 dark:text-black text-sm">
                               {formatEditType(req.edit_type)}
                             </h4>
-                            <p className="text-xs text-gray-600 mt-1">
+                            <p className="text-xs text-gray-700 dark:text-neutral-900 mt-1">
                               {req.work_date}
                             </p>
                           </div>
                           <Badge
-                            className={`rounded-full ${req.status === "PENDING"
-                              ? "bg-yellow-500"
+                            className={`rounded-full font-medium px-3 py-1 ${req.status === "PENDING"
+                              ? "bg-yellow-500 dark:bg-yellow-600 text-white"
                               : req.status === "APPROVED"
-                                ? "bg-green-500"
-                                : "bg-red-500"
-                              } text-white`}
+                                ? "bg-green-500 dark:bg-green-600 text-white"
+                                : "bg-red-500 dark:bg-red-600 text-white"
+                              }`}
                           >
                             {tdashboardEmployee(`editRequests.status${req.status.charAt(0)}${req.status.slice(1).toLowerCase()}`)}
                           </Badge>
                         </div>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-600 dark:text-neutral-900/90">
                           {req.reason || "-"}
                         </p>
                       </div>
@@ -429,7 +429,7 @@ export default function EmployeeDashboard() {
                       >
                         {tdashboardEmployee("editRequests.pagePrev")}
                       </Button>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
                         Page {currentPage} of {totalPages}
                       </span>
                       <Button

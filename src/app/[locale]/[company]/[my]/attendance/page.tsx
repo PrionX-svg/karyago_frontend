@@ -243,7 +243,7 @@ export default function AttendancePage() {
     };
 
     return (
-        <main className="p-4 sm:p-6 min-h-screen">
+        <main className="p-4 sm:p-6 min-h-screen bg-white dark:bg-[#0e0e0e] text-gray-900 dark:text-gray-100 transition-colors duration-300">
             {/* Header */}
             <div className="mb-8 text-center sm:text-left">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start sm:space-x-3 space-y-2 sm:space-y-0">
@@ -254,7 +254,7 @@ export default function AttendancePage() {
                         <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent leading-tight">
                             {attendancePage("title-1")}
                         </h1>
-                        <p className="text-gray-600 text-xs sm:text-sm mt-1">
+                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm mt-1">
                             {attendancePage("description-1")}
                         </p>
                     </div>
@@ -263,7 +263,7 @@ export default function AttendancePage() {
 
 
             {/* Search & Filter */}
-            <Card className="mb-8 bg-white/90 backdrop-blur-sm border-0 shadow-lg rounded-3xl">
+            <Card className="mb-8 bg-white/90 dark:bg-[#111111]/90 backdrop-blur-sm border border-gray-200 dark:border-gray-800 shadow-lg rounded-3xl">
                 <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-col lg:flex-row flex-wrap gap-3 justify-between">
                         <Input
@@ -274,10 +274,10 @@ export default function AttendancePage() {
                             }
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="h-11 sm:h-12 w-full lg:w-[260px] rounded-2xl border-gray-200 bg-white focus:border-orange-500 focus:ring-orange-500"
+                            className="h-11 sm:h-12 w-full lg:w-[260px] rounded-2xl border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 focus:border-orange-500 focus:ring-orange-500"
                         />
                         <Select value={viewType} onValueChange={(val: "attendance" | "edit-request") => setViewType(val)}>
-                            <SelectTrigger className="h-11 sm:h-12 w-full lg:w-[180px] rounded-2xl border-gray-200 bg-white font-medium text-gray-700">
+                            <SelectTrigger className="h-11 sm:h-12 w-full lg:w-[180px] rounded-2xl border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1a1a] font-medium text-gray-700 dark:text-gray-200">
                                 <SelectValue placeholder="Select View" />
                             </SelectTrigger>
                             <SelectContent>
@@ -289,14 +289,14 @@ export default function AttendancePage() {
                         {/* Date Range */}
                         <div className="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto">
                             <DatePicker date={dateFrom} onDateChange={setDateFrom} placeholder={attendancePage("filterPlaceholderDateFrom")} />
-                            <span className="text-gray-400 hidden sm:block">–</span>
+                            <span className="text-gray-400 dark:text-gray-500 hidden sm:block">–</span>
                             <DatePicker date={dateTo} onDateChange={setDateTo} placeholder={attendancePage("filterPlaceholderDateTo")} />
                         </div>
 
                         {/* Status Filter */}
                         <div className="w-full lg:w-[180px]">
                             <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                <SelectTrigger className="h-11 sm:h-12 w-full rounded-2xl border-gray-200 bg-white font-medium text-gray-700">
+                                <SelectTrigger className="h-11 sm:h-12 w-full rounded-2xl border-gray-200 bg-white font-medium text-gray-700 dark:text-gray-200">
                                     <SelectValue placeholder="Status" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -324,12 +324,12 @@ export default function AttendancePage() {
             {viewType === "attendance" ? (
                 <>
                     {/* Attendance Table */}
-                    <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-3xl overflow-hidden overflow-x-auto mb-6">
+                    <Card className="bg-white/90 dark:bg-[#111111]/95 backdrop-blur-sm border border-gray-200 dark:border-gray-800 shadow-xl rounded-3xl overflow-hidden overflow-x-auto mb-6 transition-colors duration-300">
                         <CardContent className="p-6">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-6">Attendance List</h2>
+                            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">Attendance List</h2>
 
                             {/* Header */}
-                            <div className="hidden md:grid md:grid-cols-9 gap-4 pb-3 border-b border-gray-200 text-sm font-semibold text-gray-600">
+                            <div className="hidden md:grid md:grid-cols-9 gap-4 pb-3 text-sm font-semibold text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700">
                                 <span>{attendancePage("tableHeaderDate")}</span>
                                 <span>{attendancePage("tableHeaderAttendanceClockIn")}</span>
                                 <span>{attendancePage("tableHeaderAttendanceClockOut")}</span>
@@ -346,12 +346,15 @@ export default function AttendancePage() {
                                 {paginatedAttendance.map((a) => (
                                     <div
                                         key={a.uuid}
-                                        className="grid md:grid-cols-9 grid-cols-2 sm:grid-cols-4 gap-y-2 sm:gap-3 md:gap-4 p-4 sm:p-5 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-all"
+                                        className="grid md:grid-cols-9 grid-cols-2 sm:grid-cols-4 gap-y-2 sm:gap-3 md:gap-4 p-4 sm:p-5 
+                                        bg-gradient-to-br from-gray-50 to-white dark:from-[#141414] dark:to-[#0f0f0f] 
+                                        rounded-2xl border border-gray-100 dark:border-gray-800 
+                                        transition-all hover:shadow-md"
                                     >
                                         {/* ✅ Date */}
                                         <div className="col-span-2 sm:col-span-1">
-                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderDate")}</p>
-                                            <p className="font-medium text-gray-900">
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderDate")}</p>
+                                            <p className="font-medium text-gray-900 dark:text-gray-100">
                                                 {a.work_date
                                                     ? format(new Date(a.work_date), "dd/MMM/yyyy", { locale: id })
                                                     : "-"}
@@ -360,8 +363,8 @@ export default function AttendancePage() {
 
                                         {/* ✅ Clock In */}
                                         <div>
-                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceClockIn")}</p>
-                                            <p className="text-gray-700 whitespace-nowrap">
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderAttendanceClockIn")}</p>
+                                            <p className="text-gray-700 dark:text-gray-200 whitespace-nowrap">
                                                 {a.clock_in_at ? a.clock_in_at.slice(11, 16).replace(":", ".") : "-"}
                                                 {/* {a.clock_in_at
                                                     ? format(toZonedTime(a.clock_in_at, "Asia/Jakarta"), "HH.mm")
@@ -371,15 +374,15 @@ export default function AttendancePage() {
 
                                         {/* ✅ Clock Out */}
                                         <div>
-                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceClockOut")}</p>
-                                            <p className="text-gray-700 whitespace-nowrap">
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderAttendanceClockOut")}</p>
+                                            <p className="text-gray-700 dark:text-gray-200 whitespace-nowrap">
                                                 {a.clock_out_at ? a.clock_out_at.slice(11, 16).replace(":", ".") : "-"}
                                             </p>
                                         </div>
 
                                         {/* ✅ Type */}
                                         <div>
-                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceType")}</p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderAttendanceType")}</p>
                                             <Badge
                                                 className={`${a.is_home_office
                                                     ? "bg-green-100 text-green-700"
@@ -392,7 +395,7 @@ export default function AttendancePage() {
 
                                         {/* ✅ Total Hours */}
                                         <div>
-                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceTotalHours")}</p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderAttendanceTotalHours")}</p>
                                             <p className="text-gray-800 font-medium text-sm text-center">
                                                 {a.total_work_hours ? `${a.total_work_hours.toFixed(1)}h` : "-"}
                                             </p>
@@ -400,34 +403,33 @@ export default function AttendancePage() {
 
                                         {/* ✅ Overtime */}
                                         <div>
-                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceOvetime")}</p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderAttendanceOvetime")}</p>
                                             {a.is_overtime ? (
                                                 <Badge className="bg-orange-100 text-orange-700 border-0 rounded-full text-xs sm:text-sm">
                                                     {a.overtime_hours ? `${a.overtime_hours.toFixed(1)}h` : "OT"}
                                                 </Badge>
                                             ) : (
-                                                <span className="text-gray-400 text-sm">-</span>
+                                                <span className="text-gray-400 dark:text-gray-500 text-sm">-</span>
                                             )}
                                         </div>
 
                                         {/* ✅ Notes */}
                                         <div className="col-span-2 sm:col-span-1">
-                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceNotes")}</p>
-                                            <p className="text-gray-500 text-sm break-words">{a.notes || "-"}</p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderAttendanceNotes")}</p>
+                                            <p className="text-gray-500 dark:text-gray-400 text-sm break-words">{a.notes || "-"}</p>
                                         </div>
 
                                         {/* ✅ Status */}
                                         <div>
-                                            <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderAttendanceStatus")}</p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderAttendanceStatus")}</p>
                                             <Badge
                                                 className={`${a.status === "PRESENT"
-                                                    ? "bg-green-100 text-green-700"
+                                                    ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
                                                     : a.status === "OPEN"
-                                                        ? "bg-yellow-100 text-yellow-700"
-                                                        : "bg-gray-100 text-gray-700"
+                                                        ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300"
+                                                        : "bg-gray-100 text-gray-700 dark:bg-gray-800/60 dark:text-gray-300"
                                                     } border-0 rounded-full text-xs sm:text-sm`}
                                             >
-                                                {a.status}
                                             </Badge>
                                         </div>
 
@@ -447,7 +449,7 @@ export default function AttendancePage() {
 
 
                                 {paginatedAttendance.length === 0 && (
-                                    <p className="text-center text-gray-500 text-sm py-4">
+                                    <p className="text-center text-gray-500 dark:text-gray-400text-sm py-4">
                                         {attendancePage("noAttendance")}
                                     </p>
                                 )}
@@ -465,7 +467,7 @@ export default function AttendancePage() {
                                     >
                                         <ChevronLeft className="w-4 h-4" />
                                     </Button>
-                                    <span className="text-sm text-gray-600">
+                                    <span className="text-sm text-gray-600 dark:text-gray-300">
                                         {currentPage} of {totalPages}
                                     </span>
                                     <Button
@@ -542,11 +544,11 @@ export default function AttendancePage() {
                 </>
             ) : (
                 /* Edit Requests */
-                <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl rounded-3xl overflow-hidden">
+                <Card className="bg-white/90 dark:bg-[#0f0f0f]/95 backdrop-blur-sm border border-gray-200 dark:border-gray-800 shadow-xl rounded-3xl overflow-hidden transition-colors duration-300">
                     <CardContent className="p-6">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-6">{attendancePage("editRequestList")}</h2>
+                        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">{attendancePage("editRequestList")}</h2>
 
-                        <div className="hidden md:grid md:grid-cols-5 gap-4 pb-3 border-b border-gray-200 text-sm font-semibold text-gray-600">
+                        <div className="hidden md:grid md:grid-cols-5 gap-4 pb-3 border-b border-gray-200 text-sm font-semibold text-gray-600 dark:text-gray-300">
                             <span>{attendancePage("tableHeaderDate")}</span>
                             <span>{attendancePage("tableHeaderEditAttendanceType")}</span>
                             <span>{attendancePage("tableHeaderEditAttendanceReason")}</span>
@@ -554,16 +556,20 @@ export default function AttendancePage() {
                             <span>{attendancePage("tableHeaderEditAttendanceRequestedTime")}</span>
                         </div>
 
+                        {/* Row */}
                         <div className="space-y-3 mt-4">
                             {sortedEditRequests.map((r) => (
                                 <div
                                     key={r.id}
-                                    className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-y-2 sm:gap-3 md:gap-4 p-4 sm:p-5 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-all"
+                                    className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-y-2 sm:gap-3 md:gap-4 
+                                    p-4 sm:p-5 bg-gradient-to-br from-gray-50 to-white dark:from-[#141414] dark:to-[#0f0f0f] 
+                                    border-b-1 border-gray-300 dark:border-gray-700/80 rounded-2xl 
+                                    transition-all hover:shadow-md"
                                 >
                                     {/* 🗓️ Date */}
                                     <div>
-                                        <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderDate")}</p>
-                                        <p className="font-medium text-gray-900 text-sm sm:text-base">
+                                        <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderDate")}</p>
+                                        <p className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base">
                                             {r.work_date
                                                 ? format(new Date(r.work_date), "dd/MMM/yyyy", { locale: id })
                                                 : "-"}
@@ -572,7 +578,7 @@ export default function AttendancePage() {
 
                                     {/* 🧾 Type */}
                                     <div>
-                                        <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderEditAttendanceType")}</p>
+                                        <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderEditAttendanceType")}</p>
                                         {r.proposed_is_home_office !== null && (
                                             <Badge
                                                 className={`${r.proposed_is_home_office
@@ -587,13 +593,13 @@ export default function AttendancePage() {
 
                                     {/* 💬 Reason */}
                                     <div className="col-span-2 sm:col-span-1">
-                                        <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderEditAttendanceReason")}</p>
-                                        <p className="text-sm text-gray-600 break-words">{r.reason || "-"}</p>
+                                        <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderEditAttendanceReason")}</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300 break-words">{r.reason || "-"}</p>
                                     </div>
 
                                     {/* 🏷️ Status */}
                                     <div>
-                                        <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderEditAttendanceStatus")}</p>
+                                        <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderEditAttendanceStatus")}</p>
                                         <Badge
                                             className={`${r.status === "PENDING"
                                                 ? "bg-yellow-100 text-yellow-700"
@@ -608,8 +614,8 @@ export default function AttendancePage() {
 
                                     {/* 🕒 Requested Time */}
                                     <div>
-                                        <p className="text-xs text-gray-400 md:hidden">{attendancePage("tableHeaderEditAttendanceRequestedTime")}</p>
-                                        <p className="text-sm text-gray-600">
+                                        <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderEditAttendanceRequestedTime")}</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">
                                             {r.proposed_clock_in_at
                                                 ? format(toZonedTime(r.proposed_clock_in_at, "Asia/Jakarta"), "HH.mm")
                                                 : "-"}{" "}
@@ -624,7 +630,7 @@ export default function AttendancePage() {
 
 
                             {myEditRequests.length === 0 && (
-                                <p className="text-center text-gray-500 text-sm py-4">
+                                <p className="text-center text-gray-500 dark:text-gray-500 text-sm py-4">
                                     {attendancePage("noRequests")}
                                 </p>
                             )}
@@ -634,9 +640,9 @@ export default function AttendancePage() {
             )}
             {showEditModal && selectedAttendance && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-3xl shadow-xl w-[90%] sm:w-[420px] md:w-[480px] max-h-[90vh] overflow-y-auto p-5 sm:p-6 relative animate-in fade-in-50">
+                    <div className="bg-white rounded-3xl shadow-xl w-[90%] sm:w-[420px] md:w-[480px] max-h-[90vh] overflow-y-auto p-5 sm:p-6 relative animate-in fade-in-50 dark:bg-[#111111] text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700">
                         <button
-                            className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+                            className="absolute top-3 right-3 text-gray-40 hover:text-gray-600 dark:text-gray-300"
                             onClick={() => setShowEditModal(false)}
                         >
                             <X className="w-5 h-5" />
@@ -651,12 +657,12 @@ export default function AttendancePage() {
 
                         <div className="space-y-4">
                             <div>
-                                <label className="text-sm font-medium text-gray-600">{attendancePage("tableHeaderDate")}</label>
+                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300">{attendancePage("tableHeaderDate")}</label>
                                 <Input value={selectedAttendance.work_date} disabled />
                             </div>
 
                             <div>
-                                <label className="text-sm font-medium text-gray-600">{attendancePage("editRequestType")}</label>
+                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300">{attendancePage("editRequestType")}</label>
                                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                 <Select value={editType} onValueChange={(v) => setEditType(v as any)}>
                                     <SelectTrigger>
@@ -677,7 +683,7 @@ export default function AttendancePage() {
                                 <div className="grid grid-cols-2 gap-3">
                                     {["CLOCK_IN", "BOTH", "BOTH_PLUS_FLAG"].includes(editType) && (
                                         <div>
-                                            <label className="text-sm text-gray-600">{attendancePage("editClockIn")}</label>
+                                            <label className="text-sm text-gray-600 dark:text-gray-300">{attendancePage("editClockIn")}</label>
                                             <Input
                                                 type="time"
                                                 value={requestedClockIn}
@@ -688,7 +694,7 @@ export default function AttendancePage() {
 
                                     {["CLOCK_OUT", "BOTH", "BOTH_PLUS_FLAG"].includes(editType) && (
                                         <div>
-                                            <label className="text-sm text-gray-600">{attendancePage("editClockOut")}</label>
+                                            <label className="text-sm text-gray-600 dark:text-gray-300">{attendancePage("editClockOut")}</label>
                                             <Input
                                                 type="time"
                                                 value={requestedClockOut}
@@ -709,14 +715,14 @@ export default function AttendancePage() {
                                         onChange={(e) => setIsHomeOffice(e.target.checked)}
                                         className="w-4 h-4 text-purple-500 border-gray-300 rounded"
                                     />
-                                    <label htmlFor="homeFlag" className="text-sm text-gray-700">
+                                    <label htmlFor="homeFlag" className="text-sm text-gray-700 dark:text-gray-200">
                                         {attendancePage("editSetAsHomeOffie")}
                                     </label>
                                 </div>
                             )}
 
                             <div>
-                                <label className="text-sm font-medium text-gray-600">
+                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300">
                                     {attendancePage("editReasonLabel")}
                                 </label>
                                 <textarea
