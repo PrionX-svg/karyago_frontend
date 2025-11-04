@@ -120,7 +120,7 @@ export default function EmployeeEditRequestsPage() {
     }
   }
 
-  
+
 
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -193,11 +193,10 @@ export default function EmployeeEditRequestsPage() {
       </div>
 
       {/* Table & Card Layout */}
-      <Card className="shadow-md border-0 rounded-3xl">
-
+      <Card className="shadow-md border border-gray-200 dark:border-gray-800 rounded-3xl bg-white dark:bg-neutral-900">
         <CardContent>
           {/* Desktop table */}
-          <div className="hidden md:grid md:grid-cols-8 text-sm font-semibold text-gray-600 border-b pb-3 mb-3">
+          <div className="hidden md:grid md:grid-cols-8 text-sm font-semibold text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700 pb-3 mb-3">
             <span>{t("tableHeaderName")}</span>
             <span>{t("tableHeaderDepartment")}</span>
             <span>{t("tableHeaderDate")}</span>
@@ -222,7 +221,7 @@ export default function EmployeeEditRequestsPage() {
                         : "bg-red-100 text-red-700"
                       }`}
                   >
-                     {getStatusLabel(r.status)}
+                    {getStatusLabel(r.status)}
                   </Badge>
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
@@ -256,10 +255,12 @@ export default function EmployeeEditRequestsPage() {
             {sortedRequests.map((r) => (
               <div
                 key={r.id}
-                className="grid md:grid-cols-8 items-center py-3 border-b text-sm hover:bg-gray-50 transition-all"
+                className="grid md:grid-cols-8 items-center py-3 border-b text-sm transition-all
+                bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900
+                border-gray-100 dark:border-gray-800 text-gray-900 dark:text-gray-100/90"
               >
-                <span className="font-medium text-gray-900">{r.user_name ?? ""}</span>
-                <span className="text-gray-600">{r.department_name}</span>
+                <span className="font-medium text-gray-900 dark:text-gray-100/90">{r.user_name ?? ""}</span>
+                <span className="text-gray-600 dark:text-gray-300">{r.department_name}</span>
                 <span>{r.work_date ? format(new Date(r.work_date), "dd/MMM/yyyy", { locale: id }) : "-"}</span>
                 <span>{formatEditType(r.edit_type)}</span>
                 <span>
@@ -275,14 +276,15 @@ export default function EmployeeEditRequestsPage() {
                 <span className="text-gray-500 truncate">{r.reason}</span>
                 <Badge
                   className={`${r.status === "PENDING"
-                    ? "bg-yellow-100 text-yellow-700"
+                    ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
                     : r.status === "APPROVED"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
+                      ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                      : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                     } rounded-full w-fit`}
                 >
-                   {getStatusLabel(r.status)}
+                  {getStatusLabel(r.status)}
                 </Badge>
+
                 <div className="flex justify-center gap-2">
                   {r.status === "PENDING" && (
                     <>
@@ -330,9 +332,9 @@ export default function EmployeeEditRequestsPage() {
       {/* Reject Modal */}
       {rejectModal.open && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">Reject Edit Request</h2>
-            <p className="text-gray-600 mb-3">Please provide a reason for rejecting this request:</p>
+          <div className="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Reject Edit Request</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-3">Please provide a reason...</p>
             <textarea
               value={rejectModal.reason}
               onChange={(e) => setRejectModal({ ...rejectModal, reason: e.target.value })}

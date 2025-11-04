@@ -92,7 +92,7 @@ export default function RequestEditAttendancePage() {
   }
 
   return (
-    <main className="min-h-screen p-4 sm:p-6">
+    <main className="min-h-screen p-4 sm:p-6 bg-white dark:bg-[#0e0e0e] text-gray-900 dark:text-gray-100 transition-colors duration-300">
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col items-center text-center sm:text-left sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
@@ -105,7 +105,7 @@ export default function RequestEditAttendancePage() {
               <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent leading-tight">
                 {attendanceEditPage("editRequestTitle")}
               </h1>
-              <p className="text-gray-600 text-xs sm:text-sm mt-1">
+              <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm mt-1">
                 {attendanceEditPage("editRequestDesc")}
               </p>
             </div>
@@ -126,17 +126,17 @@ export default function RequestEditAttendancePage() {
 
 
         {/* Card */}
-        <Card className="bg-white/95 backdrop-blur-xl border-0 shadow-xl rounded-3xl">
+        <Card className="bg-white/95 dark:bg-[#111111]/95 backdrop-blur-xl border border-gray-200 dark:border-gray-800 shadow-xl rounded-3xl transition-colors duration-300">
           <CardContent className="p-5 sm:p-8 grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">
             {/* Calendar Section */}
             <div className="flex flex-col space-y-6">
-              <Label className="text-gray-700 font-semibold">{attendanceEditPage("editRequestSelectDate")}</Label>
+              <Label className="text-gray-700 dark:text-gray-200 font-semibold">{attendanceEditPage("editRequestSelectDate")}</Label>
               <div className="flex justify-center sm:justify-start">
                 <Calendar
                   mode="single"
                   selected={selectedDate}
                   onSelect={setSelectedDate}
-                  className="rounded-2xl bg-white border border-gray-100 shadow-sm scale-95 sm:scale-100"
+                  className="rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-100 dark:border-gray-800 shadow-sm scale-95 sm:scale-100"
                 />
               </div>
 
@@ -149,7 +149,7 @@ export default function RequestEditAttendancePage() {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="office" id="office" />
-                    <Label htmlFor="office" className="text-gray-700 cursor-pointer">
+                   <Label htmlFor="office" className="text-gray-700 dark:text-gray-200 cursor-pointer">
                       {attendanceEditPage("inOffice")}
                     </Label>
                   </div>
@@ -173,18 +173,18 @@ export default function RequestEditAttendancePage() {
                     checked={clockInChecked}
                     onCheckedChange={(checked) => setClockInChecked(checked as boolean)}
                   />
-                  <Label htmlFor="clock-in" className="text-gray-700 font-medium cursor-pointer">
+                  <Label htmlFor="clock-in" className="text-gray-600 dark:text-gray-300 font-medium cursor-pointer">
                     Clock In
                   </Label>
                 </div>
                 {clockInChecked && (
                   <div>
-                    <Label className="text-sm text-gray-600 mb-2 block">{attendanceEditPage("editClockIn")}</Label>
+                    <Label className="text-sm text-gray-600 dark:text-gray-300 mb-2 block">{attendanceEditPage("editClockIn")}</Label>
                     <Input
                       type="time"
                       value={clockInTime}
                       onChange={(e) => setClockInTime(e.target.value)}
-                      className="border-gray-200 rounded-xl h-11 sm:h-12"
+                      className="border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 rounded-xl h-11 sm:h-12 transition-colors"
                     />
                   </div>
                 )}
@@ -198,13 +198,13 @@ export default function RequestEditAttendancePage() {
                     checked={clockOutChecked}
                     onCheckedChange={(checked) => setClockOutChecked(checked as boolean)}
                   />
-                  <Label htmlFor="clock-out" className="text-gray-700 font-medium cursor-pointer">
+                  <Label htmlFor="clock-out" className="text-gray-600 dark:text-gray-300 font-medium cursor-pointer">
                     Clock Out
                   </Label>
                 </div>
                 {clockOutChecked && (
                   <div>
-                    <Label className="text-sm text-gray-600 mb-2 block">{attendanceEditPage("editClockOut")}</Label>
+                    <Label className="text-sm text-gray-600 dark:text-gray-300 mb-2 block">{attendanceEditPage("editClockOut")}</Label>
                     <Input
                       type="time"
                       value={clockOutTime}
@@ -217,12 +217,12 @@ export default function RequestEditAttendancePage() {
 
               {/* Reason */}
               <div className="space-y-3">
-                <Label className="text-gray-700 font-medium">{attendanceEditPage("editReasonLabel")}</Label>
+                <Label className="text-gray-600 dark:text-gray-300 font-medium">{attendanceEditPage("editReasonLabel")}</Label>
                 <Textarea
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder={attendanceEditPage("editReasonPlaceholder")}
-                  className="border-gray-200 rounded-xl min-h-[100px] sm:min-h-[120px] resize-none text-sm sm:text-base"
+                  className="border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 rounded-xl min-h-[100px] sm:min-h-[120px] resize-none text-sm sm:text-base transition-colors"
                 />
               </div>
             </form>

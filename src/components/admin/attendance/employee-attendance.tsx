@@ -10,7 +10,7 @@ import { useCompanyStore } from "@/stores/company-store"
 import { employeeAPI } from "@/lib/api/employee-api"
 import { DatePicker } from "@/components/ui/date-picker"
 import { CalendarClockIcon, ChevronLeft, ChevronRight } from "lucide-react"
-import { format} from "date-fns"
+import { format } from "date-fns"
 import { id } from "date-fns/locale"
 import { useTranslations } from "next-intl"
 
@@ -114,7 +114,7 @@ export default function EmployeeAttendancePage() {
             <SelectContent>
               {employeeNames.map((name) => (
                 <SelectItem key={name} value={name}>
-                  {name === "all" ? t("filterTitleEmployeeName"): name}
+                  {name === "all" ? t("filterTitleEmployeeName") : name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -124,8 +124,8 @@ export default function EmployeeAttendancePage() {
         <div className="flex flex-wrap gap-3 items-center justify-start sm:justify-end w-full sm:w-auto min-w-0">
           <div className="flex flex-wrap gap-2 items-center w-full sm:w-auto">
             <DatePicker date={dateFrom} onDateChange={setDateFrom} placeholder={t("filterPlaceholderDateFrom")} />
-            <span className="text-gray-500">–</span>
-            <DatePicker date={dateTo} onDateChange={setDateTo} placeholder={t("filterPlaceholderDateTo")}/>
+            <span className="bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">–</span>
+            <DatePicker date={dateTo} onDateChange={setDateTo} placeholder={t("filterPlaceholderDateTo")} />
           </div>
 
           <Select value={selectedStatus} onValueChange={setSelectedStatus}>
@@ -143,11 +143,10 @@ export default function EmployeeAttendancePage() {
       </div>
 
       {/* Main Card */}
-      <Card className="shadow-md border-0 rounded-3xl">
-
+      <Card className="shadow-md border border-gray-200 dark:border-gray-800 rounded-3xl bg-white dark:bg-neutral-900">
         <CardContent>
           {/* Table View for Desktop */}
-          <div className="hidden md:grid md:grid-cols-8 text-sm font-semibold text-gray-500 border-b pb-2 mb-2">
+          <div className="hidden md:grid md:grid-cols-8 text-sm font-semibold text-gray-600 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 pb-2 mb-2">
             <span>{t("tableHeaderName")}</span>
             <span>{t("tableHeaderDate")}</span>
             <span>{t("tableHeaderAttendanceClockIn")}</span>
@@ -166,10 +165,10 @@ export default function EmployeeAttendancePage() {
                   <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">{a.employee_name}</h3>
                   <Badge
                     className={`text-xs ${a.status === "PRESENT"
-                      ? "bg-green-100 text-green-700"
+                      ? "bbg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                       : a.status === "OPEN"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-gray-100 text-gray-700"
+                        ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                        : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                       }`}
                   >
                     {a.status}
@@ -201,8 +200,11 @@ export default function EmployeeAttendancePage() {
             {paginated.map((a, index) => (
               <div
                 key={index}
-                className={`grid md:grid-cols-8 gap-3 py-3 border-b last:border-0 items-center text-sm ${a.is_overtime ? "bg-orange-50" : "bg-white"
-                  }`}
+                className={`grid md:grid-cols-8 gap-3 py-3 border-b last:border-0 items-center text-sm ${a.is_overtime
+                  ? "bg-orange-50 dark:bg-orange-950/30"
+                  : "bg-white dark:bg-neutral-900"
+                  } border-gray-100 dark:border-gray-800 text-gray-900 dark:text-gray-100`}
+
               >
                 <span className="font-medium">{a.employee_name || "-"}</span>
                 <span>{a.work_date ? format(new Date(a.work_date), "dd/MMM/yyyy", { locale: id }) : "-"}</span>

@@ -134,13 +134,13 @@ export function ChatbotAI() {
       {/* Panel */}
       {open && (
         <div className="fixed bottom-6 right-6 z-50 w-[min(88vw,420px)]">
-          <div className="bg-white/95 backdrop-blur-xl border border-gray-200 rounded-3xl shadow-2xl overflow-hidden">
+          <div className="bg-white/95 dark:bg-[#111111]/95 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl shadow-2xl overflow-hidden transition-colors duration-300">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-[#111111]/95 transition-colors">
               <div className="flex items-center gap-2">
                 <MessageCircle className="h-5 w-5 text-orange-600" />
-                <div className="font-semibold">Chatbot</div>
-                <span className="text-xs text-muted-foreground ml-2">
+                <div className="font-semibold text-gray-900 dark:text-gray-100">Chatbot</div>
+                <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
                   {currentCompany?.name ? `• ${currentCompany.name}` : ""}
                 </span>
               </div>
@@ -155,7 +155,7 @@ export function ChatbotAI() {
             </div>
 
             {/* Messages */}
-            <div className="max-h-[50vh] overflow-y-auto p-4 space-y-3">
+            <div className="max-h-[50vh] overflow-y-auto p-4 space-y-3 bg-white dark:bg-[#0e0e0e] transition-colors duration-300">
               {history.length === 0 && (
                 <div className="text-sm text-muted-foreground text-center py-6">
                   Ask anything about company policies, attendance, or HR workflows.
@@ -164,8 +164,8 @@ export function ChatbotAI() {
               {history.map((t) => (
                 <div key={t.id} className={`flex ${t.role === "assistant" ? "justify-start" : "justify-end"}`}>
                   <div
-                    className={`px-3 py-2 rounded-2xl max-w-[85%] text-sm leading-relaxed shadow-sm ${t.role === "assistant"
-                      ? "bg-gray-50 border"
+                    className={`px-3 py-2 rounded-2xl max-w-[85%] text-sm leading-relaxed shadow-sm transition-colors ${t.role === "assistant"
+                      ? "bg-gray-50 dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
                       : "bg-gradient-to-br from-orange-500 to-red-500 text-white"
                       }`}
                   >
@@ -177,13 +177,13 @@ export function ChatbotAI() {
             </div>
 
             {/* Composer */}
-            <div className="p-3 border-t bg-white flex items-end gap-2">
+            <div className="p-3 border-t bg-white dark:bg-[#111111]/95 border-gray-200 dark:border-gray-800 flex items-end gap-2 transition-colors">
               <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={onKeyDown}
                 placeholder="Type a message… (Enter to send, Shift+Enter for newline)"
-                className="min-h-[44px] max-h-[160px] rounded-2xl resize-y"
+                className="min-h-[44px] max-h-[160px] rounded-2xl resize-y border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
               />
               <Button
                 onClick={send}
