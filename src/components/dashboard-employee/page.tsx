@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
+import { useDebounce } from "use-debounce"
 import { useCompanyStore } from "@/stores/company-store"
 import { useAttendanceEditStore } from "@/stores/attendance-edit-store"
 import { useEmployeeSelfStore } from "@/stores/employee-self-store"
@@ -169,6 +170,37 @@ export default function EmployeeDashboard() {
     fetchMonthlyStats()
   }, [currentCompany?.uuid, fetchAttendanceRange])
 
+  // Autosave with debounce and trigger
+  const [localNotes, setLocalNotes] = useState(notes)
+  const [isSaving, setIsSaving] = useState(false)
+  const [debouncedNotes] = useDebounce(localNotes, 1000) // ⏳ delay 1 detik
+
+  // Trigger autosave setiap kali debouncedNotes berubah
+  useEffect(() => {
+    const autoSave = async () => {
+      if (debouncedNotes !== notes && currentCompany?.uuid) {
+        try {
+          setIsSaving(true)
+          await saveNotes(debouncedNotes, currentCompany.uuid)
+        } finally {
+          setIsSaving(false)
+        }
+      }
+    }
+    autoSave()
+  }, [debouncedNotes, currentCompany?.uuid])
+
+  // Tambahan autosave tiap 30 detik (opsional)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (localNotes && currentCompany?.uuid) {
+        saveNotes(localNotes, currentCompany.uuid)
+      }
+    }, 30000)
+    return () => clearInterval(interval)
+  }, [localNotes, currentCompany?.uuid])
+
+
   const formatEditType = (type: string) => {
     switch (type.toUpperCase()) {
       case "CLOCK_IN":
@@ -289,12 +321,16 @@ export default function EmployeeDashboard() {
                 <div className="mb-6">
                   <Textarea
                     placeholder={tdashboardEmployee("clockCard.notesPlaceholder")}
-                    value={notes}
-                    onChange={(e) => saveNotes(e.target.value, currentCompany?.uuid)}
+                    value={localNotes}
+                    onChange={(e) => setLocalNotes(e.target.value)}
+                    onBlur={() => currentCompany?.uuid && saveNotes(localNotes, currentCompany.uuid)} // simpan pas blur
                     disabled={attendanceToday?.status === "PRESENT"}
                     className="w-full bg-gray-50 dark:bg-[#1a1a1a] border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100/90 rounded-2xl ..."
                     rows={2}
                   />
+                  <p className="text-xs text-gray-400 mt-1">
+                    {isSaving ? "Saving..." : "All changes saved"}
+                  </p>
                 </div>
 
                 {/* Clock In / Out Buttons */}
@@ -325,7 +361,7 @@ export default function EmployeeDashboard() {
         </div>
 
         {/* Attendance Rate */}
-        <Card className="bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 border-0 shadow-lg rounded-3xl text-white">
+        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 border-0 shadow-lg rounded-3xl text-white">
           <CardContent className="p-6 text-white flex flex-col justify-between">
             <CardTitle className="text-white font-semibold text-lg flex items-center">
               <Target className="w-5 h-5 mr-2" />
@@ -344,7 +380,7 @@ export default function EmployeeDashboard() {
         </Card>
 
         {/* Total Hours */}
-        <Card className="bg-gradient-to-br from-purple-500 to-pink-600 dark:from-purple-600 dark:to-pink-700 border-0 shadow-lg rounded-3xl">
+        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 border-0 shadow-lg rounded-3xl">
           <CardContent className="p-6 text-white flex flex-col justify-between">
             <CardTitle className="text-white font-semibold text-lg flex items-center">
               <Award className="w-5 h-5 mr-2" />

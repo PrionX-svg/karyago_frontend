@@ -120,8 +120,6 @@ export default function EmployeeEditRequestsPage() {
     }
   }
 
-
-
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "PENDING":
@@ -184,9 +182,9 @@ export default function EmployeeEditRequestsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t("filterPlaceholderStatusDefault")}</SelectItem>
-              <SelectItem value="PENDING">{t("filterPlaceholderStatusAttendance-1")}</SelectItem>
-              <SelectItem value="APPROVED">{t("filterPlaceholderStatusAttendance-2")}</SelectItem>
-              <SelectItem value="REJECTED">{t("filterPlaceholderStatusAttendance-3")}</SelectItem>
+              <SelectItem value="PENDING">{t("filterPlaceholderStatusEditAttendance-1")}</SelectItem>
+              <SelectItem value="APPROVED">{t("filterPlaceholderStatusEditAttendance-2")}</SelectItem>
+              <SelectItem value="REJECTED">{t("filterPlaceholderStatusEditAttendance-3")}</SelectItem>
             </SelectContent>
           </Select>
         </div>

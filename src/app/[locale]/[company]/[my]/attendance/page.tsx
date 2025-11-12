@@ -438,7 +438,7 @@ export default function AttendancePage() {
                                             <Button
                                                 size="icon"
                                                 variant="ghost"
-                                                className="text-purple-500 hover:text-purple-700"
+                                                className="text-orange-500 hover:text-orange-700"
                                                 onClick={() => openEditModal(a)}
                                             >
                                                 <Edit className="w-4 h-4" />
@@ -487,7 +487,7 @@ export default function AttendancePage() {
                     {/* ✅ Summary Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
                         {/* Present Days */}
-                        <Card className="bg-gradient-to-br from-green-500 to-emerald-500 border-0 shadow-xl rounded-3xl overflow-hidden">
+                        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 border-0 shadow-xl rounded-3xl overflow-hidden">
                             <CardContent className="p-6 text-white">
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
                                     <Calendar className="w-6 h-6" />
@@ -498,7 +498,7 @@ export default function AttendancePage() {
                         </Card>
 
                         {/* Still Open */}
-                        <Card className="bg-gradient-to-br from-yellow-500 to-orange-500 border-0 shadow-xl rounded-3xl overflow-hidden">
+                        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 border-0 shadow-xl rounded-3xl overflow-hidden">
                             <CardContent className="p-6 text-white">
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
                                     <Clock className="w-6 h-6" />
@@ -509,7 +509,7 @@ export default function AttendancePage() {
                         </Card>
 
                         {/* Absent Days */}
-                        <Card className="bg-gradient-to-br from-red-500 to-pink-500 border-0 shadow-xl rounded-3xl overflow-hidden">
+                        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 border-0 shadow-xl rounded-3xl overflow-hidden">
                             <CardContent className="p-6 text-white">
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
                                     <X className="w-6 h-6" />
@@ -520,7 +520,7 @@ export default function AttendancePage() {
                         </Card>
 
                         {/* Total Hours */}
-                        <Card className="bg-gradient-to-br from-blue-500 to-cyan-500 border-0 shadow-xl rounded-3xl overflow-hidden">
+                        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 border-0 shadow-xl rounded-3xl overflow-hidden">
                             <CardContent className="p-6 text-white">
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
                                     <Clock className="w-6 h-6" />
@@ -531,7 +531,7 @@ export default function AttendancePage() {
                         </Card>
 
                         {/* Total Overtime */}
-                        <Card className="bg-gradient-to-br from-orange-500 to-amber-600 border-0 shadow-xl rounded-3xl overflow-hidden">
+                        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 border-0 shadow-xl rounded-3xl overflow-hidden">
                             <CardContent className="p-6 text-white">
                                 <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
                                     <Clock className="w-6 h-6" />
@@ -649,7 +649,7 @@ export default function AttendancePage() {
                         </button>
 
                         <div className="flex items-center mb-4 space-x-3">
-                            <div className="w-10 h-10 bg-purple-100 text-purple-600 flex items-center justify-center rounded-xl">
+                            <div className="w-10 h-10 bg-orange-100 text-orange-600 flex items-center justify-center rounded-xl">
                                 <Edit className="w-5 h-5" />
                             </div>
                             <h2 className="text-xl font-semibold">{attendancePage("editRequestTitle")}</h2>
@@ -713,7 +713,7 @@ export default function AttendancePage() {
                                         id="homeFlag"
                                         checked={isHomeOffice}
                                         onChange={(e) => setIsHomeOffice(e.target.checked)}
-                                        className="w-4 h-4 text-purple-500 border-gray-300 rounded"
+                                        className="w-4 h-4 text-orange-500 border-gray-300 rounded"
                                     />
                                     <label htmlFor="homeFlag" className="text-sm text-gray-700 dark:text-gray-200">
                                         {attendancePage("editSetAsHomeOffie")}
@@ -726,7 +726,7 @@ export default function AttendancePage() {
                                     {attendancePage("editReasonLabel")}
                                 </label>
                                 <textarea
-                                    className="w-full p-3 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-purple-400"
+                                    className="w-full p-3 rounded-xl border border-gray-200 focus:border-orange-400 focus:ring-orange-400"
                                     rows={3}
                                     placeholder={attendancePage("editReasonPlaceholder")}
                                     value={reason}
@@ -735,7 +735,7 @@ export default function AttendancePage() {
                             </div>
 
                             <Button
-                                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl"
+                                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl"
                                 onClick={handleSubmitEditRequest}
                             >
                                 {attendancePage("submitEditRequest")}
