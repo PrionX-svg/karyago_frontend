@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar, Clock, Edit, ChevronLeft, ChevronRight, X } from "lucide-react"
+import { Calendar, Clock, Edit, ChevronLeft, ChevronRight, X, NotepadTextIcon } from "lucide-react"
 import { employeeAPI } from "@/lib/api/employee-api"
 import { DatePicker } from "@/components/ui/date-picker"
 import { toZonedTime, format } from "date-fns-tz"
@@ -23,6 +23,8 @@ export default function AttendancePage() {
     const { attendanceList, fetchAttendanceRange } = useEmployeeSelfStore()
     const { myEditRequests, fetchMyEditRequests } = useAttendanceEditStore()
 
+    const [showNotesModal, setShowNotesModal] = useState(false);
+    const [selectedNote, setSelectedNote] = useState("");
     const [viewType, setViewType] = useState<"attendance" | "edit-request">("attendance")
     const [timeFilter] = useState<"this-week" | "this-month">("this-week")
     const [searchTerm, setSearchTerm] = useState("")
@@ -416,8 +418,38 @@ export default function AttendancePage() {
                                         {/* ✅ Notes */}
                                         <div className="col-span-2 sm:col-span-1">
                                             <p className="text-xs text-gray-400 dark:text-gray-500 md:hidden">{attendancePage("tableHeaderAttendanceNotes")}</p>
-                                            <p className="text-gray-500 dark:text-gray-400 text-sm break-words">{a.notes || "-"}</p>
+                                            {/* <p className="text-gray-500 dark:text-gray-400 text-sm break-words">{a.notes || "-"}</p> */}
+                                            <div className="flex items-center space-x-2">
+                                                {/* If there are notes, show the icon to open the modal */}
+                                                {a.notes && (
+                                                    <NotepadTextIcon
+                                                        className="w-4 h-4 text-gray-500 cursor-pointer"
+                                                        onClick={() => {
+                                                            setSelectedNote(a.notes ?? "");
+                                                            setShowNotesModal(true);
+                                                        }}
+                                                    />
+                                                )}
+                                            </div>
                                         </div>
+                                        {/* Modal to show full notes */}
+                                        {showNotesModal && selectedNote && (
+                                            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                                                <div className="bg-white rounded-3xl shadow-xl w-[90%] sm:w-[420px] max-h-[90vh] overflow-y-auto p-5 sm:p-6 relative animate-in fade-in-50 dark:bg-[#111111] text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700">
+                                                    <button
+                                                        className="absolute top-3 right-3 text-gray-40 hover:text-gray-600 dark:text-gray-300"
+                                                        onClick={() => setShowNotesModal(false)}
+                                                    >
+                                                        <X className="w-5 h-5" />
+                                                    </button>
+
+                                                    <div>
+                                                        <h3 className="text-lg font-semibold">{attendancePage("notes")}</h3>
+                                                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{selectedNote}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
 
                                         {/* ✅ Status */}
                                         <div>
@@ -430,6 +462,7 @@ export default function AttendancePage() {
                                                         : "bg-gray-100 text-gray-700 dark:bg-gray-800/60 dark:text-gray-300"
                                                     } border-0 rounded-full text-xs sm:text-sm`}
                                             >
+                                                {a.status}
                                             </Badge>
                                         </div>
 

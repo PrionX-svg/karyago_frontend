@@ -643,7 +643,8 @@
     "editTypeClockOut": "Clock Out",
     "editTypeBoth": "Clock In & Out",
     "editTypeHome": "Tipe Kerja",
-    "allRequestEditType": "Semua Tipe Pengajuan"
+    "allRequestEditType": "Semua Tipe Pengajuan",
+    "notes": "Catatan"
   },
   "dashboardEmployee": {
     "title": "Dashboard Karyawan",

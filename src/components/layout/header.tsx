@@ -108,7 +108,7 @@ export function Header() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenu>My Account</DropdownMenu>
+            {/* <DropdownMenu>My Account</DropdownMenu> */}
             {/* <DropdownMenuSeparator />
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>

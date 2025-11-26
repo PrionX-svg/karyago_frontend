@@ -654,7 +654,8 @@
     "editTypeClockOut": "Clock Out",
     "editTypeBoth": "Clock In & Out",
     "editTypeHome": "Work Type",
-    "allRequestEditType": "All Request Type"
+    "allRequestEditType": "All Request Type",
+    "notes": "Notes"
   },
   "dashboardEmployee": {
     "title": "Employee Dashboard",
