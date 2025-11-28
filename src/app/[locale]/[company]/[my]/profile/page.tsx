@@ -18,7 +18,6 @@ import { api } from "@/lib/api/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useUserStore } from "@/stores/user-store"
-import { useCompanyStore } from "@/stores/company-store"
 
 function fmtDate(d?: string | null) {
   if (!d) return "-"

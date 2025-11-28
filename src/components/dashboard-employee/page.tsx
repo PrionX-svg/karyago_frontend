@@ -175,22 +175,6 @@ export default function EmployeeDashboard() {
   const [isSaving, setIsSaving] = useState(false)
   const [debouncedNotes] = useDebounce(localNotes, 1000) // ⏳ delay 1 detik
 
-  // Manual save untuk backup
-  const handleSaveNotes = async () => {
-    if (localNotes !== notes && currentCompany?.uuid) {
-      try {
-        setIsSaving(true);
-        await saveNotes(localNotes, currentCompany.uuid); // Save the note to the backend
-        toast.success("Notes saved successfully!");
-      } catch (error) {
-        console.error("Error saving notes:", error);
-        toast.error("Failed to save notes.");
-      } finally {
-        setIsSaving(false);
-      }
-    }
-  };
-
   // Trigger autosave setiap kali debouncedNotes berubah
   useEffect(() => {
     const autoSave = async () => {
@@ -204,7 +188,7 @@ export default function EmployeeDashboard() {
       }
     }
     autoSave()
-  }, [debouncedNotes, currentCompany?.uuid])
+  }, [debouncedNotes, notes, saveNotes, currentCompany?.uuid])
 
   // Tambahan autosave tiap 30 detik (opsional)
   useEffect(() => {
@@ -214,7 +198,7 @@ export default function EmployeeDashboard() {
       }
     }, 30000)
     return () => clearInterval(interval)
-  }, [localNotes, currentCompany?.uuid])
+  }, [localNotes, saveNotes,currentCompany?.uuid])
 
 
   const formatEditType = (type: string) => {
