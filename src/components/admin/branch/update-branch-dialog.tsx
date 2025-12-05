@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "next-intl";
 import FileUploader from "./FileUploader";
+import { Building2 } from "lucide-react";
 
 interface UpdateBranchForm {
   branchUuid: string
@@ -81,6 +82,7 @@ export function UpdateBranchDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden">
         <div className="flex flex-col items-center py-6 px-6 bg-gradient-to-br from-gray-50 to-white dark:from-stone-900 dark:to-stone-950">
+          <Building2 size={40} className="mb-2 text-primary" />
           <DialogHeader className="w-full items-center text-center mb-2">
             <DialogTitle className="text-xl font-bold">
               {t("updateBranch")}

@@ -155,7 +155,7 @@ export function DivisionForm({ mode, division, trigger }: DivisionDialogProps) {
                             <Building2 className="w-6 h-6 text-orange-600" />
                         </div>
                     </div>
-                    <DialogTitle className="text-base font-semibold text-gray-900">
+                    <DialogTitle className="text-base text-center font-semibold text-gray-900">
                         {mode === "create" ? "Create New Department Group" : "Edit Department Group"}
                     </DialogTitle>
                 </DialogHeader>

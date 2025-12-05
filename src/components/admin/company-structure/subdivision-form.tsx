@@ -122,11 +122,13 @@ export function SubDivisionDialog({ mode, subDivision, trigger }: SubDivisionDia
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <div className="p-2 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
-                            <Target className="w-5 h-5 text-orange-600" />
+                <DialogHeader className="mb-4 space-y-3 text-center">
+                    <div className="flex justify-center">
+                        <div className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200">
+                            <Target className="w-6 h-6 text-orange-600" />
                         </div>
+                    </div>
+                    <DialogTitle className="text-base text-center font-semibold text-gray-900">
                         {mode === "create" ? "Create New Department" : "Edit Department"}
                     </DialogTitle>
                 </DialogHeader>

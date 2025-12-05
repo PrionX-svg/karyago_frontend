@@ -329,7 +329,7 @@ export default function EmployeeEditRequestsPage() {
 
       {/* Reject Modal */}
       {rejectModal.open && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-lg w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Reject Edit Request</h2>
             <p className="text-gray-600 dark:text-gray-300 mb-3">Please provide a reason...</p>
