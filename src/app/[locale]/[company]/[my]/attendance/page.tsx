@@ -37,18 +37,19 @@ export default function AttendancePage() {
     const ITEMS_PER_PAGE = 10
 
     /** Range filter waktu */
-    const getDateRange = (filter: string) => {
-        const now = new Date()
-        const start = new Date()
-        if (filter === "this-week") start.setDate(now.getDate() - 7)
-        else start.setMonth(now.getMonth() - 1)
-        return { from: start, to: now }
-    }
+    // const getDateRange = (filter: string) => {
+    //     const now = new Date()
+    //     const start = new Date()
+    //     if (filter === "this-week") start.setDate(now.getDate() - 7)
+    //     else start.setMonth(now.getMonth() - 1)
+    //     return { from: start, to: now }
+    // }
 
     /** Fetch data attendance + edit requests */
     useEffect(() => {
         if (!currentCompany?.uuid) return
-        const { from, to } = getDateRange(timeFilter)
+        const from = new Date("2025-01-01")
+        const to = new Date("2025-12-31")
         fetchAttendanceRange(from, to, currentCompany.uuid)
         fetchMyEditRequests(currentCompany.uuid)
     }, [currentCompany?.uuid, timeFilter, fetchAttendanceRange, fetchMyEditRequests])
@@ -56,7 +57,6 @@ export default function AttendancePage() {
     // useEffect(() => {
     //     console.log("🟢 attendanceList (from store):", attendanceList)
     // }, [attendanceList])
-
 
     const filteredAttendance = attendanceList.filter((a) => {
         const workDate = a.work_date ? new Date(a.work_date) : undefined
@@ -434,8 +434,8 @@ export default function AttendancePage() {
                                         </div>
                                         {/* Modal to show full notes */}
                                         {showNotesModal && selectedNote && (
-                                            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-                                                <div className="bg-white rounded-3xl shadow-xl w-[90%] sm:w-[420px] max-h-[90vh] overflow-y-auto p-5 sm:p-6 relative animate-in fade-in-50 dark:bg-[#111111] text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700">
+                                            <div className="fixed inset-0 flex items-center justify-center z-50">
+                                                <div className="bg-white rounded-3xl shadow-xl w-[90%] sm:w-[420px] max-h-[90vh] overflow-y-auto p-5 sm:p-6 relative animate-in fade-in-50 dark:bg-black/40 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700">
                                                     <button
                                                         className="absolute top-3 right-3 text-gray-40 hover:text-gray-600 dark:text-gray-300"
                                                         onClick={() => setShowNotesModal(false)}

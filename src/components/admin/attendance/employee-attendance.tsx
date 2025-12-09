@@ -42,9 +42,8 @@ export default function EmployeeAttendancePage() {
     const fetchAttendance = async () => {
       if (!currentCompany?.uuid) return
       try {
-        const now = new Date()
-        const defaultFrom = dateFrom || new Date(now.getFullYear(), now.getMonth(), 1)
-        const defaultTo = dateTo || now
+        const defaultFrom = dateFrom || new Date("2000-01-01")
+        const defaultTo = dateTo || new Date("2100-01-01")
         const res = await employeeAPI.listAllAttendance(defaultFrom, defaultTo, currentCompany.uuid)
         setAttendanceList(res.data || [])
       } catch (err) {
@@ -165,10 +164,10 @@ export default function EmployeeAttendancePage() {
                   <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">{a.employee_name}</h3>
                   <Badge
                     className={`text-xs ${a.status === "PRESENT"
-                      ? "bbg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                      ? "bg-green-100 text-green-700"
                       : a.status === "OPEN"
-                        ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-                        : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-gray-100 text-gray-700"
                       }`}
                   >
                     {a.status}
@@ -210,7 +209,7 @@ export default function EmployeeAttendancePage() {
                 <span>{a.work_date ? format(new Date(a.work_date), "dd/MMM/yyyy", { locale: id }) : "-"}</span>
                 <span> {a.clock_in_at ? a.clock_in_at.slice(11, 16).replace(":", ".") : "-"}</span>
                 <span>{a.clock_out_at ? a.clock_out_at.slice(11, 16).replace(":", ".") : "-"}</span>
-                <span className="text-center text-gray-800 font-medium">
+                <span className="text-center text-gray-800 dark:text-gray-100 **:font-medium">
                   {a.total_work_hours ? `${a.total_work_hours.toFixed(1)}h` : "-"}
                 </span>
                 <span className="text-center">
