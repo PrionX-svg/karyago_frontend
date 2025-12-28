@@ -172,17 +172,36 @@ export default async function middleware(req: NextRequest) {
       );
 
       const role = (payload.role as string)?.toLowerCase() ?? roleCookie ?? "";
-      const company = (payload.company as string) ?? "default-company";
+      const companies = (payload.companies as string[]) ?? [];
+      const companyCount =
+        (payload.companyCount as number) ?? companies.length ?? 0;
+
+      // ambil default company (kalau cuma satu)
+      const singleCompany = companies[0];
 
       // ✅ Stop redirect if user is selecting company
       if (isSelectCompanyPage) {
+        if (companyCount === 1 && singleCompany) {
+          // langsung redirect ke company
+          if (["admin", "owner", "assistant"].includes(role)) {
+            url.pathname = `/${locale}/${singleCompany}`;
+          } else if (role === "employee") {
+            url.pathname = `/${locale}/my`;
+          } else {
+            url.pathname = `/${locale}/auth`;
+          }
+          return NextResponse.redirect(url);
+        }
+
+        // ✅ kalau company > 1, boleh stay di select-company
         return addSecurityHeaders(intlResponse);
+
       }
 
       // ✅ Redirect user from /auth -> ke dashboard sesuai role
       if (isAuthPage) {
         if (["admin", "owner", "assistant"].includes(role)) {
-          url.pathname = `/${locale}/${company}`;
+          url.pathname = `/${locale}/${singleCompany}`;
         } else if (role === "employee") {
           url.pathname = `/${locale}/my`;
         } else {
@@ -192,13 +211,13 @@ export default async function middleware(req: NextRequest) {
       }
 
       // ✅ Optional: Proteksi akses antar-role
-      if (pathname.includes(`/${company}`) && role === "employee") {
+      if (pathname.includes(`/${singleCompany}`) && role === "employee") {
         url.pathname = `/${locale}/my`;
         return NextResponse.redirect(url);
       }
 
       if (pathname.includes("/my") && ["admin", "owner", "assistant"].includes(role)) {
-        url.pathname = `/${locale}/${company}`;
+        url.pathname = `/${locale}/${singleCompany}`;
         return NextResponse.redirect(url);
       }
     } catch (err) {
