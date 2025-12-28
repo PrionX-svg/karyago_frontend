@@ -119,56 +119,81 @@ export default function EmployeeDashboard() {
   )
 
   // Attendance Rate
-  useEffect(() => {
-    const fetchMonthlyStats = async () => {
-      if (!currentCompany?.uuid) return
+useEffect(() => {
+  const fetchMonthlyStats = async () => {
+    if (!currentCompany?.uuid) return
 
-      try {
-        // Ambil range tanggal bulan ini
-        const now = new Date()
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    try {
+      const now = new Date()
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-        const res = (await fetchAttendanceRange(startOfMonth, endOfMonth, currentCompany.uuid)) as unknown as { data?: AttendanceRecord[] }
-        const attendances = res.data ?? []
+      const res = (await fetchAttendanceRange(
+        startOfMonth,
+        endOfMonth,
+        currentCompany.uuid
+      )) as unknown as { data?: AttendanceRecord[] }
 
+      const attendances: AttendanceRecord[] = res.data ?? []
 
-        if (attendances.length === 0) {
-          setAttendanceRate(0)
-          setTotalHours(0)
-          return
+      // ✅ HITUNG TOTAL HARI KERJA DARI KALENDER
+      const totalWorkDays = Array.from(
+        { length: endOfMonth.getDate() },
+        (_, i) => {
+          const d = new Date(startOfMonth)
+          d.setDate(d.getDate() + i)
+          const day = d.getDay()
+          return day !== 0 && day !== 6
         }
+      ).filter(Boolean).length
 
-        // Filter hanya hari kerja (exclude weekend)
-        const workingDays = attendances.filter((a) => {
-          const day = new Date(a.work_date).getDay()
-          return day !== 0 && day !== 6 // 0 = Minggu, 6 = Sabtu
-        })
-
-        // Hitung jumlah hadir (status = PRESENT)
-        const presentDays = workingDays.filter((a) => a.status === "PRESENT").length
-
-        // Total hari kerja
-        const totalDays = workingDays.length
-
-        // Hitung attendance rate
-        const rate = totalDays > 0 ? (presentDays / totalDays) * 100 : 0
-
-        // 🎯 Total jam kerja langsung dari backend
-        const totalHoursCalc = workingDays.reduce(
-          (acc: number, a) => acc + (a.total_work_hours ?? 0),
-          0
-        )
-
-        setAttendanceRate(rate)
-        setTotalHours(totalHoursCalc)
-      } catch (err) {
-        console.error("❌ Failed to calculate monthly stats:", err)
+      if (totalWorkDays === 0) {
+        setAttendanceRate(0)
+        setTotalHours(0)
+        return
       }
-    }
 
-    fetchMonthlyStats()
-  }, [currentCompany?.uuid, fetchAttendanceRange])
+      /**
+       * ✅ HADIR = ADA ATTENDANCE DI HARI KERJA
+       * dedup per work_date
+       */
+      const presentDates = new Set<string>()
+
+      attendances.forEach((a) => {
+        if (!a.work_date) return
+
+        const day = new Date(a.work_date).getDay()
+        if (day === 0 || day === 6) return // skip weekend
+
+        presentDates.add(a.work_date)
+      })
+
+      const presentDays = presentDates.size
+
+      const rate = Math.round((presentDays / totalWorkDays) * 100)
+
+      // ✅ TOTAL JAM KERJA (tetap dari backend)
+      const totalHoursCalc = attendances.reduce(
+        (acc: number, a) => acc + (a.total_work_hours ?? 0),
+        0
+      )
+
+      console.log("📊 Employee Attendance Debug:", {
+        totalWorkDays,
+        presentDays,
+        rate,
+        totalHoursCalc,
+      })
+
+      setAttendanceRate(rate)
+      setTotalHours(totalHoursCalc)
+    } catch (err) {
+      console.error("❌ Failed to calculate monthly stats:", err)
+    }
+  }
+
+  fetchMonthlyStats()
+}, [currentCompany?.uuid, fetchAttendanceRange])
 
   // Autosave with debounce and trigger
   const [localNotes, setLocalNotes] = useState(notes)

@@ -11,6 +11,7 @@ import { useEmployeeStore } from "@/stores/employee-store"
 import { Building2, Users, Target, Briefcase } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useParams } from "next/navigation"
+import { AttendanceRecord } from "@/lib/interfaces/attendance-interface"
 
 interface Division {
   uuid: string
@@ -29,11 +30,6 @@ interface EditRequest {
   edit_type: string
   status: "PENDING" | "APPROVED" | "REJECTED"
 }
-
-interface AttendanceRecord {
-  status: string
-}
-
 
 export default function AdminDashboardPage() {
   const { currentCompany } = useCompanyStore()
@@ -74,33 +70,83 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const calcRate = async () => {
       if (!currentCompany?.uuid) return
+      if (employees.length === 0) return
+
       try {
         const now = new Date()
         const from = new Date(now.getFullYear(), now.getMonth(), 1)
         const to = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-        const range = await employeeAPI.listAllAttendance(from, to, currentCompany.uuid)
-        console.log("📊 Attendance range result:", range)
-        const records = range.data || []
+        const range = await employeeAPI.listAllAttendance(
+          from,
+          to,
+          currentCompany.uuid
+        )
 
-        // hanya karyawan aktif
-        const activeCount = employees.filter((e) => !e.termination?.date).length
+        const records: AttendanceRecord[] = range.data || []
 
+        // Debug
+        // console.log("Attendance records length:", records.length)
+        // console.log("Attendance sample:", records[0])
 
-        // total hari kerja (exclude sabtu & minggu)
-        const totalWorkDays = Array.from({ length: to.getDate() }, (_, i) => {
-          const d = new Date(from)
-          d.setDate(d.getDate() + i)
-          const day = d.getDay()
-          return day !== 0 && day !== 6 // exclude Sun & Sat
-        }).filter(Boolean).length
+        // ✅ jumlah employee aktif
+        const activeCount = employees.filter(
+          (e) => !e.termination?.date
+        ).length
 
-        // total hadir
-        const totalPresent = records.filter((r: AttendanceRecord) => r.status === "PRESENT").length
+        // ✅ total hari kerja (exclude Sabtu & Minggu)
+        const totalWorkDays = Array.from(
+          { length: to.getDate() },
+          (_, i) => {
+            const d = new Date(from)
+            d.setDate(d.getDate() + i)
+            const day = d.getDay()
+            return day !== 0 && day !== 6
+          }
+        ).filter(Boolean).length
 
-        // rate
+        /**
+         * ✅ HITUNG ATTENDANCE BERBASIS HARI
+         * key   = work_date
+         * value = jumlah attendance di hari tsb
+         */
+        const presentByDate = new Map<string, number>()
+
+        records.forEach((r) => {
+          if (!r.work_date) return
+
+          presentByDate.set(
+            r.work_date,
+            (presentByDate.get(r.work_date) || 0) + 1
+          )
+        })
+
+        /**
+         * ✅ TOTAL HADIR
+         * per hari maksimal = active employee
+         */
+        let totalPresent = 0
+
+        presentByDate.forEach((count) => {
+          totalPresent += Math.min(count, activeCount)
+        })
+
         const totalPossible = activeCount * totalWorkDays
-        const rate = totalPossible > 0 ? (totalPresent / totalPossible) * 100 : 0
+
+        const rate =
+          totalPossible > 0
+            ? Math.round((totalPresent / totalPossible) * 100)
+            : 0
+
+        // Debug
+        // console.log("📊 Attendance Debug FINAL:", {
+        //   activeCount,
+        //   totalWorkDays,
+        //   daysWithAttendance: presentByDate.size,
+        //   totalPresent,
+        //   totalPossible,
+        //   rate,
+        // })
 
         setAttendanceRate(rate)
       } catch (err) {
@@ -201,7 +247,9 @@ export default function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="text-6xl font-bold text-foreground">{attendanceRate ? `${attendanceRate.toFixed(0)}%` : "--"}</div>
+              <div className="text-6xl font-bold text-foreground">
+                {attendanceRate !== null ? `${attendanceRate}%` : "--"}
+              </div>
               <p className="text-sm text-muted-foreground">{t("attendanceRate.thisMonth")}</p>
             </div>
           </CardContent>
