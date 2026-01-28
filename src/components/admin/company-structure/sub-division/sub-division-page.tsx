@@ -87,9 +87,9 @@ export default function SubDivisionsRoundedTable() {
     if (!selectedSubDivision) return;
     try {
       await api.deleteSubDivision(selectedSubDivision);
-      toast.success(t("deleteSuccess"));
+      toast.success("Department deleted successfully");
     } catch {
-      toast.error(t("deleteError"));
+      toast.error("Deleting department failed");
     } finally {
       setIsDeleteOpen(false);
       setSubSelectedDivision(null);

@@ -199,11 +199,13 @@ useEffect(() => {
   const [localNotes, setLocalNotes] = useState(notes)
   const [isSaving, setIsSaving] = useState(false)
   const [debouncedNotes] = useDebounce(localNotes, 1000) // ⏳ delay 1 detik
+  const isClockedOut = Boolean(attendanceToday?.clock_out_at)
+  const canSaveNotes = Boolean(currentCompany?.uuid) && !isClockedOut
 
   // Trigger autosave setiap kali debouncedNotes berubah
   useEffect(() => {
     const autoSave = async () => {
-      if (debouncedNotes !== notes && currentCompany?.uuid) {
+      if (debouncedNotes !== notes && canSaveNotes) {
         try {
           setIsSaving(true)
           await saveNotes(debouncedNotes, currentCompany.uuid)
@@ -213,17 +215,17 @@ useEffect(() => {
       }
     }
     autoSave()
-  }, [debouncedNotes, notes, saveNotes, currentCompany?.uuid])
+  }, [debouncedNotes, notes, saveNotes, canSaveNotes, currentCompany?.uuid])
 
   // Tambahan autosave tiap 30 detik (opsional)
   useEffect(() => {
     const interval = setInterval(() => {
-      if (localNotes && currentCompany?.uuid) {
+      if (localNotes && canSaveNotes) {
         saveNotes(localNotes, currentCompany.uuid)
       }
     }, 30000)
     return () => clearInterval(interval)
-  }, [localNotes, saveNotes,currentCompany?.uuid])
+  }, [localNotes, saveNotes, canSaveNotes, currentCompany?.uuid])
 
 
   const formatEditType = (type: string) => {
@@ -348,8 +350,8 @@ useEffect(() => {
                     placeholder={tdashboardEmployee("clockCard.notesPlaceholder")}
                     value={localNotes}
                     onChange={(e) => setLocalNotes(e.target.value)}
-                    onBlur={() => currentCompany?.uuid && saveNotes(localNotes, currentCompany.uuid)} // simpan pas blur
-                    disabled={attendanceToday?.status === "PRESENT"}
+                    onBlur={() => canSaveNotes && saveNotes(localNotes, currentCompany.uuid)} // simpan pas blur
+                    disabled={attendanceToday?.status === "PRESENT" || isClockedOut}
                     className="w-full bg-gray-50 dark:bg-[#1a1a1a] border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100/90 rounded-2xl ..."
                     rows={2}
                   />

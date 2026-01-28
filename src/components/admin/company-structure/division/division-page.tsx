@@ -68,7 +68,7 @@ export default function DivisionsPage() {
     try {
       await api
         .deleteDivision(selectedDivision)
-        .then(() => toast.success(t("deleteSuccess")))
+        .then(() => toast.success("Department group deleted successfully"))
         .catch((error) => toast.error(`${t("deleteError")}: ${error.message}`))
     } catch (error) {
       console.error("Failed to delete department groups", error)

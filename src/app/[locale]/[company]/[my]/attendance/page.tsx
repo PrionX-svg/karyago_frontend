@@ -48,8 +48,10 @@ export default function AttendancePage() {
     /** Fetch data attendance + edit requests */
     useEffect(() => {
         if (!currentCompany?.uuid) return
-        const from = new Date("2025-01-01")
-        const to = new Date("2025-12-31")
+        const from = new Date("2020-01-01")
+        const to = new Date("2050-12-31")
+
+
         fetchAttendanceRange(from, to, currentCompany.uuid)
         fetchMyEditRequests(currentCompany.uuid)
     }, [currentCompany?.uuid, timeFilter, fetchAttendanceRange, fetchMyEditRequests])
@@ -57,6 +59,15 @@ export default function AttendancePage() {
     // useEffect(() => {
     //     console.log("🟢 attendanceList (from store):", attendanceList)
     // }, [attendanceList])
+
+    useEffect(() => {
+        console.log(
+            attendanceList.map(a => ({
+                date: a.work_date,
+                status: a.status
+            }))
+        )
+    }, [attendanceList])
 
     const filteredAttendance = attendanceList.filter((a) => {
         const workDate = a.work_date ? new Date(a.work_date) : undefined
@@ -92,6 +103,8 @@ export default function AttendancePage() {
 
     // 🧭 Sort attendance by work_date (newest first)
     const sortedAttendance = [...filteredAttendance].sort((a, b) => {
+        if (a.status === "OPEN" && b.status !== "OPEN") return -1
+        if (a.status !== "OPEN" && b.status === "OPEN") return 1
         const dateA = new Date(a.work_date ?? 0).getTime()
         const dateB = new Date(b.work_date ?? 0).getTime()
         return dateB - dateA // newest first
